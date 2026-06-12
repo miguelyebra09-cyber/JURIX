@@ -3,307 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Tickets - Área Jurídica</title>
+    <title>JURIX-DGAJ - Registro de Ticket</title>
     <style>
         :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #475569;
-            --accent-color: #b91c1c;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
+            --naranja-nitido: #FF5500;
+            --gris-oscuro: #2D3748;
+            --gris-claro: #F7FAFC;
+            --borde: #E2E8F0;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: #334155;
+            background-color: var(--gris-claro);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            color: var(--gris-oscuro);
+        }
+
+        /* Navegación */
+        nav {
+            background-color: var(--gris-oscuro);
+            padding: 1rem 2rem;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            justify-content: flex-end;
+            gap: 1.5rem;
         }
 
-        .container {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            width: 100%;
-            max-width: 650px;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-            text-align: center;
-        }
-
-        .ticket-preview {
-            background-color: #f1f5f9;
-            border-left: 4px solid var(--primary-color);
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 0 4px 4px 0;
-        }
-
-        .ticket-preview span {
+        nav a {
+            color: white;
+            text-decoration: none;
             font-weight: bold;
-            font-size: 1.1em;
-            color: var(--primary-color);
+        }
+
+        nav a:hover {
+            color: var(--naranja-nitido);
+        }
+
+        /* Encabezado */
+        header {
+            text-align: center;
+            padding: 2rem 0 1rem 0;
+        }
+
+        header h1 {
+            color: var(--naranja-nitido);
+            font-size: 3rem;
+            margin: 0;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        /* Contenedor del Formulario */
+        .container {
+            max-width: 650px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--naranja-nitido);
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            font-size: 0.95em;
         }
 
         input[type="text"], select, textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
+            padding: 0.75rem;
+            border: 1px solid var(--borde);
             border-radius: 4px;
             box-sizing: border-box;
-            font-size: 1srem;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
+            font-size: 1rem;
         }
 
         textarea {
             resize: vertical;
-            min-height: 80px;
+            height: 100px;
         }
 
-        .file-input-wrapper {
-            position: relative;
-            margin-top: 5px;
-        }
-
-        .buttons-container {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 25px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
+        .folio-display {
+            background-color: #EDF2F7;
+            padding: 0.75rem;
             border-radius: 4px;
-            font-weight: 600;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2B6CB0;
+            border: 1px dashed #CBD5E0;
+        }
+
+        /* Botones */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        button, .btn-cancelar {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background 0.2s;
+            text-align: center;
+            text-decoration: none;
         }
 
-        .btn-cancel {
-            background-color: #e2e8f0;
-            color: var(--secondary-color);
-        }
-
-        .btn-cancel:hover {
-            background-color: #cbd5e1;
-        }
-
-        .btn-submit {
-            background-color: var(--primary-color);
+        .btn-enviar {
+            background-color: var(--naranja-nitido);
             color: white;
+            border: none;
+            flex: 2;
         }
 
-        .btn-submit:hover {
-            background-color: #1d4ed8;
+        .btn-enviar:hover {
+            background-color: #E04A00;
+        }
+
+        .btn-cancelar {
+            background-color: #E2E8F0;
+            color: var(--gris-oscuro);
+            border: 1px solid #CBD5E0;
+            flex: 1;
+        }
+
+        .btn-cancelar:hover {
+            background-color: #CBD5E0;
+        }
+
+        input[type="file"] {
+            margin-top: 0.5rem;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Registro de Ticket de Servicio - Área Jurídica</h2>
-    
-    <div class="ticket-preview">
-        Folio Provisional del Ticket: <span id="lblTicket">Seleccione una solicitud...</span>
+    <nav>
+        <a href="xxx.html">Opción 1</a>
+        <a href="index.html">Salir</a>
+    </nav>
+
+    <header>
+        <h1>JURIX-DGAJ</h1>
+    </header>
+
+    <div class="container">
+        <form id="ticketForm">
+            <div class="form-group">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="puesto">Puesto:</label>
+                <input type="text" id="puesto" required>
+            </div>
+
+            <div class="form-group">
+                <label for="area">Área:</label>
+                <input type="text" id="area" required>
+            </div>
+
+            <div class="form-group">
+                <label for="solicitud">Tipo de Solicitud:</label>
+                <select id="solicitud" required onchange="generarFolio()">
+                    <option value="" disabled selected>-- Seleccione una opción --</option>
+                    <option value="Consulta">Consulta</option>
+                    <option value="Análisis Hallazgo">Análisis Hallazgo</option>
+                    <option value="Analisis de Pliego">Analisis de Pliego</option>
+                    <option value="Análisis de Informe">Análisis de Informe</option>
+                    <option value="Denuncia">Denuncia</option>
+                    <option value="Tarjeta Informativa">Tarjeta Informativa</option>
+                    <option value="Actividad 1">Actividad 1</option>
+                    <option value="Actividad 2">Actividad 2</option>
+                    <option value="Actividad 3">Actividad 3</option>
+                    <option value="Actividad 4">Actividad 4</option>
+                    <option value="Opción X">Opción X</option>
+                    <option value="Opción Y">Opción Y</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Número de Ticket (Folio Autogenerado):</label>
+                <div id="folioTicket" class="folio-display">Seleccione una solicitud...</div>
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Adjuntar Archivo (PDF, DOC, XLS):</label>
+                <input type="file" id="archivo" accept=".pdf, .doc, .docx, .xls, .xlsx" onchange="alertaArchivo()">
+            </div>
+
+            <div class="form-group">
+                <label for="comentarios">Comentarios Adicionales:</label>
+                <textarea id="comentarios" placeholder="Escriba aquí sus observaciones..."></textarea>
+            </div>
+
+            <div class="btn-group">
+                <a href="index.html" class="btn-cancelar">Cancelar</a>
+                <button type="submit" class="btn-enviar">Enviar Ticket</button>
+            </div>
+        </form>
     </div>
 
-    <form id="ticketForm">
-        <div class="form-group">
-            <label for="nombre">Nombre Completo:</label>
-            <input type="text" id="nombre" required placeholder="Ej. Juan Pérez">
-        </div>
+    <script>
+        // Configuración de las credenciales de Supabase proporcionadas
+        const SUPABASE_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitud";
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
-        <div class="form-group">
-            <label for="puesto">Puesto:</label>
-            <input type="text" id="puesto" required placeholder="Ej. Analista Legal">
-        </div>
+        // Variable global para almacenar el folio actual calculado
+        let folioActual = "";
 
-        <div class="form-group">
-            <label for="area">Área:</label>
-            <input type="text" id="area" required placeholder="Ej. Dirección de lo Contencioso">
-        </div>
+        // Función para calcular y mostrar el folio dinámico y consecutivo
+        function generarFolio() {
+            const solicitud = document.getElementById('solicitud').value;
+            let prefijo = "";
+            let claveControl = ""; // Llave interna para el consecutivo en localStorage
 
-        <div class="form-group">
-            <label for="solicitud">Tipo de Solicitud:</label>
-            <select id="solicitud" required onchange="actualizarFolioPreview()">
-                <option value="" disabled selected>-- Seleccione una opción --</option>
-                <option value="Consulta">Consulta</option>
-                <option value="Análisis Hallazgo">Análisis Hallazgo</option>
-                <option value="Analisis de Pliego">Analisis de Pliego</option>
-                <option value="Análisis de Informe">Análisis de Informe</option>
-                <option value="Denuncia">Denuncia</option>
-                <option value="Tarjeta Informativa">Tarjeta Informativa</option>
-                <option value="Opción X">Opción X (Por defecto: DCPL)</option>
-                <option value="Opción Y">Opción Y (Por defecto: DCPL)</option>
-                <option value="ACTIVIDAD1">ACTIVIDAD 1</option>
-                <option value="ACTIVIDAD2">ACTIVIDAD 2</option>
-                <option value="ACTIVIDAD3">ACTIVIDAD 3</option>
-                <option value="ACTIVIDAD4">ACTIVIDAD 4</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="adjunto">Adjuntar Archivo de Soporte (PDF, DOC, XLS):</label>
-            <input type="file" id="adjunto" accept=".pdf, .doc, .docx, .xls, .xlsx" onchange="validarYAlertarArchivo(this)">
-        </div>
-
-        <div class="form-group">
-            <label for="comentarios">Comentarios u Observaciones Adicionales:</label>
-            <textarea id="comentarios" placeholder="Escriba aquí los detalles adicionales de su solicitud..."></textarea>
-        </div>
-
-        <div class="buttons-container">
-            <button type="button" class="btn-cancel" onclick="cancelarTramite()">Cancelar</button>
-            <button type="submit" class="btn-submit">Enviar Ticket</button>
-        </div>
-    </form>
-</div>
-
-<script>
-    // Inicialización de consecutivos en LocalStorage para simular base de datos
-    if (!localStorage.getItem('seq_DGAJ_DCPL')) localStorage.setItem('seq_DGAJ_DCPL', '1');
-    if (!localStorage.getItem('seq_DGAJ_DINV')) localStorage.setItem('seq_DGAJ_DINV', '1');
-    if (!localStorage.getItem('seq_DSUB_DCPL')) localStorage.setItem('seq_DSUB_DCPL', '1');
-
-    // Mapeo de reglas para saber qué nomenclatura le toca a cada opción
-    function obtenerReglaNomenclatura(solicitud) {
-        const reglas = {
-            "Consulta":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Análisis Hallazgo":   { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Analisis de Pliego":  { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Análisis de Informe": { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Denuncia":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Tarjeta Informativa": { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Opción X":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
-            "Opción Y":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            // Grupo 1: DCPL Estándar
+            const grupoDCPL = ["Consulta", "Análisis Hallazgo", "Analisis de Pliego", "Análisis de Informe", "Denuncia", "Tarjeta Informativa", "Opción X", "Opción Y"];
             
-            "ACTIVIDAD1":          { prefijo: "JURIX-DGAJ-DINV-", seqKey: "seq_DGAJ_DINV" },
-            "ACTIVIDAD2":          { prefijo: "JURIX-DGAJ-DINV-", seqKey: "seq_DGAJ_DINV" },
-            
-            "ACTIVIDAD3":          { prefijo: "JURIX-DSUB-DCPL-", seqKey: "seq_DSUB_DCPL" },
-            "ACTIVIDAD4":          { prefijo: "JURIX-DSUB-DCPL-", seqKey: "seq_DSUB_DCPL" }
-        };
-        return reglas[solicitud] || null;
-    }
+            if (grupoDCPL.includes(solicitud)) {
+                prefijo = "JURIX-DGAJ-DCPL-";
+                claveControl = "DCPL_G1";
+            } 
+            // Grupo 2: DINV (Actividad 1 y 2)
+            else if (solicitud === "Actividad 1" || solicitud === "Actividad 2") {
+                prefijo = "JURIX-DGAJ-DINV-";
+                claveControl = "DINV_G2";
+            } 
+            // Grupo 3: DSUB-DCPL (Actividad 3 y 4)
+            else if (solicitud === "Actividad 3" || solicitud === "Actividad 4") {
+                prefijo = "JURIX-DSUB-DCPL-";
+                claveControl = "DCPL_G3";
+            }
 
-    // Formatea números a 4 dígitos (Ej: 1 -> 0001)
-    function formatearNumero(num) {
-        return String(num).padStart(4, '0');
-    }
+            if (prefijo !== "") {
+                // Obtener el consecutivo actual guardado o empezar en 1
+                let consecutivo = localStorage.getItem(claveControl);
+                if (!consecutivo) {
+                    consecutivo = 1;
+                } else {
+                    consecutivo = parseInt(consecutivo);
+                }
 
-    // Actualiza el texto en pantalla del folio que le tocaría al usuario
-    function actualizarFolioPreview() {
-        const solicitudSel = document.getElementById('solicitud').value;
-        const regla = obtenerReglaNomenclatura(solicitudSel);
-        
-        if (regla) {
-            const actualConsecutivo = localStorage.getItem(regla.seqKey);
-            document.getElementById('lblTicket').innerText = regla.prefijo + formatearNumero(actualConsecutivo);
-        } else {
-            document.getElementById('lblTicket').innerText = "Seleccione una solicitud...";
-        }
-    }
-
-    // Evento gatillado inmediatamente al subir un archivo
-    function validarYAlertarArchivo(input) {
-        if (input.files && input.files.length > 0) {
-            alert("Revise su archivo adjunto antes de aceptar. Una vez enviado, se creará un ticket de servicio. Si necesita realizar cambios posteriores, deberá generar un nuevo ticket que entrará a la fila virtual de atención.");
-        }
-    }
-
-    // Botón Cancelar redirige a index.html
-    function cancelarTramite() {
-        window.location.href = "index.html";
-    }
-
-    // Procesamiento del formulario al dar Enviar
-    document.getElementById('ticketForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Detiene el envío clásico para procesar la lógica de folios
-        
-        const solicitudSel = document.getElementById('solicitud').value;
-        const regla = obtenerReglaNomenclatura(solicitudSel);
-
-        if (!regla) {
-            alert("Por favor seleccione un tipo de solicitud válido.");
-            return;
+                // Formatear a 4 dígitos (ej. 0001)
+                let numeroFormateado = String(consecutivo).padStart(4, '0');
+                folioActual = prefijo + numeroFormateado;
+                
+                document.getElementById('folioTicket').innerText = folioActual;
+                // Guardamos de manera temporal la clave para actualizarla solo si se envía con éxito
+                document.getElementById('ticketForm').dataset.claveControl = claveControl;
+                document.getElementById('ticketForm').dataset.consecutivoActual = consecutivo;
+            }
         }
 
-        // 1. Consolidar el folio definitivo para este envío
-        let consecutivoActual = parseInt(localStorage.getItem(regla.seqKey));
-        const folioDefinitivo = regla.prefijo + formatearNumero(consecutivoActual);
-
-        // 2. Incrementar el consecutivo específico en la memoria interna (Localstorage) para el siguiente usuario
-        localStorage.setItem(regla.seqKey, (consecutivoActual + 1).toString());
-
-        alert("Ticket generado con éxito. Su número de folio oficial es: " + folioDefinitivo);
-
-        // 3. Enrutamiento dinámico basado en la selección del usuario
-        let destinoHTML = "index.html"; // Redirección por defecto si no aplica a las específicas
-
-        switch(solicitudSel) {
-            case "Consulta":
-                destinoHTML = "CONSULTA.HTML";
-                break;
-            case "Análisis Hallazgo":
-                destinoHTML = "HALLAZGO.HTML";
-                break;
-            case "Analisis de Pliego":
-                destinoHTML = "PLIEGO.HTML";
-                break;
-            case "Análisis de Informe":
-                destinoHTML = "INFORME.HTML";
-                break;
-            case "Denuncia":
-                destinoHTML = "DENUNCIA.HTML";
-                break;
-            case "Tarjeta Informativa":
-                destinoHTML = "TARJETAINFO.HTML";
-                break;
-            case "ACTIVIDAD1":
-                destinoHTML = "ACT1.HTML";
-                break;
-            // Las demás opciones (Opción X, Opción Y, Actividad 2, 3 y 4) no tienen una ruta definida en tu solicitud, 
-            // por lo que se pueden mandar a una general o al index.html de seguridad.
-            default:
-                destinoHTML = "index.html";
-                break;
+        // Alerta requerida cuando el usuario sube un documento
+        function alertaArchivo() {
+            const archivoInput = document.getElementById('archivo');
+            if (archivoInput.files.length > 0) {
+                alert("Revise su archivo adjunto antes de aceptar. Una vez enviado, se creará un ticket de servicio. Si necesita realizar cambios posteriores, deberá generar un nuevo ticket que entrará a la fila virtual de atención.");
+            }
         }
 
-        // Redireccionar a la página correspondiente
-        window.location.href = destinoHTML;
-    });
-</script>
+        // Manejo del envío del formulario e integración con Supabase
+        document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
 
+            const solicitudSeleccionada = document.getElementById('solicitud').value;
+
+            // Datos estructurados para enviar a la tabla 'solicitud' de Supabase
+            const datosTicket = {
+                nombre: document.getElementById('nombre').value,
+                puesto: document.getElementById('puesto').value,
+                area: document.getElementById('area').value,
+                solicitud: solicitudSeleccionada,
+                folio: folioActual,
+                comentarios: document.getElementById('comentarios').value
+            };
+
+            try {
+                // Petición HTTP POST a la REST API de Supabase
+                const response = await fetch(SUPABASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(datosTicket)
+                });
+
+                if (response.ok) {
+                    // Si se guardó con éxito, aumentamos el consecutivo correspondiente en el localStorage
+                    const clave = this.dataset.claveControl;
+                    const proxConsecutivo = parseInt(this.dataset.consecutivoActual) + 1;
+                    localStorage.setItem(clave, proxConsecutivo);
+
+                    alert("¡Ticket creado con éxito! Folio asignado: " + folioActual);
+                    
+                    // Ejecutar el redireccionamiento condicional solicitado
+                    redireccionarPagina(solicitudSeleccionada);
+                } else {
+                    const errorData = await response.json();
+                    alert("Error al conectar con Supabase: " + (errorData.message || response.statusText));
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error);
+                alert("Hubo un problema de red al intentar conectar con Supabase.");
+            }
+        });
+
+        // Función encargada de bifurcar el destino final según la opción seleccionada
+        function redireccionarPagina(solicitud) {
+            switch(solicitud) {
+                case "Consulta":
+                    window.location.href = "CONSULTA.HTML";
+                    break;
+                case "Análisis Hallazgo":
+                    window.location.href = "HALLAZGO.HTML";
+                    break;
+                case "Analisis de Pliego":
+                    window.location.href = "PLIEGO.HTML";
+                    break;
+                case "Análisis de Informe":
+                    window.location.href = "INFORME.HTML";
+                    break;
+                case "Denuncia":
+                    window.location.href = "DENUNCIA.HTML";
+                    break;
+                case "Tarjeta Informativa":
+                    window.location.href = "TARJETAINFO.HTML";
+                    break;
+                case "Actividad 1":
+                    window.location.href = "ACT1.HTML";
+                    break;
+                default:
+                    // Si es otra opción no especificada (como Actividad 2, 3, 4, X o Y), regresa al index
+                    window.location.href = "index.html";
+                    break;
+            }
+        }
+    </script>
 </body>
 </html>
