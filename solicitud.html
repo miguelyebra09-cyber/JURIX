@@ -1,1 +1,325 @@
+Aquí tienes el código completo de la página web en un solo archivo HTML. Incluye la estructura, los estilos de diseño para que se vea profesional y el código JavaScript que maneja toda la lógica que necesitas:
 
+* **Consecutivos independientes** guardados en el navegador (usando `localStorage`) para que no se pierdan al recargar la página.
+* **Cambio dinámico del formato de folio** según la opción seleccionada.
+* **Alerta preventiva** inmediatamente al adjuntar un archivo.
+* **Redirección condicional** a las páginas que especificaste al hacer clic en "Enviar".
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Tickets - Área Jurídica</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #475569;
+            --accent-color: #b91c1c;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #334155;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 650px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .ticket-preview {
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .ticket-preview span {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1srem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-cancel {
+            background-color: #e2e8f0;
+            color: var(--secondary-color);
+        }
+
+        .btn-cancel:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registro de Ticket de Servicio - Área Jurídica</h2>
+    
+    <div class="ticket-preview">
+        Folio Provisional del Ticket: <span id="lblTicket">Seleccione una solicitud...</span>
+    </div>
+
+    <form id="ticketForm">
+        <div class="form-group">
+            <label for="nombre">Nombre Completo:</label>
+            <input type="text" id="nombre" required placeholder="Ej. Juan Pérez">
+        </div>
+
+        <div class="form-group">
+            <label for="puesto">Puesto:</label>
+            <input type="text" id="puesto" required placeholder="Ej. Analista Legal">
+        </div>
+
+        <div class="form-group">
+            <label for="area">Área:</label>
+            <input type="text" id="area" required placeholder="Ej. Dirección de lo Contencioso">
+        </div>
+
+        <div class="form-group">
+            <label for="solicitud">Tipo de Solicitud:</label>
+            <select id="solicitud" required onchange="actualizarFolioPreview()">
+                <option value="" disabled selected>-- Seleccione una opción --</option>
+                <option value="Consulta">Consulta</option>
+                <option value="Análisis Hallazgo">Análisis Hallazgo</option>
+                <option value="Analisis de Pliego">Analisis de Pliego</option>
+                <option value="Análisis de Informe">Análisis de Informe</option>
+                <option value="Denuncia">Denuncia</option>
+                <option value="Tarjeta Informativa">Tarjeta Informativa</option>
+                <option value="Opción X">Opción X (Por defecto: DCPL)</option>
+                <option value="Opción Y">Opción Y (Por defecto: DCPL)</option>
+                <option value="ACTIVIDAD1">ACTIVIDAD 1</option>
+                <option value="ACTIVIDAD2">ACTIVIDAD 2</option>
+                <option value="ACTIVIDAD3">ACTIVIDAD 3</option>
+                <option value="ACTIVIDAD4">ACTIVIDAD 4</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="adjunto">Adjuntar Archivo de Soporte (PDF, DOC, XLS):</label>
+            <input type="file" id="adjunto" accept=".pdf, .doc, .docx, .xls, .xlsx" onchange="validarYAlertarArchivo(this)">
+        </div>
+
+        <div class="form-group">
+            <label for="comentarios">Comentarios u Observaciones Adicionales:</label>
+            <textarea id="comentarios" placeholder="Escriba aquí los detalles adicionales de su solicitud..."></textarea>
+        </div>
+
+        <div class="buttons-container">
+            <button type="button" class="btn-cancel" onclick="cancelarTramite()">Cancelar</button>
+            <button type="submit" class="btn-submit">Enviar Ticket</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Inicialización de consecutivos en LocalStorage para simular base de datos
+    if (!localStorage.getItem('seq_DGAJ_DCPL')) localStorage.setItem('seq_DGAJ_DCPL', '1');
+    if (!localStorage.getItem('seq_DGAJ_DINV')) localStorage.setItem('seq_DGAJ_DINV', '1');
+    if (!localStorage.getItem('seq_DSUB_DCPL')) localStorage.setItem('seq_DSUB_DCPL', '1');
+
+    // Mapeo de reglas para saber qué nomenclatura le toca a cada opción
+    function obtenerReglaNomenclatura(solicitud) {
+        const reglas = {
+            "Consulta":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Análisis Hallazgo":   { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Analisis de Pliego":  { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Análisis de Informe": { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Denuncia":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Tarjeta Informativa": { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Opción X":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            "Opción Y":            { prefijo: "JURIX-DGAJ-DCPL-", seqKey: "seq_DGAJ_DCPL" },
+            
+            "ACTIVIDAD1":          { prefijo: "JURIX-DGAJ-DINV-", seqKey: "seq_DGAJ_DINV" },
+            "ACTIVIDAD2":          { prefijo: "JURIX-DGAJ-DINV-", seqKey: "seq_DGAJ_DINV" },
+            
+            "ACTIVIDAD3":          { prefijo: "JURIX-DSUB-DCPL-", seqKey: "seq_DSUB_DCPL" },
+            "ACTIVIDAD4":          { prefijo: "JURIX-DSUB-DCPL-", seqKey: "seq_DSUB_DCPL" }
+        };
+        return reglas[solicitud] || null;
+    }
+
+    // Formatea números a 4 dígitos (Ej: 1 -> 0001)
+    function formatearNumero(num) {
+        return String(num).padStart(4, '0');
+    }
+
+    // Actualiza el texto en pantalla del folio que le tocaría al usuario
+    function actualizarFolioPreview() {
+        const solicitudSel = document.getElementById('solicitud').value;
+        const regla = obtenerReglaNomenclatura(solicitudSel);
+        
+        if (regla) {
+            const actualConsecutivo = localStorage.getItem(regla.seqKey);
+            document.getElementById('lblTicket').innerText = regla.prefijo + formatearNumero(actualConsecutivo);
+        } else {
+            document.getElementById('lblTicket').innerText = "Seleccione una solicitud...";
+        }
+    }
+
+    // Evento gatillado inmediatamente al subir un archivo
+    function validarYAlertarArchivo(input) {
+        if (input.files && input.files.length > 0) {
+            alert("Revise su archivo adjunto antes de aceptar. Una vez enviado, se creará un ticket de servicio. Si necesita realizar cambios posteriores, deberá generar un nuevo ticket que entrará a la fila virtual de atención.");
+        }
+    }
+
+    // Botón Cancelar redirige a index.html
+    function cancelarTramite() {
+        window.location.href = "index.html";
+    }
+
+    // Procesamiento del formulario al dar Enviar
+    document.getElementById('ticketForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Detiene el envío clásico para procesar la lógica de folios
+        
+        const solicitudSel = document.getElementById('solicitud').value;
+        const regla = obtenerReglaNomenclatura(solicitudSel);
+
+        if (!regla) {
+            alert("Por favor seleccione un tipo de solicitud válido.");
+            return;
+        }
+
+        // 1. Consolidar el folio definitivo para este envío
+        let consecutivoActual = parseInt(localStorage.getItem(regla.seqKey));
+        const folioDefinitivo = regla.prefijo + formatearNumero(consecutivoActual);
+
+        // 2. Incrementar el consecutivo específico en la memoria interna (Localstorage) para el siguiente usuario
+        localStorage.setItem(regla.seqKey, (consecutivoActual + 1).toString());
+
+        alert("Ticket generado con éxito. Su número de folio oficial es: " + folioDefinitivo);
+
+        // 3. Enrutamiento dinámico basado en la selección del usuario
+        let destinoHTML = "index.html"; // Redirección por defecto si no aplica a las específicas
+
+        switch(solicitudSel) {
+            case "Consulta":
+                destinoHTML = "CONSULTA.HTML";
+                break;
+            case "Análisis Hallazgo":
+                destinoHTML = "HALLAZGO.HTML";
+                break;
+            case "Analisis de Pliego":
+                destinoHTML = "PLIEGO.HTML";
+                break;
+            case "Análisis de Informe":
+                destinoHTML = "INFORME.HTML";
+                break;
+            case "Denuncia":
+                destinoHTML = "DENUNCIA.HTML";
+                break;
+            case "Tarjeta Informativa":
+                destinoHTML = "TARJETAINFO.HTML";
+                break;
+            case "ACTIVIDAD1":
+                destinoHTML = "ACT1.HTML";
+                break;
+            // Las demás opciones (Opción X, Opción Y, Actividad 2, 3 y 4) no tienen una ruta definida en tu solicitud, 
+            // por lo que se pueden mandar a una general o al index.html de seguridad.
+            default:
+                destinoHTML = "index.html";
+                break;
+        }
+
+        // Redireccionar a la página correspondiente
+        window.location.href = destinoHTML;
+    });
+</script>
+
+</body>
+</html>
+
+```
+
+### Características implementadas:
+
+1. **Lógica Dinámica de Prefijos:** Separa adecuadamente los 3 contadores independientes ordenados según tus instrucciones: `DGAJ-DCPL`, `DGAJ-DINV`, y `DSUB-DCPL`.
+2. **Persistencia Local:** Al usar `localStorage`, si pruebas la página en tu navegador y envías un ticket de *Consulta* cambiará a `0002`. Si seleccionas luego *Actividad 1*, este empezará limpio en `0001` sin interferir con el anterior.
+3. **Seguridad y Validación:** El campo de adjuntos restringe de forma nativa desde la ventana de selección que solo se puedan visualizar archivos `.pdf`, `.doc/.docx` y `.xls/.xlsx`.
