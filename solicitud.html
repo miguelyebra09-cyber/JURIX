@@ -1,20 +1,9 @@
-Tienes toda la razón, disculpa el desajuste en la estructura del folio. Entiendo perfectamente el error: mezclé la clave del servicio (`A001`, `B001`, etc.) con el número consecutivo final en lugar de mantenerlos separados, y se me coló un error de dedo en las variables globales del JavaScript.
-
-Aquí tienes la corrección exacta de la lógica. Ahora el folio se arma uniendo de forma estricta los bloques que pediste:
-
-* **Consulta:** `JURIX-DGAJ-DCPL-A001` + `0001` $\rightarrow$ `JURIX-DGAJ-DCPL-A0010001`
-* **Actividad 1:** `JURIX-DGAJ-DINV-` + `0001` $\rightarrow$ `JURIX-DGAJ-DINV-0001`
-* Cada dirección (`DCPL`, `DINV`, `DSUB`) mantiene su **consecutivo independiente** en el `localStorage`.
-
-Aquí tienes el código HTML corregido y listo para usar:
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Generador de Tickets</title>
+    <title>JURIX-DGAJ - Generador de Tickets Corregido</title>
     <style>
         :root {
             --naranja-nitido: #FF6600;
@@ -114,7 +103,6 @@ Aquí tienes el código HTML corregido y listo para usar:
             font-weight: bold;
             font-size: 1.1rem;
             color: #0044cc;
-            letter-spacing: 0.5px;
         }
 
         .btn-container {
@@ -229,7 +217,7 @@ Aquí tienes el código HTML corregido y listo para usar:
             </div>
 
             <div class="form-group">
-                <label>Número de Ticket:</label>
+                <label>Número de Ticket Generado:</label>
                 <div id="folioDisplay" class="folio-box">Seleccione una solicitud...</div>
             </div>
 
@@ -270,6 +258,7 @@ Aquí tienes el código HTML corregido y listo para usar:
             }
         }
 
+        // LÓGICA DE FOLIOS CORREGIDA
         function calcularFolio() {
             const opcion = document.getElementById('solicitud').value;
             const display = document.getElementById('folioDisplay');
@@ -278,22 +267,21 @@ Aquí tienes el código HTML corregido y listo para usar:
 
             let estructuraBase = "";
             let claveServicio = "";
-            let tipoDireccion = ""; 
+            let tipoDireccion = ""; // Identificador del consecutivo independiente (DCPL, DINV, DSUB)
 
-            // Aplicación estricta de tus reglas de negocio
             switch(opcion) {
                 case "Consulta": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "A001"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "A001-"; tipoDireccion = "DCPL"; break;
                 case "Análisis Hallazgo": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B001"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B001-"; tipoDireccion = "DCPL"; break;
                 case "Analisis de Pliego": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B002"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B002-"; tipoDireccion = "DCPL"; break;
                 case "Análisis de Informe": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B003"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B003-"; tipoDireccion = "DCPL"; break;
                 case "Denuncia": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "C001"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "C001-"; tipoDireccion = "DCPL"; break;
                 case "Tarjeta Informativa": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "D001"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "D001-"; tipoDireccion = "DCPL"; break;
                 
                 case "Actividad 1":
                 case "Actividad 2":
@@ -303,16 +291,16 @@ Aquí tienes el código HTML corregido y listo para usar:
                 case "Actividad 4":
                     estructuraBase = "JURIX-DSUB-DCPL-"; claveServicio = ""; tipoDireccion = "DSUB"; break;
                 
-                default: // Opción X y Opción Y
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "X000"; tipoDireccion = "DCPL"; break;
+                default: // Opción X u Opción Y
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "X000-"; tipoDireccion = "DCPL"; break;
             }
 
-            // Control de folios independientes por Dirección (DCPL, DINV, DSUB)
+            // Obtener el consecutivo independiente según el área/dirección
             let numActual = localStorage.getItem(`consecutivo_${tipoDireccion}`) || 1;
-            let consecutivoFormateado = String(numActual).padStart(4, '0');
+            let numFormateado = String(numActual).padStart(4, '0');
 
-            // Unión final del Folio solicitado
-            folioGeneradoGlobal = `${estructuraBase}${claveServicio}${consecutivoFormateado}`;
+            // Armar el folio exactamente como fue solicitado
+            folioGeneradoGlobal = `${estructuraBase}${claveServicio}${numFormateado}`;
             display.textContent = folioGeneradoGlobal;
         }
 
@@ -349,23 +337,24 @@ Aquí tienes el código HTML corregido y listo para usar:
                 if (response.ok) {
                     alert(`¡Ticket generado con éxito!\nSu folio oficial es: ${folioGeneradoGlobal}`);
                     
-                    // Avanzar consecutivo independiente de la dirección correspondiente
-                    actualizarContadorDireccion(solicitud);
+                    // Avanzar el consecutivo de la dirección correspondiente
+                    actualizarContadorLocal(solicitud);
 
+                    // Redirección condicional según la solicitud
                     redireccionarPagina(solicitud);
                 } else {
                     const errorData = await response.json();
                     console.error(errorData);
-                    alert("Hubo un error al guardar en Supabase. Revisa las columnas de tu tabla.");
+                    alert("Error al guardar en Supabase. Revisa las columnas de tu tabla.");
                 }
 
             } catch (error) {
                 console.error("Error de red:", error);
-                alert("Error de conexión con la base de datos.");
+                alert("No se pudo conectar a la base de datos.");
             }
         });
 
-        function actualizarContadorDireccion(opcion) {
+        function actualizarContadorLocal(opcion) {
             let tipoDireccion = "DCPL";
             if (["Actividad 1", "Actividad 2"].includes(opcion)) {
                 tipoDireccion = "DINV";
@@ -392,5 +381,3 @@ Aquí tienes el código HTML corregido y listo para usar:
     </script>
 </body>
 </html>
-
-```
