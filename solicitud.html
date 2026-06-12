@@ -1,11 +1,3 @@
-Aquí tienes el código completo de la página web en un solo archivo HTML. Incluye la estructura, los estilos de diseño para que se vea profesional y el código JavaScript que maneja toda la lógica que necesitas:
-
-* **Consecutivos independientes** guardados en el navegador (usando `localStorage`) para que no se pierdan al recargar la página.
-* **Cambio dinámico del formato de folio** según la opción seleccionada.
-* **Alerta preventiva** inmediatamente al adjuntar un archivo.
-* **Redirección condicional** a las páginas que especificaste al hacer clic en "Enviar".
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -315,11 +307,3 @@ Aquí tienes el código completo de la página web en un solo archivo HTML. Incl
 
 </body>
 </html>
-
-```
-
-### Características implementadas:
-
-1. **Lógica Dinámica de Prefijos:** Separa adecuadamente los 3 contadores independientes ordenados según tus instrucciones: `DGAJ-DCPL`, `DGAJ-DINV`, y `DSUB-DCPL`.
-2. **Persistencia Local:** Al usar `localStorage`, si pruebas la página en tu navegador y envías un ticket de *Consulta* cambiará a `0002`. Si seleccionas luego *Actividad 1*, este empezará limpio en `0001` sin interferir con el anterior.
-3. **Seguridad y Validación:** El campo de adjuntos restringe de forma nativa desde la ventana de selección que solo se puedan visualizar archivos `.pdf`, `.doc/.docx` y `.xls/.xlsx`.
