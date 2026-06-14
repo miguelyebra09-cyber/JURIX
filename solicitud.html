@@ -183,23 +183,23 @@
         
         <form id="ticketForm">
             <div class="form-group">
-                <label for="nombre_user">Nombre Completo:</label>
-                <input type="text" id="nombre_user" required placeholder="Ej. Juan Pérez">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" required placeholder="Ej. Juan Pérez">
             </div>
 
             <div class="form-group">
-                <label for="puesto_user">Puesto:</label>
-                <input type="text" id="puesto_user" required placeholder="Ej. Analista Jurídico">
+                <label for="puesto">Puesto:</label>
+                <input type="text" id="puesto" required placeholder="Ej. Analista Jurídico">
             </div>
 
             <div class="form-group">
-                <label for="area_user">Área:</label>
-                <input type="text" id="area_user" required placeholder="Ej. Dirección de lo Contencioso">
+                <label for="area">Área:</label>
+                <input type="text" id="area" required placeholder="Ej. Dirección de lo Contencioso">
             </div>
 
             <div class="form-group">
-                <label for="tipo_solicitud">Tipo de Solicitud:</label>
-                <select id="tipo_solicitud" required onchange="calcularFolio()">
+                <label for="solicitud">Tipo de Solicitud:</label>
+                <select id="solicitud" required onchange="calcularFolio()">
                     <option value="" disabled selected>-- Seleccione una opción --</option>
                     <option value="Consulta">Consulta</option>
                     <option value="Análisis Hallazgo">Análisis Hallazgo</option>
@@ -232,7 +232,7 @@
 
             <div class="form-group">
                 <label for="comentarios">Comentarios / Descripción Adicional:</label>
-                <textarea id="comentarios_user" rows="4" placeholder="Escriba aquí los detalles de su solicitud..."></textarea>
+                <textarea id="comentarios" rows="4" placeholder="Escriba aquí los detalles de su solicitud..."></textarea>
             </div>
 
             <div class="btn-container">
@@ -314,12 +314,12 @@
             const comentarios = document.getElementById('comentarios').value;
 
             const data = {
-                nombre: nombre,
-                puesto: puesto,
-                area: area,
-                solicitud: solicitud,
-                folio: folioGeneradoGlobal,
-                comentarios: comentarios
+                nombre_user: nombre,
+                puesto_user: puesto,
+                area_user: area,
+                tipo_solicitud: solicitud,
+                foliodisplay: folioGeneradoGlobal,
+                comentarios_user: comentarios
             };
 
             try {
