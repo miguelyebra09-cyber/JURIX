@@ -11,7 +11,6 @@
             --gris-claro: #f4f4f9;
             --blanco: #ffffff;
             --azul-info: #0066cc;
-            --verde-exito: #2ecc71;
         }
 
         body {
@@ -105,7 +104,7 @@
             font-size: 0.9rem;
         }
 
-        input[type="text"], input[type="date"], input[type="number"], input[type="url"], select, textarea {
+        input[type="text"], input[type="number"], input[type="url"], select, textarea {
             width: 100%;
             padding: 11px;
             border: 1px solid #ccc;
@@ -126,17 +125,18 @@
             cursor: not-allowed;
         }
 
-        /* Fila Virtual Estilizada */
+        /* --- FILA VIRTUAL AVANZADA Y DINÁMICA --- */
         .queue-section {
             margin-top: 35px;
             background: #fff;
             border: 1px solid #e1e1e1;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
 
         .queue-title {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: var(--gris-oscuro);
             border-bottom: 2px solid var(--gris-claro);
             padding-bottom: 8px;
@@ -148,30 +148,71 @@
         }
 
         .queue-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
-            border-left: 5px solid var(--naranja-nitido);
-            padding: 15px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-left: 6px solid #666;
+            padding: 20px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            transition: all 0.4s ease;
+        }
+
+        /* Estilos de colores dinámicos según el servicio */
+        .card-b001 { background: #fffcf4; border-left-color: #f39c12; } /* Ámbar / Alerta */
+        .card-b002 { background: #f4fbf7; border-left-color: #2ecc71; } /* Verde Esmeralda */
+        .card-b003 { background: #f4f9ff; border-left-color: #3498db; } /* Azul Civil */
+        .card-default { background: #fdf4f5; border-left-color: #9b59b6; } /* Púrpura */
+
+        .queue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 80%;
         }
 
         .queue-info p {
-            margin: 4px 0;
-            font-size: 0.9rem;
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .queue-info strong {
+            color: var(--gris-oscuro);
+        }
+
+        .status-container {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
         }
 
         .status-badge {
-            background-color: #ffeaa7;
-            color: #d35400;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-b001 { background-color: #fdebd0; color: #b9770e; }
+        .badge-b002 { background-color: #d5f5e3; color: #1e8449; }
+        .badge-b003 { background-color: #d6eaf8; color: #21618c; }
+        .badge-default { background-color: #f4ecf7; color: #6c3483; }
+
+        .time-display {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #444;
+            background: rgba(255,255,255,0.7);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px dashed #ccc;
         }
 
+        /* --- BOTONERA --- */
         .btn-container {
             display: flex;
             justify-content: space-between;
@@ -346,16 +387,24 @@
 
             <div class="queue-section">
                 <div class="queue-title">
-                    <span>⏳ Fila Virtual de Atención</span>
+                    <span>⏳ Control Virtual de Turno e Información de Fila</span>
                 </div>
-                <div class="queue-card">
-                    <div class="queue-info">
-                        <p><strong>Ticket Asociado:</strong> <span id="lblTicketQueue">-</span></p>
-                        <p><strong>Lugar en Fila:</strong> Turno #1 (En Revisión Técnica)</p>
-                        <p><strong>Tiempo Estimado de Espera:</strong> 25 - 40 minutos</p>
+                <div id="queueCardElement" class="queue-card">
+                    <div class="queue-grid">
+                        <div class="queue-info">
+                            <p><strong>Ticket ID:</strong> <span id="lblTicketQueue">-</span></p>
+                            <p><strong>Solicitud:</strong> <span id="lblTipoSolicitudQueue">-</span></p>
+                            <p><strong>Usuario:</strong> <span id="lblUsuarioQueue">Cargando...</span></p>
+                        </div>
+                        <div class="queue-info">
+                            <p><strong>Puesto:</strong> <span id="lblPuestoQueue">Cargando...</span></p>
+                            <p><strong>Área:</strong> <span id="lblAreaQueue">Cargando...</span></p>
+                            <p><strong>Posición Fila:</strong> Turno Virtual Activo</p>
+                        </div>
                     </div>
-                    <div>
-                        <span class="status-badge">Pendiente de Cédula</span>
+                    <div class="status-container">
+                        <span id="badgeEstatus" class="status-badge">Procesando</span>
+                        <div id="timeEstimate" class="time-display">Calculando tiempo...</div>
                     </div>
                 </div>
             </div>
@@ -370,33 +419,78 @@
     <script>
         const SUPABASE_HALLAZGOS_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-        
-        let folioActivo = "";
 
-        // Al cargar la página de hallazgos
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. Establecer fecha de recepción del día de hoy de forma automática
+            // 1. Asignar fecha de recepción de hoy
             const hoy = new Date();
             const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
             document.getElementById('fecha_recepcion').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
 
-            // 2. Extraer el último folio generado por la dirección DCPL_B001 (Análisis Hallazgo)
-            // Si por alguna razón no existe, busca la general o pone un ejemplo base
-            folioActivo = localStorage.getItem('consecutivo_DCPL_B001');
-            
-            // Para asegurar la integración fluida, reconstruimos la nomenclatura visual del último ticket
-            let numActual = parseInt(folioActivo) - 1; // El valor en LocalStorage ya se incrementó para el siguiente, restamos 1 para ver el actual
-            if (isNaN(numActual) || numActual < 1) numActual = 1;
-            
-            let numFormateado = String(numActual).padStart(4, '0');
-            let ticketFinal = `JURIX-DGAJ-DCPL-B001-${numFormateado}`;
+            // 2. Extraer datos guardados desde el LocalStorage de solicitud.html
+            // Reconstruimos el último ticket generado dinámicamente según lo que se usó
+            let ticketFinal = "JURIX-DGAJ-DCPL-B001-0001"; // Default por contingencia
+            let tipoSolicitudDetectada = "Análisis Hallazgo"; // Default
 
-            // Inyectar en los campos visuales solicitados
+            // Buscar cuál contador se usó en la última pantalla para armar el folio
+            const servicios = ['DCPL_A001', 'DCPL_B001', 'DCPL_B002', 'DCPL_B003', 'DCPL_C001', 'DCPL_D001', 'DINV_ACT1', 'DINV_ACT2', 'DSUB_ACT3', 'DSUB_ACT4'];
+            
+            for (let svc of servicios) {
+                let valor = localStorage.getItem(`consecutivo_${svc}`);
+                if (valor) {
+                    let numActual = parseInt(valor) - 1;
+                    if (numActual < 1) numActual = 1;
+                    let numFormateado = String(numActual).padStart(4, '0');
+                    
+                    // Mapeos correspondientes para la interfaz visual
+                    if (svc === 'DCPL_A001') { ticketFinal = `JURIX-DGAJ-DCPL-A001-${numFormateado}`; tipoSolicitudDetectada = "Consulta"; }
+                    if (svc === 'DCPL_B001') { ticketFinal = `JURIX-DGAJ-DCPL-B001-${numFormateado}`; tipoSolicitudDetectada = "Análisis Hallazgo"; }
+                    if (svc === 'DCPL_B002') { ticketFinal = `JURIX-DGAJ-DCPL-B002-${numFormateado}`; tipoSolicitudDetectada = "Analisis de Pliego"; }
+                    if (svc === 'DCPL_B003') { ticketFinal = `JURIX-DGAJ-DCPL-B003-${numFormateado}`; tipoSolicitudDetectada = "Análisis de Informe"; }
+                    if (svc === 'DCPL_C001') { ticketFinal = `JURIX-DGAJ-DCPL-C001-${numFormateado}`; tipoSolicitudDetectada = "Denuncia"; }
+                    if (svc === 'DCPL_D001') { ticketFinal = `JURIX-DGAJ-DCPL-D001-${numFormateado}`; tipoSolicitudDetectada = "Tarjeta Informativa"; }
+                }
+            }
+
+            // Inyectar datos del ticket en la UI
             document.getElementById('folioTicketSub').textContent = `Ticket Relacionado: ${ticketFinal}`;
             document.getElementById('lblTicketQueue').textContent = ticketFinal;
+            document.getElementById('lblTipoSolicitudQueue').textContent = tipoSolicitudDetectada;
+
+            // Simulamos la obtención de los datos del usuario que metió el ticket anterior (puedes leerlos de inputs guardados si lo deseas)
+            // Por estructura profesional extraemos o dejamos listos los marcadores legibles
+            document.getElementById('lblUsuarioQueue').textContent = "Usuario Operativo DGAJ";
+            document.getElementById('lblPuestoQueue').textContent = "Auditor / Analista Legal";
+            document.getElementById('lblAreaQueue').textContent = "Dirección de lo Contencioso";
+
+            // 3. Lógica de Colores y Tiempos Condicionales para la Fila Virtual
+            const card = document.getElementById('queueCardElement');
+            const badge = document.getElementById('badgeEstatus');
+            const timeDiv = document.getElementById('timeEstimate');
+
+            if (ticketFinal.includes("-B001-")) {
+                card.className = "queue-card card-b001";
+                badge.className = "status-badge badge-b001";
+                badge.textContent = "Revisión B001";
+                timeDiv.textContent = "⏱️ Est. 24 a 36 horas aprox.";
+            } else if (ticketFinal.includes("-B002-")) {
+                card.className = "queue-card card-b002";
+                badge.className = "status-badge badge-b002";
+                badge.textContent = "Validación B002";
+                timeDiv.textContent = "⏱️ Est. 1 Día hábil";
+            } else if (ticketFinal.includes("-B003-")) {
+                card.className = "queue-card card-b003";
+                badge.className = "status-badge badge-b003";
+                badge.textContent = "Dictamen B003";
+                timeDiv.textContent = "⏱️ Est. 1 a 2 días hábiles";
+            } else {
+                card.className = "queue-card card-default";
+                badge.className = "status-badge badge-default";
+                badge.textContent = "Trámite General";
+                timeDiv.textContent = "⏱️ Est. 12 a 24 horas aprox.";
+            }
         });
 
-        // Evento Submit para guardar en la tabla hallazgos
+        // Enviar a Supabase (Tabla hallazgos)
         document.getElementById('hallazgoForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -427,16 +521,16 @@
                 });
 
                 if (response.ok) {
-                    alert(`¡Éxito!\nLos detalles técnicos del hallazgo para el ticket ${ticketAsociado} han sido registrados correctamente en la base de datos.`);
-                    window.location.href = "index.html"; // Redirección final al menú de inicio o índice
+                    alert(`¡Éxito!\nLos detalles de la Cédula para el ticket ${ticketAsociado} han sido registrados correctamente.`);
+                    window.location.href = "index.html";
                 } else {
                     const err = await response.json();
                     console.error(err);
-                    alert("Error en el registro. Verifique que las columnas existan con estos nombres exactos en la tabla 'hallazgos'.");
+                    alert("Error en el registro. Verifique sus columnas en Supabase.");
                 }
             } catch (error) {
-                console.error("Error de conexión:", error);
-                alert("Error de red al intentar conectar con Supabase.");
+                console.error("Error de red:", error);
+                alert("Error de conexión al servidor.");
             }
         });
     </script>
