@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURIX-DGAJ - Registro de Hallazgos</title>
+    <style>
+        :root {
+            --naranja-nitido: #FF6600;
+            --gris-oscuro: #333333;
+            --gris-claro: #f4f4f9;
+            --blanco: #ffffff;
+            --azul-info: #0066cc;
+            --verde-exito: #2ecc71;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gris-claro);
+            margin: 0;
+            padding: 0;
+            color: var(--gris-oscuro);
+        }
+
+        header {
+            background-color: var(--blanco);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--naranja-nitido);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--naranja-nitido);
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        nav {
+            background-color: var(--gris-oscuro);
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: var(--blanco);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--naranja-nitido);
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 30px auto;
+            background: var(--blanco);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--gris-oscuro);
+            margin-bottom: 5px;
+            font-size: 1.6rem;
+        }
+
+        .subtitle-folio {
+            text-align: center;
+            color: var(--azul-info);
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #eef7ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border: 1px dashed var(--azul-info);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"], input[type="url"], select, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--naranja-nitido);
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
+        }
+
+        input[readonly] {
+            background-color: #eaeded;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* Fila Virtual Estilizada */
+        .queue-section {
+            margin-top: 35px;
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .queue-title {
+            font-size: 1.1rem;
+            color: var(--gris-oscuro);
+            border-bottom: 2px solid var(--gris-claro);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .queue-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            border-left: 5px solid var(--naranja-nitido);
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .queue-info p {
+            margin: 4px 0;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            background-color: #ffeaa7;
+            color: #d35400;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+        }
+
+        button, .btn-cancelar {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .btn-enviar {
+            background-color: var(--naranja-nitido);
+            color: var(--blanco);
+            box-shadow: 0 3px 6px rgba(255,102,0,0.2);
+        }
+
+        .btn-enviar:hover {
+            background-color: #e05500;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancelar {
+            background-color: #999999;
+            color: var(--blanco);
+        }
+
+        .btn-cancelar:hover {
+            background-color: #777777;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>JURIX-DGAJ</h1>
+    </header>
+
+    <nav>
+        <a href="solicitud.html">Nueva Solicitud</a>
+        <a href="index.html">Salir</a>
+    </nav>
+
+    <div class="container">
+        <h2>Cédula de Análisis de Hallazgos</h2>
+        <div id="folioTicketSub" class="subtitle-folio">Cargando Folio del Ticket...</div>
+        
+        <form id="hallazgoForm">
+            <div class="form-grid">
+                
+                <div class="form-group">
+                    <label for="fecha_recepcion">Fecha de Recepción:</label>
+                    <input type="text" id="fecha_recepcion" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="sujeto_fiscalizado">Sujeto Fiscalizado:</label>
+                    <select id="sujeto_fiscalizado" required>
+                        <option value="" disabled selected>-- Seleccione Sujeto --</option>
+                        <option value="AIAI">AIAI- Instituto de Acceso a la Información Pública para el Estado de Guanajuato</option>
+                        <option value="FGEG">FGEG- Fiscalía General del Estado de Guanajuato</option>
+                        <option value="MABA">MABA_Abasolo</option>
+                        <option value="MACA">MACA_Acámbaro</option>
+                        <option value="MAPA">MAPA_Apaseo El Alto</option>
+                        <option value="MAPG">MAPG_Apaseo El Grande</option>
+                        <option value="MATA">MATA_Atarjea</option>
+                        <option value="MCOM">MCOM_Comonfort</option>
+                        <option value="MCOR">MCOR_Coroneo</option>
+                        <option value="MCTZ">MCTZ_Cortazar</option>
+                        <option value="MCUE">MCUE_Cuerámaro</option>
+                        <option value="MCYA">MCYA_Celaya</option>
+                        <option value="MDHI">MDHI_Dolores Hidalgo Cuna De La Independencia Nacional</option>
+                        <option value="MDRM">MDRM_Doctor Mora</option>
+                        <option value="MGTO">MGTO_Guanajuato</option>
+                        <option value="MHUA">MHUA_Huanímaro</option>
+                        <option value="MIRA">MIRA_Irapuato</option>
+                        <option value="MJER">MJER_Jerécuaro</option>
+                        <option value="MJPR">MJPR_Jaral Del Progreso</option>
+                        <option value="MLEO">MLEO_León</option>
+                        <option value="MMDB">MMDB_Manuel Doblado</option>
+                        <option value="MMOR">MMOR_Moroleón</option>
+                        <option value="MOCA">MOCA_Ocampo</option>
+                        <option value="MPJM">MPJM_Pénjamo</option>
+                        <option value="MPNV">MPNV_Pueblo Nuevo</option>
+                        <option value="MPRR">MPRR_Purísima Del Rincón</option>
+                        <option value="MROM">MROM_Romita</option>
+                        <option value="MSAL">MSAL_Salamanca</option>
+                        <option value="MSCT">MSCT_Santa Catarina</option>
+                        <option value="MSDU">MSDU_San Diego De La Unión</option>
+                        <option value="MSFP">MSFP_San Felipe</option>
+                        <option value="MSFR">MSFR_San Francisco Del Rincón</option>
+                        <option value="MSIL">MSIL_Silao De La Victoria</option>
+                        <option value="MSJI">MSJI_San José De Iturbide</option>
+                        <option value="MSJR">MSJR_Santa Cruz De Juventino Rosas</option>
+                        <option value="MSLP">MSLP_San Luis De La Paz</option>
+                        <option value="MSMA">MSMA_San Miguel De Allende</option>
+                        <option value="MSMV">MSMV_Santiago Maravatío</option>
+                        <option value="MSVT">MSVT_Salvatierra</option>
+                        <option value="MTAR">MTAR_Tarandacuao</option>
+                        <option value="MTBL">MTBL_Tierra Blanca</option>
+                        <option value="MTMO">MTMO_Tarimoro</option>
+                        <option value="MURI">MURI_Uriangato</option>
+                        <option value="MVIC">MVIC_Victoria</option>
+                        <option value="MVIL">MVIL_Villagrán</option>
+                        <option value="MVST">MVST_Valle De Santiago</option>
+                        <option value="MXIC">MXIC_Xichú</option>
+                        <option value="MYUR">MYUR_Yuriria</option>
+                        <option value="PEEG">PEEG-Poder Ejecutivo del Estado de Guanajuato</option>
+                        <option value="PJEG">PJEG-Poder Judicial del Estado de Guanajuato</option>
+                        <option value="PLGT">PLGT- Poder Legislativo del Estado de Guanajuato</option>
+                        <option value="PRODHEG">PRODHEG- Procuraduría de los Derechos Humanos del Estado de Guanajuato</option>
+                        <option value="TJA">TJA- Tribunal de Justicia Administrativa</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo_auditoria">Tipo de Auditoría:</label>
+                    <select id="tipo_auditoria" required>
+                        <option value="" disabled selected>-- Seleccione Tipo --</option>
+                        <option value="RCPF">💰 1.1 RCPF- Revisión Cuenta Pública-Financiero</option>
+                        <option value="RCPI">👷🏼 1.2 RCPI- Revisión Cuenta Pública-Infraestructura</option>
+                        <option value="Por definir">2.Por definir</option>
+                        <option value="Seleccionar">Seleccionar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="rubro_hallazgo">Rubro de Hallazgo:</label>
+                    <select id="rubro_hallazgo" required>
+                        <option value="" disabled selected>-- Seleccione Rubro --</option>
+                        <option value="Financiero">Financiero</option>
+                        <option value="Infraestructura">Infraestructura</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo_hallazgo">Tipo de Hallazgo:</label>
+                    <select id="tipo_hallazgo" required>
+                        <option value="" disabled selected>-- Seleccione Tipo --</option>
+                        <option value="Observación">🔎 Observación</option>
+                        <option value="Recomendación">⚠️ Recomendación</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="num_concepto">🔢 Núm / Concepto en Cédula:</label>
+                    <input type="text" id="num_concepto" required placeholder="Ej. Con-01">
+                </div>
+
+                <div class="form-group">
+                    <label for="link_soporte">🌐 Link de Soporte Documental:</label>
+                    <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
+                </div>
+
+                <div class="form-group">
+                    <label for="importe">💲 Importe ($):</label>
+                    <input type="number" id="importe" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="comentarios_revision">💬 Comentarios de Revisión:</label>
+                    <textarea id="comentarios_revision" rows="3" placeholder="Escriba el desglose del hallazgo detectado..."></textarea>
+                </div>
+            </div>
+
+            <div class="queue-section">
+                <div class="queue-title">
+                    <span>⏳ Fila Virtual de Atención</span>
+                </div>
+                <div class="queue-card">
+                    <div class="queue-info">
+                        <p><strong>Ticket Asociado:</strong> <span id="lblTicketQueue">-</span></p>
+                        <p><strong>Lugar en Fila:</strong> Turno #1 (En Revisión Técnica)</p>
+                        <p><strong>Tiempo Estimado de Espera:</strong> 25 - 40 minutos</p>
+                    </div>
+                    <div>
+                        <span class="status-badge">Pendiente de Cédula</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <a href="solicitud.html" class="btn-cancelar">Regresar</a>
+                <button type="submit" class="btn-enviar">Subir Ticket e Información</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const SUPABASE_HALLAZGOS_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+        
+        let folioActivo = "";
+
+        // Al cargar la página de hallazgos
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1. Establecer fecha de recepción del día de hoy de forma automática
+            const hoy = new Date();
+            const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('fecha_recepcion').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
+
+            // 2. Extraer el último folio generado por la dirección DCPL_B001 (Análisis Hallazgo)
+            // Si por alguna razón no existe, busca la general o pone un ejemplo base
+            folioActivo = localStorage.getItem('consecutivo_DCPL_B001');
+            
+            // Para asegurar la integración fluida, reconstruimos la nomenclatura visual del último ticket
+            let numActual = parseInt(folioActivo) - 1; // El valor en LocalStorage ya se incrementó para el siguiente, restamos 1 para ver el actual
+            if (isNaN(numActual) || numActual < 1) numActual = 1;
+            
+            let numFormateado = String(numActual).padStart(4, '0');
+            let ticketFinal = `JURIX-DGAJ-DCPL-B001-${numFormateado}`;
+
+            // Inyectar en los campos visuales solicitados
+            document.getElementById('folioTicketSub').textContent = `Ticket Relacionado: ${ticketFinal}`;
+            document.getElementById('lblTicketQueue').textContent = ticketFinal;
+        });
+
+        // Evento Submit para guardar en la tabla hallazgos
+        document.getElementById('hallazgoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const ticketAsociado = document.getElementById('lblTicketQueue').textContent;
+            const dataHallazgo = {
+                folio_user: ticketAsociado,
+                fecha_recepcion: document.getElementById('fecha_recepcion').value,
+                sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
+                tipo_auditoria: document.getElementById('tipo_auditoria').value,
+                rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
+                tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
+                num_concepto: document.getElementById('num_concepto').value,
+                link_soporte: document.getElementById('link_soporte').value,
+                importe: parseFloat(document.getElementById('importe').value) || 0,
+                comentarios_revision: document.getElementById('comentarios_revision').value
+            };
+
+            try {
+                const response = await fetch(SUPABASE_HALLAZGOS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(dataHallazgo)
+                });
+
+                if (response.ok) {
+                    alert(`¡Éxito!\nLos detalles técnicos del hallazgo para el ticket ${ticketAsociado} han sido registrados correctamente en la base de datos.`);
+                    window.location.href = "index.html"; // Redirección final al menú de inicio o índice
+                } else {
+                    const err = await response.json();
+                    console.error(err);
+                    alert("Error en el registro. Verifique que las columnas existan con estos nombres exactos en la tabla 'hallazgos'.");
+                }
+            } catch (error) {
+                console.error("Error de conexión:", error);
+                alert("Error de red al intentar conectar con Supabase.");
+            }
+        });
+    </script>
+</body>
+</html>
