@@ -183,23 +183,23 @@
         
         <form id="ticketForm">
             <div class="form-group">
-                <label for="nombre">Nombre Completo:</label>
-                <input type="text" id="nombre" required placeholder="Ej. Juan Pérez">
+                <label for="nombre_user">Nombre Completo:</label>
+                <input type="text" id="nombre_user" required placeholder="Ej. Juan Pérez">
             </div>
 
             <div class="form-group">
-                <label for="puesto">Puesto:</label>
-                <input type="text" id="puesto" required placeholder="Ej. Analista Jurídico">
+                <label for="puesto_user">Puesto:</label>
+                <input type="text" id="puesto_user" required placeholder="Ej. Analista Jurídico">
             </div>
 
             <div class="form-group">
-                <label for="area">Área:</label>
-                <input type="text" id="area" required placeholder="Ej. Dirección de lo Contencioso">
+                <label for="area_user">Área:</label>
+                <input type="text" id="area_user" required placeholder="Ej. Dirección de lo Contencioso">
             </div>
 
             <div class="form-group">
-                <label for="solicitud">Tipo de Solicitud:</label>
-                <select id="solicitud" required onchange="calcularFolio()">
+                <label for="tipo_solicitud">Tipo de Solicitud:</label>
+                <select id="tipo_solicitud" required onchange="calcularFolio()">
                     <option value="" disabled selected>-- Seleccione una opción --</option>
                     <option value="Consulta">Consulta</option>
                     <option value="Análisis Hallazgo">Análisis Hallazgo</option>
@@ -231,8 +231,8 @@
             </div>
 
             <div class="form-group">
-                <label for="comentarios">Comentarios / Descripción Adicional:</label>
-                <textarea id="comentarios" rows="4" placeholder="Escriba aquí los detalles de su solicitud..."></textarea>
+                <label for="comentarios_user">Comentarios / Descripción Adicional:</label>
+                <textarea id="comentarios_user" rows="4" placeholder="Escriba aquí los detalles de su solicitud..."></textarea>
             </div>
 
             <div class="btn-container">
@@ -248,26 +248,27 @@
 
         let folioGeneradoGlobal = "";
 
+        // Alerta con el texto lógico y corregido
         function alertaArchivo(input) {
             const fileNameSpan = document.getElementById('file-name');
             if (input.files.length > 0) {
                 fileNameSpan.textContent = input.files[0].name;
-                alert("Revise su archivo adjunto antes de aceptar. Una vez enviado, se creará un ticket de servicio. Si necesita realizar cambios posteriores, deberá generar un nuevo ticket que entrará a la fila virtual de atención.");
+                alert("Por favor, verifique su archivo adjunto antes de continuar. Al hacer clic en 'Aceptar', se generará automáticamente un ticket de servicio. Si detecta algún error y necesita modificar el archivo después de enviar, tendrá que generar un nuevo ticket de servicio que será enviado a la fila virtual para su atención.");
             } else {
                 fileNameSpan.textContent = "Ningún archivo seleccionado";
             }
         }
 
-        // LÓGICA DE FOLIOS CORREGIDA
+        // LÓGICA DE FOLIOS ORIGINALES
         function calcularFolio() {
-            const opcion = document.getElementById('solicitud').value;
+            const opcion = document.getElementById('tipo_solicitud').value;
             const display = document.getElementById('folioDisplay');
             
             if(!opcion) return;
 
             let estructuraBase = "";
             let claveServicio = "";
-            let tipoDireccion = ""; // Identificador del consecutivo independiente (DCPL, DINV, DSUB)
+            let tipoDireccion = ""; 
 
             switch(opcion) {
                 case "Consulta": 
@@ -291,35 +292,41 @@
                 case "Actividad 4":
                     estructuraBase = "JURIX-DSUB-DCPL-"; claveServicio = ""; tipoDireccion = "DSUB"; break;
                 
-                default: // Opción X u Opción Y
+                default: 
                     estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "X000-"; tipoDireccion = "DCPL"; break;
             }
 
-            // Obtener el consecutivo independiente según el área/dirección
             let numActual = localStorage.getItem(`consecutivo_${tipoDireccion}`) || 1;
             let numFormateado = String(numActual).padStart(4, '0');
 
-            // Armar el folio exactamente como fue solicitado
             folioGeneradoGlobal = `${estructuraBase}${claveServicio}${numFormateado}`;
             display.textContent = folioGeneradoGlobal;
         }
 
+        // CONTROLADOR SUBMIT CORREGIDO CON NOMBRE DE COLUMNAS EXACTO
         document.getElementById('ticketForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const nombre = document.getElementById('nombre').value;
-            const puesto = document.getElementById('puesto').value;
-            const area = document.getElementById('area').value;
-            const solicitud = document.getElementById('solicitud').value;
-            const comentarios = document.getElementById('comentarios').value;
+            if (!folioGeneradoGlobal) {
+                alert("Por favor, seleccione un tipo de solicitud válido para generar su folio.");
+                return;
+            }
 
+            // Captura directa usando las nomenclaturas solicitadas
+            const nombre_user = document.getElementById('nombre_user').value;
+            const puesto_user = document.getElementById('puesto_user').value;
+            const area_user = document.getElementById('area_user').value;
+            const tipo_solicitud = document.getElementById('tipo_solicitud').value;
+            const comentarios_user = document.getElementById('comentarios_user').value;
+
+            // Mapeo exacto de claves de columna de Supabase sin pérdidas
             const data = {
-                nombre_user: nombre,
-                puesto_user: puesto,
-                area_user: area,
-                tipo_solicitud: solicitud,
+                nombre_user: nombre_user,
+                puesto_user: puesto_user,
+                area_user: area_user,
+                tipo_solicitud: tipo_solicitud,
                 folio_user: folioGeneradoGlobal,
-                comentarios_user: comentarios
+                comentarios_user: comentarios_user
             };
 
             try {
@@ -335,22 +342,19 @@
                 });
 
                 if (response.ok) {
-                    alert(`¡Ticket generado con éxito!\nSu folio oficial es: ${folioGeneradoGlobal}`);
+                    alert(`¡Ticket generado con éxito!\nSu folio oficial es: ${folioGeneradoGlobal}\nSu solicitud ha sido enviada a la fila virtual.`);
                     
-                    // Avanzar el consecutivo de la dirección correspondiente
-                    actualizarContadorLocal(solicitud);
-
-                    // Redirección condicional según la solicitud
-                    redireccionarPagina(solicitud);
+                    actualizarContadorLocal(tipo_solicitud);
+                    redireccionarPagina(tipo_solicitud);
                 } else {
                     const errorData = await response.json();
-                    console.error(errorData);
-                    alert("Error al guardar en Supabase. Revisa las columnas de tu tabla.");
+                    console.error("Detalles del error en Supabase:", errorData);
+                    alert("Error al guardar en Supabase. Asegúrese de que las columnas coincidan exactamente en la base de datos.");
                 }
 
             } catch (error) {
                 console.error("Error de red:", error);
-                alert("No se pudo conectar a la base de datos.");
+                alert("No se pudo establecer conexión con la base de datos.");
             }
         });
 
