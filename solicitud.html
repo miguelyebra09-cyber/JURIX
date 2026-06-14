@@ -248,7 +248,6 @@
 
         let folioGeneradoGlobal = "";
 
-        // Alerta con el texto lógico y corregido
         function alertaArchivo(input) {
             const fileNameSpan = document.getElementById('file-name');
             if (input.files.length > 0) {
@@ -259,7 +258,23 @@
             }
         }
 
-        // LÓGICA DE FOLIOS ORIGINALES
+        // LÓGICA DE FOLIOS CORREGIDA: Identifica de forma única cada servicio/actividad
+        function obtenerIdentificadorContador(opcion) {
+            switch(opcion) {
+                case "Consulta": return "DCPL_A001";
+                case "Análisis Hallazgo": return "DCPL_B001";
+                case "Analisis de Pliego": return "DCPL_B002";
+                case "Análisis de Informe": return "DCPL_B003";
+                case "Denuncia": return "DCPL_C001";
+                case "Tarjeta Informativa": return "DCPL_D001";
+                case "Actividad 1": return "DINV_ACT1";
+                case "Actividad 2": return "DINV_ACT2";
+                case "Actividad 3": return "DSUB_ACT3";
+                case "Actividad 4": return "DSUB_ACT4";
+                default: return "DCPL_X000";
+            }
+        }
+
         function calcularFolio() {
             const opcion = document.getElementById('tipo_solicitud').value;
             const display = document.getElementById('folioDisplay');
@@ -268,42 +283,42 @@
 
             let estructuraBase = "";
             let claveServicio = "";
-            let tipoDireccion = ""; 
 
             switch(opcion) {
                 case "Consulta": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "A001-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "A001-"; break;
                 case "Análisis Hallazgo": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B001-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B001-"; break;
                 case "Analisis de Pliego": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B002-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B002-"; break;
                 case "Análisis de Informe": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B003-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B003-"; break;
                 case "Denuncia": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "C001-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "C001-"; break;
                 case "Tarjeta Informativa": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "D001-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "D001-"; break;
                 
                 case "Actividad 1":
                 case "Actividad 2":
-                    estructuraBase = "JURIX-DGAJ-DINV-"; claveServicio = ""; tipoDireccion = "DINV"; break;
+                    estructuraBase = "JURIX-DGAJ-DINV-"; claveServicio = ""; break;
                 
                 case "Actividad 3":
                 case "Actividad 4":
-                    estructuraBase = "JURIX-DSUB-DCPL-"; claveServicio = ""; tipoDireccion = "DSUB"; break;
+                    estructuraBase = "JURIX-DSUB-DCPL-"; claveServicio = ""; break;
                 
                 default: 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "X000-"; tipoDireccion = "DCPL"; break;
+                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "X000-"; break;
             }
 
-            let numActual = localStorage.getItem(`consecutivo_${tipoDireccion}`) || 1;
+            // Conseguir la clave de almacenamiento específica de esta solicitud individual
+            const idContador = obtenerIdentificadorContador(opcion);
+            let numActual = localStorage.getItem(`consecutivo_${idContador}`) || 1;
             let numFormateado = String(numActual).padStart(4, '0');
 
             folioGeneradoGlobal = `${estructuraBase}${claveServicio}${numFormateado}`;
             display.textContent = folioGeneradoGlobal;
         }
 
-        // CONTROLADOR SUBMIT CORREGIDO CON NOMBRE DE COLUMNAS EXACTO
         document.getElementById('ticketForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -312,14 +327,12 @@
                 return;
             }
 
-            // Captura directa usando las nomenclaturas solicitadas
             const nombre_user = document.getElementById('nombre_user').value;
             const puesto_user = document.getElementById('puesto_user').value;
             const area_user = document.getElementById('area_user').value;
             const tipo_solicitud = document.getElementById('tipo_solicitud').value;
             const comentarios_user = document.getElementById('comentarios_user').value;
 
-            // Mapeo exacto de claves de columna de Supabase sin pérdidas
             const data = {
                 nombre_user: nombre_user,
                 puesto_user: puesto_user,
@@ -344,6 +357,7 @@
                 if (response.ok) {
                     alert(`¡Ticket generado con éxito!\nSu folio oficial es: ${folioGeneradoGlobal}\nSu solicitud ha sido enviada a la fila virtual.`);
                     
+                    // Incrementa de manera única el contador de esta solicitud específica
                     actualizarContadorLocal(tipo_solicitud);
                     redireccionarPagina(tipo_solicitud);
                 } else {
@@ -358,16 +372,11 @@
             }
         });
 
+        // Modificado para guardar usando el id único por servicio
         function actualizarContadorLocal(opcion) {
-            let tipoDireccion = "DCPL";
-            if (["Actividad 1", "Actividad 2"].includes(opcion)) {
-                tipoDireccion = "DINV";
-            } else if (["Actividad 3", "Actividad 4"].includes(opcion)) {
-                tipoDireccion = "DSUB";
-            }
-
-            let numActual = parseInt(localStorage.getItem(`consecutivo_${tipoDireccion}`)) || 1;
-            localStorage.setItem(`consecutivo_${tipoDireccion}`, numActual + 1);
+            const idContador = obtenerIdentificadorContador(opcion);
+            let numActual = parseInt(localStorage.getItem(`consecutivo_${idContador}`)) || 1;
+            localStorage.setItem(`consecutivo_${idContador}`, numActual + 1);
         }
 
         function redireccionarPagina(solicitud) {
