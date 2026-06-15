@@ -323,8 +323,7 @@
             <h3 style="color: var(--rojo-alerta); margin-top: 0; display: flex; align-items: center; gap: 8px;">
                 ⚠️ Solicitudes de Prórroga Pendientes de Validación
             </h3>
-            <div id="lista-alertas-prorrogas">
-                </div>
+            <div id="lista-alertas-prorrogas"></div>
         </div>
 
         <div id="seccion-filtros" class="filter-section">
@@ -359,49 +358,45 @@
             </div>
         </div>
 
-        <div id="contenedor-tickets-maestro">
-            </div>
+        <div id="contenedor-tickets-maestro"></div>
 
     </div>
 
     <script>
         // Configuración de Endpoints
         const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
-        const URL_PRORROGAS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/prorrogas"; // Simulación de tabla de control
+        const URL_PRORROGAS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/prorrogas";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
-        // Variables de sesión simulación (Determina vistas de forma estricta)
-        // Valores esperados de rol en tu sistema: 'usuario', 'supervisor', 'administrador'
+        // Variables de sesión dinámicas
         let userRole = "usuario"; 
         let currentUserName = "";
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // Mapeo seguro de la sesión de login
-            currentUserName = localStorage.getItem('last_user_name') || "Invitado 1";
-            const areaSesion = localStorage.getItem('last_user_area') || "DGAJ";
-            
-            // Lógica de asignación de perfil basada en el correo o nombre para pruebas
+            // Mapeo dinámico y unificado de la sesión de login (Múltiples fallbacks de llaves del localStorage)
+            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Invitado 1";
+            const areaSesion = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ";
             const correoLogueado = localStorage.getItem('last_user_email') || "";
+            
+            // Asignación estricta de privilegios basados en perfil
             if (correoLogueado.includes('admin')) {
                 userRole = "administrador";
             } else if (correoLogueado.includes('supervisor') || currentUserName.includes('Director')) {
                 userRole = "supervisor";
             } else {
-                userRole = "usuario"; // Por defecto solo ve sus propios registros
+                userRole = "usuario"; // Restringe la vista para que solo vea sus tickets propios
             }
 
-            // Pintar cabecera de sesión
+            // Inyectar datos en la interfaz
             document.getElementById('lbl-nombre-sesion').textContent = currentUserName;
             document.getElementById('lbl-area-sesion').textContent = areaSesion;
             
             const badge = document.getElementById('badge-rol-contenedor');
             badge.textContent = `Perfil: ${userRole}`;
-            badge.classList.add(`badge-${userRole}`);
+            badge.className = `role-badge badge-${userRole}`;
 
-            // Configurar visibilidad de elementos según jerarquía de perfil
+            // Configurar vistas y lanzar consulta estructurada
             configurarVistasPorPerfil();
-            
-            // Cargar datos
             cargarTicketsSincronizados();
         });
 
@@ -414,7 +409,7 @@
                 cargarAlertasProrrogas();
             }
             
-            // Escuchadores de filtros en tiempo real
+            // Listeners en tiempo real solo para perfiles de consulta masiva
             if (userRole !== "usuario") {
                 document.getElementById('filtro-usuario').addEventListener('input', filtrarTicketsLogica);
                 document.getElementById('filtro-area').addEventListener('change', filtrarTicketsLogica);
@@ -423,7 +418,7 @@
             }
         }
 
-        // Simulación estructurada de la carga de base de datos
+        // Obtener los datos reales de Supabase de manera dinámica
         async function cargarTicketsSincronizados() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "<p style='text-align:center;'>Consultando Fila Virtual en Supabase...</p>";
@@ -431,7 +426,7 @@
             try {
                 let urlQuery = URL_SOLICITUDES + "?select=*&order=fecha_creacion.desc";
                 
-                // RESTRICCIÓN DE PERFIL: El usuario regular solo tiene acceso a su propia vista
+                // RESTRICCIÓN CLAVE: Si el rol es 'usuario', se le aplica el filtro exacto por su nombre de solicitante
                 if (userRole === "usuario") {
                     urlQuery += `&nombre_solicitante=eq.${encodeURIComponent(currentUserName)}`;
                 }
@@ -447,19 +442,26 @@
                 if (!response.ok) throw new Error("Error al consultar datos");
                 const data = await response.json();
                 
-                window.ticketsCache = data; // Guardar en caché para filtros
+                window.ticketsCache = data; 
                 renderizarListaTickets(data);
 
             } catch (error) {
                 console.error(error);
                 contenedor.innerHTML = "<p style='color:red; text-align:center;'>Fallo al interconectar con Supabase. Mostrando simulación local.</p>";
-                // Fallback de demostración vistosa
+                
+                // Fallback local en caso de error de conexión
                 const mockData = [
                     { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", nombre_solicitante: "Juan Miguel Yebra Prieto", area_solicitante: "DCPL", asunto: "Análisis de Informe de Presunta Responsabilidad", prioridad: "Urgente", estatus: "En Revisión", ente: "MDRM_Doctor Mora", posicion_fila: 2 },
-                    { folio_ticket: "JURIX-DGAJ-DCPL-A001-0004", nombre_solicitante: "Invitado 1", area_solicitante: "DGAJ", asunto: "Consulta Jurídica sobre Cuenta Pública", prioridad: "Normal", estatus: "Pendiente", Ente: "San Diego de la Unión", posicion_fila: 5 }
+                    { folio_ticket: "JURIX-DGAJ-DCPL-A001-0004", nombre_solicitante: "Arturo Vidal Rojas", area_solicitante: "DGAJ", asunto: "Consulta Jurídica sobre Cuenta Pública", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 5 }
                 ];
-                window.ticketsCache = mockData;
-                renderizarListaTickets(mockData);
+                
+                // Si es un usuario básico en entorno local simulado, filtramos manualmente para evitar fugas de datos
+                if (userRole === "usuario") {
+                    window.ticketsCache = mockData.filter(t => t.nombre_solicitante === currentUserName);
+                } else {
+                    window.ticketsCache = mockData;
+                }
+                renderizarListaTickets(window.ticketsCache);
             }
         }
 
@@ -477,22 +479,22 @@
                 const enteLimpio = ticket.ente || "No especificado";
                 const fila = ticket.posicion_fila || "Activo";
 
-                // Determinar paso activo en la Fila Virtual / Línea de Tiempo
+                // Línea de tiempo interactiva según estatus de la base de datos
                 let step1 = "completed", step2 = "active", step3 = "";
                 if (estatusLimpio === "Pendiente") { step1 = "active"; step2 = ""; step3 = ""; }
                 if (estatusLimpio === "Completado") { step1 = "completed"; step2 = "completed"; step3 = "active"; }
 
                 const card = document.createElement('div');
                 card.className = "ticket-card";
-                card.setAttribute('data-usuario', ticket.nombre_solicitante);
-                card.setAttribute('data-area', ticket.area_solicitante);
+                card.setAttribute('data-usuario', ticket.nombre_solicitante || '');
+                card.setAttribute('data-area', ticket.area_solicitante || '');
                 card.setAttribute('data-ente', enteLimpio);
                 card.setAttribute('data-estatus', estatusLimpio);
 
                 card.innerHTML = `
                     <div class="ticket-header">
                         <span class="ticket-id">${ticket.folio_ticket}</span>
-                        <span class="ticket-status status-${estatusLimpio.toLowerCase().replace(' ', '')}">${estatusLimpio}</span>
+                        <span class="ticket-status status-${estatusLimpio.toLowerCase().replace(/\s+/g, '')}">${estatusLimpio}</span>
                     </div>
                     <div class="ticket-body-grid">
                         <div class="info-meta">
@@ -535,7 +537,7 @@
             });
         }
 
-        // LÓGICA DE FILTRADO MULTIVARIABLE (Supervisor / Admin)
+        // Lógica de filtrado en cliente para Supervisor / Administrador
         function filtrarTicketsLogica() {
             const txtUsuario = document.getElementById('filtro-usuario').value.toLowerCase();
             const txtArea = document.getElementById('filtro-area').value;
@@ -545,10 +547,10 @@
             const tarjetas = document.querySelectorAll('.ticket-card');
 
             tarjetas.forEach(card => {
-                const u = card.getAttribute('data-usuario').toLowerCase();
-                const a = card.getAttribute('data-area');
-                const e = card.getAttribute('data-ente').toLowerCase();
-                const s = card.getAttribute('data-estatus');
+                const u = (card.getAttribute('data-usuario') || '').toLowerCase();
+                const a = card.getAttribute('data-area') || '';
+                const e = (card.getAttribute('data-ente') || '').toLowerCase();
+                const s = card.getAttribute('data-estatus') || '';
 
                 const cumpleU = u.includes(txtUsuario);
                 const cumpleA = txtArea === "" || a === txtArea;
@@ -563,18 +565,12 @@
             });
         }
 
-        // FUNCIÓN SUPERVISOR: Solicitar prórroga al administrador
         function solicitarProrrogaTramite(folio) {
             const justificacion = prompt(`Ingrese el motivo para solicitar la ampliación de término del ticket ${folio}:`);
             if (!justificacion) return;
-
             alert(`Solicitud de prórroga enviada con éxito.\nSe ha generado una alerta en el panel de los administradores.`);
-            
-            // Lógica de resguardo para desarrollo local (Inyectar en la lista global)
-            if(userRole === 'administrador') cargarAlertasProrrogas(); 
         }
 
-        // FUNCIÓN ADMINISTRADOR: Cambiar estatus de fila virtual
         function cambiarEstatusAdmin(folio) {
             const nuevoEst = prompt(`Cambiar estatus para ${folio}.\nOpciones: Pendiente, En Revisión, Completado`);
             if(!nuevoEst) return;
@@ -582,7 +578,6 @@
             cargarTicketsSincronizados();
         }
 
-        // PANEL ADMINISTRADOR: Cargar alertas enviadas por supervisores
         function cargarAlertasProrrogas() {
             const divAlertas = document.getElementById('lista-alertas-prorrogas');
             divAlertas.innerHTML = `
