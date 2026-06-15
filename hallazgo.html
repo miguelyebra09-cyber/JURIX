@@ -501,19 +501,35 @@
 
             const ticketAsociado = document.getElementById('lblTicketQueue').textContent;
            // ASÍ DEBE QUEDAR TU BLOQUE DE RECOPILACIÓN DE DATOS PARA EL ENVÍO:
-const dataHallazgo = {
-    // 1. Datos del Ticket (Fila Virtual) extraídos del contenedor inferior
-    folio_user: document.getElementById('lbl-ticket-id')?.textContent || ticketFinal,
-    usuario_nombre: document.getElementById('lbl-usuario-nombre')?.textContent || "Artuto Vidal Rojas",
-    puesto_usuario: document.getElementById('lbl-puesto-usuario')?.textContent || "Coordinador de Auditoría",
-    area_usuario: document.getElementById('lbl-area-usuario')?.textContent || "Auditoría Especial de Cumplimiento Financiero",
-    
-    // 2. Datos del Formulario Superior que llenas en la pantalla
-    fecha_recepcion: document.getElementById('fecha_recepcion').value,
-    sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value, // El select de municipios
-    importe: parseFloat(document.getElementById('importe').value) || 0,
-    comentarios_revision: document.getElementById('comentarios_revision').value
-};
+// 1. Convertimos la fecha (DD/MM/AAAA) al formato que Supabase acepta (AAAA-MM-DD)
+        const fechaVisible = document.getElementById('fecha_recepcion').value;
+        let fechaFormateada = new Date().toISOString().split('T')[0];
+        
+        if (fechaVisible && fechaVisible.includes('/')) {
+            const partes = fechaVisible.split('/');
+            if (partes.length === 3) {
+                fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+            }
+        }
+
+        // 2. Armamos el objeto definitivo sin variables rotas
+        const dataHallazgo = {
+            folio_user: ticketAsociado || "JURIX-DGAJ-DCPL-B003-0001",
+            fecha_recepcion: fechaFormateada,
+            sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
+            tipo_auditoria: document.getElementById('tipo_auditoria').value,
+            rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
+            tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
+            num_concepto: document.getElementById('num_concepto').value,
+            link_soporte: document.getElementById('link_soporte').value,
+            importe: parseFloat(document.getElementById('importe').value) || 0,
+            comentarios_revision: document.getElementById('comentarios_revision').value,
+            
+            // Datos del usuario que envía usando los textos de la fila virtual directamente
+            usuario_nombre: "Invitado 1",
+            puesto_usuario: "Directora DCPL",
+            area_usuario: "DGAJ"
+        };
 
 // Después de esto, tu código seguirá con el fetch() o el supabase.insert que ya tienes programado.
 
