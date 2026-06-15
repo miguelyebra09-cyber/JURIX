@@ -11,6 +11,7 @@
             --gris-claro: #f4f4f9;
             --blanco: #ffffff;
             --azul-info: #0066cc;
+            --verde-exito: #2ecc71;
             --input-bloqueado: #eaeded;
         }
 
@@ -120,7 +121,6 @@
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
         }
 
-        /* Estilo para campos bloqueados de sesión o calculados */
         input[readonly] {
             background-color: var(--input-bloqueado);
             color: #7f8c8d;
@@ -136,6 +136,49 @@
             color: var(--naranja-nitido);
             font-weight: bold;
             font-size: 1rem;
+        }
+
+        /* --- CONTENEDOR ADJUNTAR ARCHIVO --- */
+        .file-upload-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 6px;
+            background-color: #fafafa;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .file-upload-box:hover {
+            border-color: var(--naranja-nitido);
+            background-color: #fff9f5;
+        }
+
+        .file-upload-box input[type="file"] {
+            display: none;
+        }
+
+        .upload-label-btn {
+            display: inline-block;
+            background-color: var(--gris-oscuro);
+            color: var(--blanco);
+            padding: 8px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            transition: background 0.3s;
+        }
+
+        .upload-label-btn:hover {
+            background-color: #444;
+        }
+
+        #file-status-message {
+            margin-top: 8px;
+            font-size: 0.88rem;
+            color: #666;
+            font-weight: 500;
         }
 
         /* --- BOTONERA --- */
@@ -197,6 +240,7 @@
         <form id="solicitudForm">
             <div class="form-grid">
                 
+                <!-- SECCIÓN 1: DATOS DE USUARIO POR DEFAULT (NO EDITABLES) -->
                 <div class="section-divider">👤 Datos del Servidor Público (Sesión Activa)</div>
 
                 <div class="form-group full-width">
@@ -214,6 +258,7 @@
                     <input type="text" id="user_area" readonly required>
                 </div>
 
+                <!-- SECCIÓN 2: DETALLES TÉCNICOS DEL TICKET -->
                 <div class="section-divider">📋 Detalles del Trámite o Ticket</div>
 
                 <div class="form-group">
@@ -251,6 +296,18 @@
                     <label for="asunto_solicitud">Asunto / Descripción Corta:</label>
                     <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
                 </div>
+
+                <!-- SECCIÓN 3: ADJUNTAR DOCUMENTO DE SOPORTE -->
+                <div class="section-divider">📂 Expediente Digital / Documento Adjunto</div>
+                
+                <div class="form-group full-width">
+                    <div class="file-upload-box">
+                        <label for="documento_adjunto" class="upload-label-btn">📎 Seleccionar Documento de Soporte</label>
+                        <input type="file" id="documento_adjunto" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg">
+                        <div id="file-status-message">Ningún archivo seleccionado (Máx. 15MB)</div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="btn-container">
@@ -277,7 +334,7 @@
             document.getElementById('user_puesto').value = localStorage.getItem('last_user_puesto') || "No detectado";
             document.getElementById('user_area').value = localStorage.getItem('last_user_area') || "No detectado";
 
-            // 3. ESTABLECER FECHA DE HOY EN PANTALLA
+            // 3. ESTABLECER FECHA DE HOY
             const hoy = new Date();
             const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
             document.getElementById('fecha_registro').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
@@ -288,30 +345,47 @@
             const servicio = this.value;
             if (!servicio) return;
 
-            // Leer el consecutivo guardado o inicializarlo en 1
             let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
             let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
 
-            // Formatear a 4 dígitos fijos (Ej. 0001)
             const numFormateado = String(numActual).padStart(4, '0');
             const prefijoTicket = servicio.replace('_', '-'); 
             const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
 
-            // Actualizar tanto el Input oculto/bloqueado como el Banner Superior Informativo
             document.getElementById('folio_calculado').value = ticketFinal;
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
-        // 5. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO
+        // 5. EVENTO AL ADJUNTAR UN DOCUMENTO Y MENSAJE DINÁMICO
+        document.getElementById('documento_adjunto').addEventListener('change', function(e) {
+            const statusMessage = document.getElementById('file-status-message');
+            
+            if (this.files && this.files.length > 0) {
+                const nombreArchivo = this.files[0].name;
+                const tamanoMegaBytes = (this.files[0].size / (1024 * 1024)).toFixed(2);
+                
+                // Cambiar estilo y mandar el mensaje de éxito al adjuntar
+                statusMessage.style.color = "var(--verde-exito)";
+                statusMessage.innerHTML = `<strong>✅ Archivo listo para cargarse:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
+            } else {
+                statusMessage.style.color = "#666";
+                statusMessage.textContent = "Ningún archivo seleccionado (Máx. 15MB)";
+            }
+        });
+
+        // 6. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO
         document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const servicio = document.getElementById('servicio_solicitado').value;
             const folioGenerado = document.getElementById('folio_calculado').value;
 
-            // Obtener el consecutivo para incrementarlo de forma definitiva tras presionar el submit
             let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
             let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
+
+            // Simulación del nombre de archivo si fue adjuntado para guardarlo en la base
+            const inputArchivo = document.getElementById('documento_adjunto');
+            const archivoNombreSoporte = inputArchivo.files.length > 0 ? inputArchivo.files[0].name : "Sin archivo adjunto";
 
             const dataSolicitud = {
                 folio_ticket: folioGenerado,
@@ -321,6 +395,7 @@
                 servicio: servicio,
                 prioridad: document.getElementById('prioridad_tramite').value,
                 asunto: document.getElementById('asunto_solicitud').value.trim(),
+                documento_respaldo: archivoNombreSoporte,
                 fecha_creacion: new Date().toISOString()
             };
 
@@ -337,12 +412,10 @@
                 });
 
                 if (response.ok) {
-                    // ÉXITO: Guardamos el incremento correlativo para el siguiente ticket en el LocalStorage
                     localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
 
-                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
+                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}\nDocumento Vinculado: ${archivoNombreSoporte}`);
                     
-                    // Redirección condicionada al flujo del Grupo B (Hallazgos, Pliegos, Informes)
                     if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
                         window.location.href = "hallazgos.html";
                     } else {
