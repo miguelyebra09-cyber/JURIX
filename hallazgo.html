@@ -500,18 +500,22 @@
             e.preventDefault();
 
             const ticketAsociado = document.getElementById('lblTicketQueue').textContent;
-            const dataHallazgo = {
-                folio_user: ticketAsociado,
-                fecha_recepcion: document.getElementById('fecha_recepcion').value,
-                sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
-                tipo_auditoria: document.getElementById('tipo_auditoria').value,
-                rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
-                tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
-                num_concepto: document.getElementById('num_concepto').value,
-                link_soporte: document.getElementById('link_soporte').value,
-                importe: parseFloat(document.getElementById('importe').value) || 0,
-                comentarios_revision: document.getElementById('comentarios_revision').value
-            };
+           // ASÍ DEBE QUEDAR TU BLOQUE DE RECOPILACIÓN DE DATOS PARA EL ENVÍO:
+const dataHallazgo = {
+    // 1. Datos del Ticket (Fila Virtual) extraídos del contenedor inferior
+    folio_user: document.getElementById('lbl-ticket-id')?.textContent || ticketFinal,
+    usuario_nombre: document.getElementById('lbl-usuario-nombre')?.textContent || "Artuto Vidal Rojas",
+    puesto_usuario: document.getElementById('lbl-puesto-usuario')?.textContent || "Coordinador de Auditoría",
+    area_usuario: document.getElementById('lbl-area-usuario')?.textContent || "Auditoría Especial de Cumplimiento Financiero",
+    
+    // 2. Datos del Formulario Superior que llenas en la pantalla
+    fecha_recepcion: document.getElementById('fecha_recepcion').value,
+    sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value, // El select de municipios
+    importe: parseFloat(document.getElementById('importe').value) || 0,
+    comentarios_revision: document.getElementById('comentarios_revision').value
+};
+
+// Después de esto, tu código seguirá con el fetch() o el supabase.insert que ya tienes programado.
 
             try {
                 const response = await fetch(SUPABASE_HALLAZGOS_URL, {
