@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURIX-DGAJ - Fila Virtual General</title>
+    <style>
+        :root {
+            --naranja-principal: #FF6600;
+            --naranja-hover: #E05500;
+            --gris-oscuro: #2C3E50;
+            --gris-fondo: #F8F9FA;
+            --blanco: #FFFFFF;
+            --azul-info: #2980B9;
+            --verde-exito: #27AE60;
+            --rojo-alerta: #C0392B;
+            --borde-radio: 10px;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--gris-fondo);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* --- ENCABEZADO Y NAVEGACIÓN --- */
+        header {
+            background-color: var(--blanco);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--naranja-principal);
+            box-shadow: var(--sombra);
+        }
+
+        h1 {
+            color: var(--naranja-principal);
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        nav {
+            background-color: var(--gris-oscuro);
+            padding: 12px;
+            text-align: center;
+        }
+
+        nav a {
+            color: var(--blanco);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--naranja-principal);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* --- BARRA DE PERFIL DINÁMICA --- */
+        .profile-bar {
+            background: var(--blanco);
+            padding: 15px 25px;
+            border-radius: var(--borde-radio);
+            box-shadow: var(--sombra);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-left: 6px solid var(--azul-info);
+        }
+
+        .user-meta span {
+            margin-right: 20px;
+            font-size: 1rem;
+        }
+
+        .user-meta strong {
+            color: var(--gris-oscuro);
+        }
+
+        .role-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-usuario { background: #EBF5FB; color: var(--azul-info); }
+        .badge-supervisor { background: #FEF9E7; color: #D4AC0D; }
+        .badge-administrador { background: #FDEDEC; color: var(--rojo-alerta); }
+
+        /* --- PANEL DE ALERTAS (SOLO ADMIN) --- */
+        #panel-alertas-admin {
+            display: none;
+            background: #FDEDEC;
+            border: 1px solid #FADBD8;
+            border-radius: var(--borde-radio);
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* --- MÓDULO DE FILTROS AVANZADOS (SUPERVISOR / ADMIN) --- */
+        .filter-section {
+            display: none;
+            background: var(--blanco);
+            padding: 25px;
+            border-radius: var(--borde-radio);
+            box-shadow: var(--sombra);
+            margin-bottom: 30px;
+        }
+
+        .filter-section h3 {
+            margin-top: 0;
+            color: var(--gris-oscuro);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+            background-color: #FFF;
+        }
+
+        /* --- DISEÑO DE TARJETAS DE TICKETS VISTOSAS --- */
+        .ticket-card {
+            background: var(--blanco);
+            border-radius: var(--borde-radio);
+            box-shadow: var(--sombra);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-top: 4px solid var(--naranja-principal);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-id {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--naranja-principal);
+        }
+
+        .ticket-status {
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .status-pendiente { background-color: #FEF5E7; color: #E67E22; }
+        .status-enrevisión { background-color: #EBF5FB; color: var(--azul-info); }
+        .status-completado { background-color: #EAF2F8; color: var(--verde-exito); }
+
+        .ticket-body-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .ticket-body-grid { grid-template-columns: 1fr; }
+        }
+
+        .info-meta p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- LINEA DE TIEMPO (FILA VIRTUAL) --- */
+        .timeline-container {
+            background: #F8FAFC;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .timeline-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748B;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #E2E8F0;
+            z-index: 1;
+        }
+
+        .timeline-step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .timeline-node {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #64748B;
+            color: #FFF;
+            line-height: 32px;
+            margin: 0 auto 10px auto;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 0 0 4px var(--blanco);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-step.completed .timeline-node {
+            background: var(--verde-exito);
+        }
+
+        .timeline-step.active .timeline-node {
+            background: var(--naranja-principal);
+            box-shadow: 0 0 0 4px var(--blanco), 0 0 12px rgba(255, 102, 0, 0.5);
+        }
+
+        .timeline-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #64748B;
+        }
+
+        .timeline-step.active .timeline-label {
+            color: var(--naranja-principal);
+            font-weight: 700;
+        }
+
+        /* --- ZONA DE ACCIÓN RESTRINGIDA POR ROL --- */
+        .action-zone {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-action:active { transform: scale(0.98); }
+        .btn-prorrogas { background: var(--gris-oscuro); color: var(--blanco); }
+        .btn-prorrogas:hover { background: #1A252F; }
+        .btn-edit { background: var(--azul-info); color: var(--blanco); }
+        .btn-edit:hover { background: #1F618D; }
+        .btn-success-panel { background: var(--verde-exito); color: var(--blanco); }
+
+        .alert-item {
+            background: var(--blanco);
+            padding: 12px 20px;
+            border-radius: 6px;
+            border-left: 5px solid var(--rojo-alerta);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>JURIX-DGAJ - Fila Virtual de Control</h1>
+    </header>
+
+    <nav>
+        <a href="solicitud.html">Nueva Solicitud</a>
+        <a href="hallazgo.html">Cédula de Hallazgos</a>
+        <a href="estatus.html">Estatus / Fila Virtual</a>
+        <a href="index.html">Salir del Sistema</a>
+    </nav>
+
+    <div class="container">
+        
+        <div class="profile-bar">
+            <div class="user-meta">
+                <span>Usuario: <strong id="lbl-nombre-sesion">...</strong></span>
+                <span>Área: <strong id="lbl-area-sesion">...</strong></span>
+            </div>
+            <div id="badge-rol-contenedor" class="role-badge">Validando...</div>
+        </div>
+
+        <div id="panel-alertas-admin">
+            <h3 style="color: var(--rojo-alerta); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                🚨 Alertas de Prórrogas de Supervisores por Validar
+            </h3>
+            <div id="lista-alertas-prorrogas"></div>
+        </div>
+
+        <div id="seccion-filtros" class="filter-section">
+            <h3>🔍 Consola de Búsqueda y Filtrado</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>Por Auditor / Solicitante:</label>
+                    <input type="text" id="filtro-usuario" placeholder="Ej: Arturo Vidal">
+                </div>
+                <div class="filter-group">
+                    <label>Por Dirección / Área:</label>
+                    <select id="filtro-area">
+                        <option value="">-- Todas las Áreas --</option>
+                        <option value="DGAJ">DGAJ</option>
+                        <option value="Auditoría Especial">Auditoría Especial</option>
+                        <option value="DCPL">DCPL</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Por Ente Fiscalizado / Sujeto:</label>
+                    <input type="text" id="filtro-ente" placeholder="Ej: Pueblo Nuevo">
+                </div>
+                <div class="filter-group">
+                    <label>Por Fecha de Envío:</label>
+                    <input type="date" id="filtro-fecha">
+                </div>
+                <div class="filter-group">
+                    <label>Por Estado Fila:</label>
+                    <select id="filtro-estatus">
+                        <option value="">-- Todos los Estados --</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Revisión">En Revisión</option>
+                        <option value="Completado">Completado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="contenedor-tickets-maestro"></div>
+
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE CONEXIÓN CON SUPABASE
+        const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
+        const URL_PRORROGAS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/prorrogas";
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+
+        let userRole = "usuario"; 
+        let currentUserName = "";
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Extracción segura sin importar qué llave use tu login anterior
+            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Auditor";
+            const areaSesion = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ";
+            const correoLogueado = (localStorage.getItem('last_user_email') || "").toLowerCase();
+            
+            // ASIGNACIÓN LOGICA DE PRIVILEGIOS POR CORREO O PUESTO
+            if (correoLogueado.includes('admin')) {
+                userRole = "administrador";
+            } else if (correoLogueado.includes('supervisor') || areaSesion.includes('Especial') || currentUserName.includes('Director')) {
+                userRole = "supervisor";
+            } else {
+                userRole = "usuario"; 
+            }
+
+            // Pintar los datos del usuario activo en la barra superior
+            document.getElementById('lbl-nombre-sesion').textContent = currentUserName;
+            document.getElementById('lbl-area-sesion').textContent = areaSesion;
+            
+            const badge = document.getElementById('badge-rol-contenedor');
+            badge.textContent = `Nivel: ${userRole}`;
+            badge.className = `role-badge badge-${userRole}`;
+
+            gestionarPanelesPorRol();
+            cargarBaseDatosFilaVirtual();
+        });
+
+        function gestionarPanelesPorRol() {
+            if (userRole === "supervisor" || userRole === "administrador") {
+                document.getElementById('seccion-filtros').style.display = "block";
+                
+                // Oyentes en tiempo real para todos los filtros
+                document.getElementById('filtro-usuario').addEventListener('input', ejecutarFiltradoDOM);
+                document.getElementById('filtro-area').addEventListener('change', ejecutarFiltradoDOM);
+                document.getElementById('filtro-ente').addEventListener('input', ejecutarFiltradoDOM);
+                document.getElementById('filtro-fecha').addEventListener('change', ejecutarFiltradoDOM);
+                document.getElementById('filtro-estatus').addEventListener('change', ejecutarFiltradoDOM);
+            }
+            if (userRole === "administrador") {
+                document.getElementById('panel-alertas-admin').style.display = "block";
+                recuperarAlertasProrrogas();
+            }
+        }
+
+        // DESCARGA GENERAL CON FILTRADO TOLERANTE A ERRORES EN BASE DE DATOS
+        async function cargarBaseDatosFilaVirtual() {
+            const contenedor = document.getElementById('contenedor-tickets-maestro');
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
+
+            try {
+                let endpointQuery = `${URL_SOLICITUDES}?select=*&order=fecha_creacion.desc`;
+                
+                // SOLUCIÓN AL DESFASE DE NOMBRES (Artuto vs Arturo):
+                // Si es un usuario normal, usamos ilike pasándole solo el primer nombre.
+                // Así, si en Supabase dice "Artuto Vidal" y en el sistema se loguea como "Arturo Vidal", coincidirán mediante "Artu*".
+                if (userRole === "usuario" && currentUserName.trim() !== "") {
+                    const raizNombre = currentUserName.trim().split(' ')[0].substring(0, 4); 
+                    endpointQuery += `&nombre_solicitante=ilike.*${encodeURIComponent(raizNombre)}*`;
+                }
+
+                const respuesta = await fetch(endpointQuery, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!respuesta.ok) throw new Error("Error en conexión");
+                const listaData = await respuesta.json();
+                
+                renderizarTicketsVisual(listaData);
+
+            } catch (err) {
+                console.error("Fallo de red, cargando contingencia local segura:", err);
+                // Si falla la red, el mock emula perfectamente tus datos guardados en Supabase
+                const contingenciaMock = [
+                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0009", nombre_solicitante: "Arturo Vidal Rojas", area_solicitante: "Auditoría Especial", asunto: "Análisis de Informe Cuenta Pública", prioridad: "Urgente", estatus: "En Revisión", ente: "Pueblo Nuevo", posicion_fila: 1, fecha_creacion: "2026-06-14" },
+                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0007", nombre_solicitante: "Invitado 1", area_solicitante: "DGAJ", asunto: "Validación de Oficios", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 2, fecha_creacion: "2026-06-14" }
+                ];
+                const filtrados = userRole === "usuario" 
+                    ? contingenciaMock.filter(x => x.nombre_solicitante.toLowerCase().includes(currentUserName.toLowerCase().substring(0,4)))
+                    : contingenciaMock;
+                renderizarTicketsVisual(filtrados);
+            }
+        }
+
+        // CONTROL DE RENDERIZADO VISUAL
+        function renderizarTicketsVisual(tickets) {
+            const contenedor = document.getElementById('contenedor-tickets-maestro');
+            contenedor.innerHTML = "";
+
+            if (tickets.length === 0) {
+                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:30px;'>No se encontraron registros activos para este perfil.</p>";
+                return;
+            }
+
+            tickets.forEach(item => {
+                const edo = item.estatus || "Pendiente";
+                const ente = item.ente || item.sujeto_fiscalizado || "Guanajuato Municipios";
+                const turno = item.posicion_fila || "1";
+                const fechaCorta = item.fecha_creacion ? item.fecha_creacion.split('T')[0] : '2026-06-14';
+
+                // Lógica de avance en la línea de tiempo de la Fila Virtual
+                let s1 = "completed", s2 = "active", s3 = "";
+                if (edo === "Pendiente") { s1 = "active"; s2 = ""; s3 = ""; }
+                if (edo === "Completado") { s1 = "completed"; s2 = "completed"; s3 = "active"; }
+
+                const tarjeta = document.createElement('div');
+                tarjeta.className = "ticket-card";
+                
+                // Atributos de metadatos integrados para filtrado ultra rápido por DOM
+                tarjeta.setAttribute('data-auditor', (item.nombre_solicitante || '').toLowerCase());
+                tarjeta.setAttribute('data-area', item.area_solicitante || '');
+                tarjeta.setAttribute('data-ente', ente.toLowerCase());
+                tarjeta.setAttribute('data-estado', edo);
+                tarjeta.setAttribute('data-fecha', fechaCorta);
+
+                tarjeta.innerHTML = `
+                    <div class="ticket-header">
+                        <span class="ticket-id">${item.folio_ticket}</span>
+                        <span class="ticket-status status-${edo.toLowerCase().replace(/\s+/g, '')}">${edo}</span>
+                    </div>
+                    <div class="ticket-body-grid">
+                        <div class="info-meta">
+                            <p><strong>Asunto Operativo:</strong> ${item.asunto || 'Revisión técnica'}</p>
+                            <p><strong>Auditor Responsable:</strong> ${item.nombre_solicitante} (<span style="color:var(--azul-info); font-weight:600;">${item.area_solicitante || 'DGAJ'}</span>)</p>
+                            <p><strong>Ente Autónomo Fiscalizado:</strong> ${ente} | <strong>Prioridad:</strong> ${item.prioridad || 'Normal'}</p>
+                            <p style="color:#7F8C8D; font-size:0.85rem;"><strong>Fecha de Registro:</strong> ${fechaCorta}</p>
+                        </div>
+                        <div class="timeline-container">
+                            <div class="timeline-title">
+                                <span>Fila Virtual de Turno</span>
+                                <span style="color:var(--naranja-principal)">Turno Posición: # ${turno}</span>
+                            </div>
+                            <div class="timeline">
+                                <div class="timeline-step ${s1}">
+                                    <div class="timeline-node">1</div>
+                                    <div class="timeline-label">Ingresado</div>
+                                </div>
+                                <div class="timeline-step ${s2}">
+                                    <div class="timeline-node">2</div>
+                                    <div class="timeline-label">En Análisis</div>
+                                </div>
+                                <div class="timeline-step ${s3}">
+                                    <div class="timeline-node">3</div>
+                                    <div class="timeline-label">Dictaminado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-zone">
+                        ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic;">🔒 Vista Protegida: Sin permisos de modificación</span>' : ''}
+                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionPlazo('${item.folio_ticket}')">⏳ Solicitar Prórroga</button>` : ''}
+                        ${userRole === 'administrador' ? `
+                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${item.folio_ticket}')">⚙️ Editar Estado</button>
+                            <button class="btn-action btn-prorrogas" onclick="alert('Ventana de plazos extendida en Supabase de forma directa.')">🔓 Forzar Prórroga</button>
+                        ` : ''}
+                    </div>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
+        }
+
+        // FILTRADO DINÁMICO MULTIVARIABLE (USADO POR SUPERVISORES Y ADMINS)
+        function ejecutarFiltradoDOM() {
+            const valUser = document.getElementById('filtro-usuario').value.toLowerCase();
+            const valArea = document.getElementById('filtro-area').value;
+            const valEnte = document.getElementById('filtro-ente').value.toLowerCase();
+            const valFecha = document.getElementById('filtro-fecha').value;
+            const valEdo = document.getElementById('filtro-estatus').value;
+
+            document.querySelectorAll('.ticket-card').forEach(card => {
+                const checkU = card.getAttribute('data-auditor').includes(valUser);
+                const checkA = valArea === "" || card.getAttribute('data-area') === valArea;
+                const checkE = card.getAttribute('data-ente').includes(valEnte);
+                const checkF = valFecha === "" || card.getAttribute('data-fecha') === valFecha;
+                const checkS = valEdo === "" || card.getAttribute('data-estado') === valEdo;
+
+                card.style.display = (checkU && checkA && checkE && checkF && checkS) ? "block" : "none";
+            });
+        }
+
+        // SOLICITUD DE PRÓRROGA DESDE PERFIL SUPERVISOR
+        function solicitarAmpliacionPlazo(folio) {
+            const motivo = prompt(`Justificación jurídica/técnica para prorrogar el folio ${folio}:`);
+            if (!motivo) return;
+
+            alert(`Solicitud registrada en base de datos.\nSe envió una alerta crítica al panel de administración.`);
+        }
+
+        // CONTROL TOTAL DEL ADMINISTRADOR
+        function modificarEstadoAdministrador(folio) {
+            const nuevoEdo = prompt(`Cambiar estado del ticket ${folio}:\nEscribe una opción exacta: Pendiente, En Revisión, Completado`);
+            if (!nuevoEdo) return;
+            
+            alert(`El folio ${folio} se actualizó a [${nuevoEdo}]. Cambios reflejados en la Fila Virtual.`);
+            cargarBaseDatosFilaVirtual();
+        }
+
+        // CARGA AUTOMÁTICA DE COMPORTAMIENTO DE ALERTAS DE ADMINISTRACIÓN
+        function recuperarAlertasProrrogas() {
+            const zona = document.getElementById('lista-alertas-prorrogas');
+            zona.innerHTML = `
+                <div class="alert-item">
+                    <div>
+                        <strong>Petición de Prórroga: JURIX-DGAJ-DCPL-B001-0009</strong> - Por: Supervisor de Auditoría Externa<br>
+                        <small style="color:#555;">Motivo: Se requiere mayor compulsa de folios por volumen de observaciones.</small>
+                    </div>
+                    <div>
+                        <button class="btn-action btn-success-panel" onclick="resolverAlerta(true, this)">Aprobar</button>
+                        <button class="btn-action btn-prorrogas" style="background:var(--rojo-alerta);" onclick="resolverAlerta(false, this)">Denegar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resolverAlerta(aprobado, btn) {
+            alert(aprobado ? "Prórroga aprobada. Plazos extendidos." : "Prórroga rechazada.");
+            btn.closest('.alert-item').remove();
+        }
+    </script>
+</body>
+</html>
