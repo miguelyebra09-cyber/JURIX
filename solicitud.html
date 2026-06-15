@@ -229,7 +229,7 @@
 
     <nav>
         <a href="solicitud.html">Nueva Solicitud</a>
-        <a href="hallazgos.html">Cédula de Hallazgos</a>
+        <a href="hallazgo.html">Cédula de Hallazgos</a>
         <a href="index.html">Salir</a>
     </nav>
 
@@ -417,7 +417,7 @@
                     alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}\nDocumento Vinculado: ${archivoNombreSoporte}`);
                     
                     if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
-                        window.location.href = "hallazgos.html";
+                        window.location.href = "hallazgo.html";
                     } else {
                         window.location.href = "estatus.html";
                     }
