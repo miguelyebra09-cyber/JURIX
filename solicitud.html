@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Generador de Tickets Corregido</title>
+    <title>JURIX-DGAJ - Generador de Tickets</title>
     <style>
         :root {
             --naranja-nitido: #FF6600;
@@ -174,8 +174,7 @@
     </header>
 
     <nav>
-        <a href="xxx.html">Opción 1</a>
-        <a href="index.html">Salir</a>
+        <a href="index.html">Inicio</a>
     </nav>
 
     <div class="container">
@@ -184,17 +183,17 @@
         <form id="ticketForm">
             <div class="form-group">
                 <label for="nombre_user">Nombre Completo:</label>
-                <input type="text" id="nombre_user" required placeholder="Ej. Juan Pérez">
+                <input type="text" id="nombre_user" required placeholder="Ej. JUAN PÉREZ">
             </div>
 
             <div class="form-group">
                 <label for="puesto_user">Puesto:</label>
-                <input type="text" id="puesto_user" required placeholder="Ej. Analista Jurídico">
+                <input type="text" id="puesto_user" required placeholder="Ej. Auditor 3">
             </div>
 
             <div class="form-group">
                 <label for="area_user">Área:</label>
-                <input type="text" id="area_user" required placeholder="Ej. Dirección de lo Contencioso">
+                <input type="text" id="area_user" required placeholder="Ej. AECF">
             </div>
 
             <div class="form-group">
@@ -208,11 +207,6 @@
                     <option value="Denuncia">Denuncia</option>
                     <option value="Tarjeta Informativa">Tarjeta Informativa</option>
                     <option value="Actividad 1">Actividad 1</option>
-                    <option value="Actividad 2">Actividad 2</option>
-                    <option value="Actividad 3">Actividad 3</option>
-                    <option value="Actividad 4">Actividad 4</option>
-                    <option value="Opción X">Opción X</option>
-                    <option value="Opción Y">Opción Y</option>
                 </select>
             </div>
 
@@ -232,7 +226,7 @@
 
             <div class="form-group">
                 <label for="comentarios_user">Comentarios / Descripción Adicional:</label>
-                <textarea id="comentarios_user" rows="4" placeholder="Escriba aquí los detalles de su solicitud..."></textarea>
+                <textarea id="comentarios_user" rows="4" placeholder="Escriba aquí los detalles..."></textarea>
             </div>
 
             <div class="btn-container">
@@ -252,13 +246,12 @@
             const fileNameSpan = document.getElementById('file-name');
             if (input.files.length > 0) {
                 fileNameSpan.textContent = input.files[0].name;
-                alert("Por favor, verifique su archivo adjunto antes de continuar. Al hacer clic en 'Aceptar', se generará automáticamente un ticket de servicio. Si detecta algún error y necesita modificar el archivo después de enviar, tendrá que generar un nuevo ticket de servicio que será enviado a la fila virtual para su atención.");
+                alert("Por favor, verifique su archivo adjunto antes de continuar.");
             } else {
                 fileNameSpan.textContent = "Ningún archivo seleccionado";
             }
         }
 
-        // LÓGICA DE FOLIOS CORREGIDA: Identifica de forma única cada servicio/actividad
         function obtenerIdentificadorContador(opcion) {
             switch(opcion) {
                 case "Consulta": return "DCPL_A001";
@@ -268,9 +261,6 @@
                 case "Denuncia": return "DCPL_C001";
                 case "Tarjeta Informativa": return "DCPL_D001";
                 case "Actividad 1": return "DINV_ACT1";
-                case "Actividad 2": return "DINV_ACT2";
-                case "Actividad 3": return "DSUB_ACT3";
-                case "Actividad 4": return "DSUB_ACT4";
                 default: return "DCPL_X000";
             }
         }
@@ -281,36 +271,19 @@
             
             if(!opcion) return;
 
-            let estructuraBase = "";
+            let estructuraBase = "JURIX-DGAJ-DCPL-";
             let claveServicio = "";
 
             switch(opcion) {
-                case "Consulta": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "A001-"; break;
-                case "Análisis Hallazgo": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B001-"; break;
-                case "Analisis de Pliego": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B002-"; break;
-                case "Análisis de Informe": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "B003-"; break;
-                case "Denuncia": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "C001-"; break;
-                case "Tarjeta Informativa": 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "D001-"; break;
-                
-                case "Actividad 1":
-                case "Actividad 2":
-                    estructuraBase = "JURIX-DGAJ-DINV-"; claveServicio = ""; break;
-                
-                case "Actividad 3":
-                case "Actividad 4":
-                    estructuraBase = "JURIX-DSUB-DCPL-"; claveServicio = ""; break;
-                
-                default: 
-                    estructuraBase = "JURIX-DGAJ-DCPL-"; claveServicio = "X000-"; break;
+                case "Consulta": claveServicio = "A001-"; break;
+                case "Análisis Hallazgo": claveServicio = "B001-"; break;
+                case "Analisis de Pliego": claveServicio = "B002-"; break;
+                case "Análisis de Informe": claveServicio = "B003-"; break;
+                case "Denuncia": claveServicio = "C001-"; break;
+                case "Tarjeta Informativa": claveServicio = "D001-"; break;
+                case "Actividad 1": estructuraBase = "JURIX-DGAJ-DINV-"; claveServicio = ""; break;
             }
 
-            // Conseguir la clave de almacenamiento específica de esta solicitud individual
             const idContador = obtenerIdentificadorContador(opcion);
             let numActual = localStorage.getItem(`consecutivo_${idContador}`) || 1;
             let numFormateado = String(numActual).padStart(4, '0');
@@ -323,23 +296,28 @@
             e.preventDefault();
 
             if (!folioGeneradoGlobal) {
-                alert("Por favor, seleccione un tipo de solicitud válido para generar su folio.");
+                alert("Por favor, seleccione un tipo de solicitud válido.");
                 return;
             }
 
-            const nombre_user = document.getElementById('nombre_user').value;
-            const puesto_user = document.getElementById('puesto_user').value;
-            const area_user = document.getElementById('area_user').value;
+            const nombre = document.getElementById('nombre_user').value;
+            const puesto = document.getElementById('puesto_user').value;
+            const area = document.getElementById('area_user').value;
             const tipo_solicitud = document.getElementById('tipo_solicitud').value;
-            const comentarios_user = document.getElementById('comentarios_user').value;
+            const comentarios = document.getElementById('comentarios_user').value;
+
+            // Guardamos temporalmente los datos del usuario operativo en LocalStorage para pasarlos a la fila virtual
+            localStorage.setItem('last_user_name', nombre);
+            localStorage.setItem('last_user_puesto', puesto);
+            localStorage.setItem('last_user_area', area);
 
             const data = {
-                nombre_user: nombre_user,
-                puesto_user: puesto_user,
-                area_user: area_user,
+                nombre_user: nombre,
+                puesto_user: puesto,
+                area_user: area,
                 tipo_solicitud: tipo_solicitud,
                 folio_user: folioGeneradoGlobal,
-                comentarios_user: comentarios_user
+                comentarios_user: comentarios
             };
 
             try {
@@ -355,30 +333,31 @@
                 });
 
                 if (response.ok) {
-                    alert(`¡Ticket generado con éxito!\nSu folio oficial es: ${folioGeneradoGlobal}\nSu solicitud ha sido enviada a la fila virtual.`);
+                    alert(`¡Ticket generado con éxito!\nFolio oficial: ${folioGeneradoGlobal}`);
                     
-                    // Incrementa de manera única el contador de esta solicitud específica
+                    // Avanzar el contador local exclusivo de este servicio
                     actualizarContadorLocal(tipo_solicitud);
+                    // Ejecutar el ruteo dinámico a las páginas hijas
                     redireccionarPagina(tipo_solicitud);
                 } else {
                     const errorData = await response.json();
-                    console.error("Detalles del error en Supabase:", errorData);
-                    alert("Error al guardar en Supabase. Asegúrese de que las columnas coincidan exactamente en la base de datos.");
+                    console.error("Error Supabase:", errorData);
+                    alert("Error al guardar en Supabase. Revise la consola del navegador.");
                 }
 
             } catch (error) {
                 console.error("Error de red:", error);
-                alert("No se pudo establecer conexión con la base de datos.");
+                alert("No se pudo conectar con Supabase.");
             }
         });
 
-        // Modificado para guardar usando el id único por servicio
         function actualizarContadorLocal(opcion) {
             const idContador = obtenerIdentificadorContador(opcion);
             let numActual = parseInt(localStorage.getItem(`consecutivo_${idContador}`)) || 1;
             localStorage.setItem(`consecutivo_${idContador}`, numActual + 1);
         }
 
+        // REDIRECCIÓN COMPLETA SOLICITADA
         function redireccionarPagina(solicitud) {
             switch(solicitud) {
                 case "Consulta": window.location.href = "CONSULTA.HTML"; break;
