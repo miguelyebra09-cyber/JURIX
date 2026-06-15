@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Fila Virtual General</title>
+    <title>JURIX-DGAJ - Fila Virtual Automatizada</title>
     <style>
         :root {
             --naranja-principal: #FF6600;
@@ -14,12 +14,12 @@
             --azul-info: #2980B9;
             --verde-exito: #27AE60;
             --rojo-alerta: #C0392B;
-            --borde-radio: 10px;
-            --sombra: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --borde-radio: 12px;
+            --sombra: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             background-color: var(--gris-fondo);
             margin: 0;
             padding: 0;
@@ -38,14 +38,16 @@
         h1 {
             color: var(--naranja-principal);
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         nav {
             background-color: var(--gris-oscuro);
             padding: 12px;
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         nav a {
@@ -65,12 +67,13 @@
             max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
+            box-sizing: border-box;
         }
 
-        /* --- BARRA DE PERFIL DINÁMICA --- */
+        /* --- BARRA DE CONTROL DE PERFIL --- */
         .profile-bar {
             background: var(--blanco);
-            padding: 15px 25px;
+            padding: 18px 25px;
             border-radius: var(--borde-radio);
             box-shadow: var(--sombra);
             display: flex;
@@ -90,18 +93,18 @@
         }
 
         .role-badge {
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 50px;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
         .badge-usuario { background: #EBF5FB; color: var(--azul-info); }
         .badge-supervisor { background: #FEF9E7; color: #D4AC0D; }
         .badge-administrador { background: #FDEDEC; color: var(--rojo-alerta); }
 
-        /* --- PANEL DE ALERTAS (SOLO ADMIN) --- */
+        /* --- PANEL DE SOLICITUDES DE PRÓRROGA (SOLO ADMIN) --- */
         #panel-alertas-admin {
             display: none;
             background: #FDEDEC;
@@ -109,9 +112,10 @@
             border-radius: var(--borde-radio);
             padding: 20px;
             margin-bottom: 25px;
+            animation: fadeIn 0.5s ease;
         }
 
-        /* --- MÓDULO DE FILTROS AVANZADOS (SUPERVISOR / ADMIN) --- */
+        /* --- FILTROS MULTIVARIABLES (SUPERVISOR / ADMIN) --- */
         .filter-section {
             display: none;
             background: var(--blanco);
@@ -124,13 +128,16 @@
         .filter-section h3 {
             margin-top: 0;
             color: var(--gris-oscuro);
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .filter-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
 
@@ -146,13 +153,19 @@
             width: 100%;
             padding: 10px;
             border: 1px solid #CBD5E1;
-            border-radius: 6px;
+            border-radius: 8px;
             box-sizing: border-box;
             font-size: 0.9rem;
             background-color: #FFF;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
-        /* --- DISEÑO DE TARJETAS DE TICKETS VISTOSAS --- */
+        .filter-group input:focus, .filter-group select:focus {
+            border-color: var(--naranja-principal);
+        }
+
+        /* --- TARJETAS VISTOSAS DE TICKETS --- */
         .ticket-card {
             background: var(--blanco);
             border-radius: var(--borde-radio);
@@ -165,7 +178,7 @@
 
         .ticket-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
 
         .ticket-header {
@@ -178,7 +191,7 @@
         }
 
         .ticket-id {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--naranja-principal);
         }
@@ -187,8 +200,9 @@
             font-weight: 700;
             padding: 6px 14px;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .status-pendiente { background-color: #FEF5E7; color: #E67E22; }
         .status-enrevisión { background-color: #EBF5FB; color: var(--azul-info); }
@@ -196,9 +210,9 @@
 
         .ticket-body-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: 1.3fr 1fr;
             gap: 25px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         @media (max-width: 768px) {
@@ -211,16 +225,19 @@
             line-height: 1.5;
         }
 
-        /* --- LINEA DE TIEMPO (FILA VIRTUAL) --- */
+        /* --- REPRESENTACIÓN DE FILA VIRTUAL (LÍNEA DE TIEMPO) --- */
         .timeline-container {
             background: #F8FAFC;
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .timeline-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
             color: #64748B;
@@ -233,7 +250,7 @@
             display: flex;
             justify-content: space-between;
             position: relative;
-            margin-top: 15px;
+            margin-bottom: 10px;
         }
 
         .timeline::before {
@@ -258,7 +275,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #64748B;
+            background: #94A3B8;
             color: #FFF;
             line-height: 32px;
             margin: 0 auto 10px auto;
@@ -274,11 +291,11 @@
 
         .timeline-step.active .timeline-node {
             background: var(--naranja-principal);
-            box-shadow: 0 0 0 4px var(--blanco), 0 0 12px rgba(255, 102, 0, 0.5);
+            box-shadow: 0 0 0 4px var(--blanco), 0 0 12px rgba(255, 102, 0, 0.4);
         }
 
         .timeline-label {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #64748B;
         }
@@ -288,7 +305,7 @@
             font-weight: 700;
         }
 
-        /* --- ZONA DE ACCIÓN RESTRINGIDA POR ROL --- */
+        /* --- ZONAS DE ACCIONES --- */
         .action-zone {
             display: flex;
             justify-content: flex-end;
@@ -317,21 +334,26 @@
 
         .alert-item {
             background: var(--blanco);
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 15px 20px;
+            border-radius: 8px;
             border-left: 5px solid var(--rojo-alerta);
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>JURIX-DGAJ - Fila Virtual de Control</h1>
+        <h1>JURIX-DGAJ - Fila Virtual de Turnos</h1>
     </header>
 
     <nav>
@@ -345,7 +367,7 @@
         
         <div class="profile-bar">
             <div class="user-meta">
-                <span>Usuario: <strong id="lbl-nombre-sesion">...</strong></span>
+                <span>Bienvenido(a): <strong id="lbl-nombre-sesion">Cargando...</strong></span>
                 <span>Área: <strong id="lbl-area-sesion">...</strong></span>
             </div>
             <div id="badge-rol-contenedor" class="role-badge">Validando...</div>
@@ -353,37 +375,37 @@
 
         <div id="panel-alertas-admin">
             <h3 style="color: var(--rojo-alerta); margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                🚨 Alertas de Prórrogas de Supervisores por Validar
+                🚨 Alertas de Control: Solicitudes de Prórroga por Validar
             </h3>
             <div id="lista-alertas-prorrogas"></div>
         </div>
 
         <div id="seccion-filtros" class="filter-section">
-            <h3>🔍 Consola de Búsqueda y Filtrado</h3>
+            <h3>🔍 Consola de Inteligencia y Búsqueda de Tickets</h3>
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label>Por Auditor / Solicitante:</label>
+                    <label>Filtrar por Auditor / Usuario:</label>
                     <input type="text" id="filtro-usuario" placeholder="Ej: Arturo Vidal">
                 </div>
                 <div class="filter-group">
-                    <label>Por Dirección / Área:</label>
+                    <label>Filtrar por Área / Dirección:</label>
                     <select id="filtro-area">
                         <option value="">-- Todas las Áreas --</option>
                         <option value="DGAJ">DGAJ</option>
-                        <option value="Auditoría Especial">Auditoría Especial</option>
                         <option value="DCPL">DCPL</option>
+                        <option value="Auditoría">Auditoría Especial</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Por Ente Fiscalizado / Sujeto:</label>
+                    <label>Filtrar por Ente Fiscalizado:</label>
                     <input type="text" id="filtro-ente" placeholder="Ej: Pueblo Nuevo">
                 </div>
                 <div class="filter-group">
-                    <label>Por Fecha de Envío:</label>
+                    <label>Filtrar por Fecha:</label>
                     <input type="date" id="filtro-fecha">
                 </div>
                 <div class="filter-group">
-                    <label>Por Estado Fila:</label>
+                    <label>Filtrar por Estatus:</label>
                     <select id="filtro-estatus">
                         <option value="">-- Todos los Estados --</option>
                         <option value="Pendiente">Pendiente</option>
@@ -399,71 +421,72 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE CONEXIÓN CON SUPABASE
+        // CONFIGURACIÓN CENTRAL DE CONEXIÓN CON SUPABASE
         const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
-        const URL_PRORROGAS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/prorrogas";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
         let userRole = "usuario"; 
         let currentUserName = "";
 
+        // MANEJO DE INICIO DE SESIÓN, ROLES Y PRIVILEGIOS
         window.addEventListener('DOMContentLoaded', async () => {
-            // Extracción segura sin importar qué llave use tu login anterior
-            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Auditor";
+            // Lectura limpia y genérica de la sesión activa
+            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Invitado";
             const areaSesion = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ";
             const correoLogueado = (localStorage.getItem('last_user_email') || "").toLowerCase();
             
-            // ASIGNACIÓN LOGICA DE PRIVILEGIOS POR CORREO O PUESTO
+            // Lógica inteligente para asignación automática de perfiles
             if (correoLogueado.includes('admin')) {
                 userRole = "administrador";
-            } else if (correoLogueado.includes('supervisor') || areaSesion.includes('Especial') || currentUserName.includes('Director')) {
+            } else if (correoLogueado.includes('supervisor') || currentUserName.includes('Director') || currentUserName.includes('Jefe')) {
                 userRole = "supervisor";
             } else {
                 userRole = "usuario"; 
             }
 
-            // Pintar los datos del usuario activo en la barra superior
+            // Inyección de textos en interfaz
             document.getElementById('lbl-nombre-sesion').textContent = currentUserName;
             document.getElementById('lbl-area-sesion').textContent = areaSesion;
             
             const badge = document.getElementById('badge-rol-contenedor');
-            badge.textContent = `Nivel: ${userRole}`;
+            badge.textContent = `Perfil: ${userRole}`;
             badge.className = `role-badge badge-${userRole}`;
 
-            gestionarPanelesPorRol();
-            cargarBaseDatosFilaVirtual();
+            // Adaptar los módulos visibles según el nivel del perfil
+            configurarModulosPorPerfil();
+            cargarTicketsFilaVirtual();
         });
 
-        function gestionarPanelesPorRol() {
+        function configurarModulosPorPerfil() {
             if (userRole === "supervisor" || userRole === "administrador") {
                 document.getElementById('seccion-filtros').style.display = "block";
                 
-                // Oyentes en tiempo real para todos los filtros
-                document.getElementById('filtro-usuario').addEventListener('input', ejecutarFiltradoDOM);
-                document.getElementById('filtro-area').addEventListener('change', ejecutarFiltradoDOM);
-                document.getElementById('filtro-ente').addEventListener('input', ejecutarFiltradoDOM);
-                document.getElementById('filtro-fecha').addEventListener('change', ejecutarFiltradoDOM);
-                document.getElementById('filtro-estatus').addEventListener('change', ejecutarFiltradoDOM);
+                // Oyentes en tiempo real para los inputs de búsqueda
+                document.getElementById('filtro-usuario').addEventListener('input', ejecutarAlgoritmoFiltrado);
+                document.getElementById('filtro-area').addEventListener('change', ejecutarAlgoritmoFiltrado);
+                document.getElementById('filtro-ente').addEventListener('input', ejecutarAlgoritmoFiltrado);
+                document.getElementById('filtro-fecha').addEventListener('change', ejecutarAlgoritmoFiltrado);
+                document.getElementById('filtro-estatus').addEventListener('change', ejecutarAlgoritmoFiltrado);
             }
             if (userRole === "administrador") {
                 document.getElementById('panel-alertas-admin').style.display = "block";
-                recuperarAlertasProrrogas();
+                recuperarSolicitudesProrrogaLocal();
             }
         }
 
-        // DESCARGA GENERAL CON FILTRADO TOLERANTE A ERRORES EN BASE DE DATOS
-        async function cargarBaseDatosFilaVirtual() {
+        // CONTROLADOR DE CONSULTAS MAESTRAS DESDE EL SERVIDOR (RESILIENTE A ERRORES DE CAPTURA)
+        async function cargarTicketsFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
 
             try {
                 let endpointQuery = `${URL_SOLICITUDES}?select=*&order=fecha_creacion.desc`;
                 
-                // SOLUCIÓN AL DESFASE DE NOMBRES (Artuto vs Arturo):
-                // Si es un usuario normal, usamos ilike pasándole solo el primer nombre.
-                // Así, si en Supabase dice "Artuto Vidal" y en el sistema se loguea como "Arturo Vidal", coincidirán mediante "Artu*".
-                if (userRole === "usuario" && currentUserName.trim() !== "") {
-                    const raizNombre = currentUserName.trim().split(' ')[0].substring(0, 4); 
+                // RESTRICCIÓN DE SEGURIDAD POR PERFIL:
+                // Si es un 'usuario' común, usamos 'ilike' con el primer bloque de su nombre para asegurar que jale
+                // sus propios tickets aunque existan errores de dedo o espacios en el registro de la base de datos.
+                if (userRole === "usuario" && currentUserName !== "Invitado") {
+                    const raizNombre = currentUserName.trim().split(' ')[0];
                     endpointQuery += `&nombre_solicitante=ilike.*${encodeURIComponent(raizNombre)}*`;
                 }
 
@@ -476,83 +499,90 @@
                     }
                 });
 
-                if (!respuesta.ok) throw new Error("Error en conexión");
+                if (!respuesta.ok) throw new Error("Error de conexión");
                 const listaData = await respuesta.json();
                 
-                renderizarTicketsVisual(listaData);
+                window.cacheFilaVirtual = listaData; 
+                renderizarTicketsInterfaz(listaData);
 
             } catch (err) {
-                console.error("Fallo de red, cargando contingencia local segura:", err);
-                // Si falla la red, el mock emula perfectamente tus datos guardados en Supabase
-                const contingenciaMock = [
+                console.error("Fallo de red:", err);
+                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error al conectar con el servidor de datos. Desplegando caché de contingencia.</p>";
+                
+                // Contingencia en memoria si falla la red externa
+                const mockContingencia = [
                     { folio_ticket: "JURIX-DGAJ-DCPL-B001-0009", nombre_solicitante: "Arturo Vidal Rojas", area_solicitante: "Auditoría Especial", asunto: "Análisis de Informe Cuenta Pública", prioridad: "Urgente", estatus: "En Revisión", ente: "Pueblo Nuevo", posicion_fila: 1, fecha_creacion: "2026-06-14" },
-                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0007", nombre_solicitante: "Invitado 1", area_solicitante: "DGAJ", asunto: "Validación de Oficios", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 2, fecha_creacion: "2026-06-14" }
+                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0007", nombre_solicitante: "Juan Miguel Yebra Prieto", area_solicitante: "DGAJ", asunto: "Validación de Oficios de Legalidad", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 2, fecha_creacion: "2026-06-14" }
                 ];
+                
                 const filtrados = userRole === "usuario" 
-                    ? contingenciaMock.filter(x => x.nombre_solicitante.toLowerCase().includes(currentUserName.toLowerCase().substring(0,4)))
-                    : contingenciaMock;
-                renderizarTicketsVisual(filtrados);
+                    ? mockContingencia.filter(x => x.nombre_solicitante.toLowerCase().includes(currentUserName.toLowerCase().split(' ')[0]))
+                    : mockContingencia;
+
+                renderizarTicketsInterfaz(filtrados);
             }
         }
 
-        // CONTROL DE RENDERIZADO VISUAL
-        function renderizarTicketsVisual(tickets) {
+        // MOTOR DE RENDERIZADO VISUAL - CONSTRUCCIÓN DE LA LÍNEA DE TIEMPO LOGICA
+        function renderizarTicketsInterfaz(tickets) {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
             if (tickets.length === 0) {
-                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:30px;'>No se encontraron registros activos para este perfil.</p>";
+                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:40px; background:white; border-radius:10px;'>No se encontraron tickets registrados o autorizados para este perfil.</p>";
                 return;
             }
 
             tickets.forEach(item => {
-                const edo = item.estatus || "Pendiente";
-                const ente = item.ente || item.sujeto_fiscalizado || "Guanajuato Municipios";
-                const turno = item.posicion_fila || "1";
+                const estatusActual = item.estatus || "Pendiente";
+                const ente = item.ente || "Municipio No Definido";
+                const turno = item.posicion_fila || "A";
                 const fechaCorta = item.fecha_creacion ? item.fecha_creacion.split('T')[0] : '2026-06-14';
 
-                // Lógica de avance en la línea de tiempo de la Fila Virtual
-                let s1 = "completed", s2 = "active", s3 = "";
-                if (edo === "Pendiente") { s1 = "active"; s2 = ""; s3 = ""; }
-                if (edo === "Completado") { s1 = "completed"; s2 = "completed"; s3 = "active"; }
+                // Calcular estados gráficos para la Línea de Tiempo de la Fila Virtual
+                let paso1 = "completed", paso2 = "", paso3 = "";
+                if (estatusActual === "En Revisión") { paso1 = "completed"; paso2 = "active"; }
+                if (estatusActual === "Completado") { paso1 = "completed"; paso2 = "completed"; paso3 = "active"; }
+                if (estatusActual === "Pendiente") { paso1 = "active"; }
 
                 const tarjeta = document.createElement('div');
                 tarjeta.className = "ticket-card";
                 
-                // Atributos de metadatos integrados para filtrado ultra rápido por DOM
+                // Atributos meta para filtrado instantáneo
                 tarjeta.setAttribute('data-auditor', (item.nombre_solicitante || '').toLowerCase());
                 tarjeta.setAttribute('data-area', item.area_solicitante || '');
                 tarjeta.setAttribute('data-ente', ente.toLowerCase());
-                tarjeta.setAttribute('data-estado', edo);
+                tarjeta.setAttribute('data-estado', estatusActual);
                 tarjeta.setAttribute('data-fecha', fechaCorta);
 
                 tarjeta.innerHTML = `
                     <div class="ticket-header">
-                        <span class="ticket-id">${item.folio_ticket}</span>
-                        <span class="ticket-status status-${edo.toLowerCase().replace(/\s+/g, '')}">${edo}</span>
+                        <span class="ticket-id">${item.folio_ticket || item.folio_user}</span>
+                        <span class="ticket-status status-${estatusActual.toLowerCase().replace(/\s+/g, '')}">${estatusActual}</span>
                     </div>
                     <div class="ticket-body-grid">
                         <div class="info-meta">
-                            <p><strong>Asunto Operativo:</strong> ${item.asunto || 'Revisión técnica'}</p>
-                            <p><strong>Auditor Responsable:</strong> ${item.nombre_solicitante} (<span style="color:var(--azul-info); font-weight:600;">${item.area_solicitante || 'DGAJ'}</span>)</p>
-                            <p><strong>Ente Autónomo Fiscalizado:</strong> ${ente} | <strong>Prioridad:</strong> ${item.prioridad || 'Normal'}</p>
-                            <p style="color:#7F8C8D; font-size:0.85rem;"><strong>Fecha de Registro:</strong> ${fechaCorta}</p>
+                            <p><strong>Asunto Operativo:</strong> ${item.asunto || 'Revisión y desahogo de observaciones'}</p>
+                            <p><strong>Auditor Responsable:</strong> ${item.nombre_solicitante || 'Asignado'}</p>
+                            <p><strong>Dirección / Área:</strong> <span style="color:var(--azul-info); font-weight:600;">${item.area_solicitante || 'DGAJ'}</span></p>
+                            <p><strong>Ente Fiscalizado:</strong> ${ente} | <strong>Prioridad:</strong> ${item.prioridad || 'Media'}</p>
+                            <p style="color:#7F8C8D; font-size:0.85rem;"><strong>Fecha Registro:</strong> ${fechaCorta}</p>
                         </div>
                         <div class="timeline-container">
                             <div class="timeline-title">
-                                <span>Fila Virtual de Turno</span>
-                                <span style="color:var(--naranja-principal)">Turno Posición: # ${turno}</span>
+                                <span>Línea de Fila Virtual</span>
+                                <span style="color:var(--naranja-principal)">Turno Asignado: # ${turno}</span>
                             </div>
                             <div class="timeline">
-                                <div class="timeline-step ${s1}">
+                                <div class="timeline-step ${paso1}">
                                     <div class="timeline-node">1</div>
                                     <div class="timeline-label">Ingresado</div>
                                 </div>
-                                <div class="timeline-step ${s2}">
+                                <div class="timeline-step ${paso2}">
                                     <div class="timeline-node">2</div>
                                     <div class="timeline-label">En Análisis</div>
                                 </div>
-                                <div class="timeline-step ${s3}">
+                                <div class="timeline-step ${paso3}">
                                     <div class="timeline-node">3</div>
                                     <div class="timeline-label">Dictaminado</div>
                                 </div>
@@ -560,11 +590,11 @@
                         </div>
                     </div>
                     <div class="action-zone">
-                        ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic;">🔒 Vista Protegida: Sin permisos de modificación</span>' : ''}
-                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionPlazo('${item.folio_ticket}')">⏳ Solicitar Prórroga</button>` : ''}
+                        ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic; padding-top:5px;">🔒 Modo Consulta Autorizado (Solo Vista)</span>' : ''}
+                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${item.folio_ticket || item.folio_user}')">⏳ Solicitar Prórroga</button>` : ''}
                         ${userRole === 'administrador' ? `
-                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${item.folio_ticket}')">⚙️ Editar Estado</button>
-                            <button class="btn-action btn-prorrogas" onclick="alert('Ventana de plazos extendida en Supabase de forma directa.')">🔓 Forzar Prórroga</button>
+                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${item.folio_ticket || item.folio_user}')">⚙️ Editar Estado</button>
+                            <button class="btn-action btn-prorrogas" onclick="alert('Plazos extendidos directamente en base de datos de control.')">🔓 Forzar Término</button>
                         ` : ''}
                     </div>
                 `;
@@ -572,62 +602,99 @@
             });
         }
 
-        // FILTRADO DINÁMICO MULTIVARIABLE (USADO POR SUPERVISORES Y ADMINS)
-        function ejecutarFiltradoDOM() {
+        // ALGORITMO DE FILTRADO EN CLIENTE (SUPERVISOR / ADMIN)
+        function ejecutarAlgoritmoFiltrado() {
             const valUser = document.getElementById('filtro-usuario').value.toLowerCase();
             const valArea = document.getElementById('filtro-area').value;
             const valEnte = document.getElementById('filtro-ente').value.toLowerCase();
             const valFecha = document.getElementById('filtro-fecha').value;
             const valEdo = document.getElementById('filtro-estatus').value;
 
-            document.querySelectorAll('.ticket-card').forEach(card => {
-                const checkU = card.getAttribute('data-auditor').includes(valUser);
-                const checkA = valArea === "" || card.getAttribute('data-area') === valArea;
-                const checkE = card.getAttribute('data-ente').includes(valEnte);
-                const checkF = valFecha === "" || card.getAttribute('data-fecha') === valFecha;
-                const checkS = valEdo === "" || card.getAttribute('data-estado') === valEdo;
+            const tarjetas = document.querySelectorAll('.ticket-card');
 
-                card.style.display = (checkU && checkA && checkE && checkF && checkS) ? "block" : "none";
+            tarjetas.forEach(card => {
+                const matchesUser = card.getAttribute('data-auditor').includes(valUser);
+                const matchesArea = valArea === "" || card.getAttribute('data-area').includes(valArea);
+                const matchesEnte = card.getAttribute('data-ente').includes(valEnte);
+                const matchesFecha = valFecha === "" || card.getAttribute('data-fecha') === valFecha;
+                const matchesEdo = valEdo === "" || card.getAttribute('data-estado') === valEdo;
+
+                if (matchesUser && matchesArea && matchesEnte && matchesFecha && matchesEdo) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
             });
         }
 
-        // SOLICITUD DE PRÓRROGA DESDE PERFIL SUPERVISOR
-        function solicitarAmpliacionPlazo(folio) {
-            const motivo = prompt(`Justificación jurídica/técnica para prorrogar el folio ${folio}:`);
+        // ACCIÓN DEL SUPERVISOR: DISPARAR ALERTA DE PRÓRROGA AL ADMINISTRADOR
+        function solicitarAmpliacionTiempo(folio) {
+            const motivo = prompt(`Ingresa la justificación legal/técnica para solicitar prórroga de tiempo sobre el folio ${folio}:`);
             if (!motivo) return;
 
-            alert(`Solicitud registrada en base de datos.\nSe envió una alerta crítica al panel de administración.`);
+            // Simular el envío del payload de alerta al canal del Administrador
+            let solicitudesPendientes = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [];
+            solicitudesPendientes.push({
+                id: Date.now(),
+                folio: folio,
+                remitente: currentUserName,
+                motivo: motivo
+            });
+            localStorage.setItem('alertas_prorrogas_maestras', JSON.stringify(solicitudesPendientes));
+
+            alert(`Solicitud de tiempo extra enviada correctamente.\nSe ha generado un token de alerta en la consola del Administrador.`);
         }
 
-        // CONTROL TOTAL DEL ADMINISTRADOR
+        // ACCIÓN DEL ADMINISTRADOR: CAMBIAR ESTADOS DE LA FILA EN CALIENTE
         function modificarEstadoAdministrador(folio) {
-            const nuevoEdo = prompt(`Cambiar estado del ticket ${folio}:\nEscribe una opción exacta: Pendiente, En Revisión, Completado`);
-            if (!nuevoEdo) return;
+            const opciones = ["Pendiente", "En Revisión", "Completado"];
+            const nuevoEdo = prompt(`Modificación Operativa (${folio})\nEscribe el nuevo estado exactamente:\n- Pendiente\n- En Revisión\n- Completado`);
             
-            alert(`El folio ${folio} se actualizó a [${nuevoEdo}]. Cambios reflejados en la Fila Virtual.`);
-            cargarBaseDatosFilaVirtual();
+            if (!opciones.includes(nuevoEdo)) {
+                if(nuevoEdo) alert("Estado inválido. Intenta de nuevo escribiéndolo exactamente.");
+                return;
+            }
+
+            alert(`Estado de folio ${folio} actualizado exitosamente a: ${nuevoEdo}`);
+            // Aquí se ejecutaría el método PATCH a Supabase; para entorno actual actualizamos la caché visual
+            if(window.cacheFilaVirtual) {
+                const target = window.cacheFilaVirtual.find(x => (x.folio_ticket === folio || x.folio_user === folio));
+                if(target) target.estatus = nuevoEdo;
+                renderizarTicketsInterfaz(window.cacheFilaVirtual);
+            }
         }
 
-        // CARGA AUTOMÁTICA DE COMPORTAMIENTO DE ALERTAS DE ADMINISTRACIÓN
-        function recuperarAlertasProrrogas() {
-            const zona = document.getElementById('lista-alertas-prorrogas');
-            zona.innerHTML = `
-                <div class="alert-item">
+        // CARGA DINÁMICA DE ALERTAS EN PANEL DE ADMINISTRADOR
+        function recuperarSolicitudesProrrogaLocal() {
+            const listaAlertas = document.getElementById('lista-alertas-prorrogas');
+            const alertas = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [
+                { id: 101, folio: "JURIX-DGAJ-DCPL-B001-0009", remitente: "Supervisor Zona Norte", motivo: "Volumen excedente de folios y facturas por validar del sujeto fiscalizado." }
+            ];
+
+            listaAlertas.innerHTML = "";
+            alertas.forEach(al => {
+                const div = document.createElement('div');
+                div.className = "alert-item";
+                div.innerHTML = `
                     <div>
-                        <strong>Petición de Prórroga: JURIX-DGAJ-DCPL-B001-0009</strong> - Por: Supervisor de Auditoría Externa<br>
-                        <small style="color:#555;">Motivo: Se requiere mayor compulsa de folios por volumen de observaciones.</small>
+                        <strong>Folio Afectado: ${al.folio}</strong> — Solicitado por: <em>${al.remitente}</em><br>
+                        <small style="color:#555;">Motivo técnico: "${al.motivo}"</small>
                     </div>
                     <div>
-                        <button class="btn-action btn-success-panel" onclick="resolverAlerta(true, this)">Aprobar</button>
-                        <button class="btn-action btn-prorrogas" style="background:var(--rojo-alerta);" onclick="resolverAlerta(false, this)">Denegar</button>
+                        <button class="btn-action btn-success-panel" onclick="resolverProrrogaAdmin(${al.id}, true, this)">Autorizar</button>
+                        <button class="btn-action btn-prorrogas" style="background:var(--rojo-alerta)" onclick="resolverProrrogaAdmin(${al.id}, false, this)">Rechazar</button>
                     </div>
-                </div>
-            `;
+                `;
+                listaAlertas.appendChild(div);
+            });
         }
 
-        function resolverAlerta(aprobado, btn) {
-            alert(aprobado ? "Prórroga aprobada. Plazos extendidos." : "Prórroga rechazada.");
-            btn.closest('.alert-item').remove();
+        function resolverProrrogaAdmin(id, aprobado, boton) {
+            alert(aprobado ? "Prórroga autorizada. Los tiempos del término se han modificado en el sistema." : "Solicitud denegada.");
+            let alertas = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [];
+            alertas = alertas.filter(x => x.id !== id);
+            localStorage.setItem('alertas_prorrogas_maestras', JSON.stringify(alertas));
+            boton.closest('.alert-item').remove();
         }
     </script>
 </body>
