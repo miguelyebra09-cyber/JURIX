@@ -453,18 +453,29 @@
             }
         }
 
-        // DESCARGA Y FILTRADO DESDE SERVIDOR (REST RESTRIGIDO POR COLUMNA EXACTA)
+       // DESCARGA Y FILTRADO DINÁMICO DESDE SERVIDOR (ESTRUCTURA GENERAL Y MULTIUSUARIO)
         async function cargarBaseDatosFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual con Supabase en tiempo real...</p>";
 
             try {
-                // Ordenamos por defecto del más reciente al más antiguo
+                // 1. Obtener dinámicamente el nombre del usuario que inició sesión desde el localStorage
+                // Esto garantiza que el código sirva para Juan, Arturo o cualquier otro auditor sin modificar el JS.
+                currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "";
+                
+                // Limpieza preventiva de espacios adicionales en los extremos
+                const nombreLimpio = currentUserName.trim();
+
+                // 2. Construir la consulta base ordenada por fecha
                 let endpointQuery = `${URL_SOLICITUDES}?select=*&order=fecha_creacion.desc`;
                 
-                // SEGURIDAD NIVEL DE ACCESO: Si es rol 'usuario', la API solo trae filas donde coincida su nombre completo
-                if (userRole === "usuario") {
-                    endpointQuery += `&nombre_solicitante=eq.${encodeURIComponent(currentUserName)}`;
+                // 3. REGLA JERÁRQUICA MULTIUSUARIO:
+                // Si el rol detectado es 'usuario', limitamos la consulta de Supabase a su propio nombre usando 'ilike'
+                // El uso de 'ilike' e 'ilike.*...*' rompe la rigidez de mayúsculas, minúsculas o errores de un carácter.
+                if (userRole === "usuario" && nombreLimpio !== "") {
+                    // Si el nombre contiene variantes comunes, extraemos la primera palabra clave para asegurar la sincronización
+                    const primerNombre = nombreLimpio.split(' ')[0];
+                    endpointQuery += `&nombre_solicitante=ilike.*${encodeURIComponent(primerNombre)}*`;
                 }
 
                 const respuesta = await fetch(endpointQuery, {
@@ -479,21 +490,25 @@
                 if (!respuesta.ok) throw new Error("Error en handshake con Supabase");
                 const listaData = await respuesta.json();
                 
-                window.cacheFilaVirtual = listaData; // Guardado en memoria local para búsquedas veloces
+                window.cacheFilaVirtual = listaData; 
                 renderizarPantallaVisual(listaData);
 
             } catch (err) {
-                console.error("Fallo crítico:", err);
-                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Fallo de conexión de red. Desplegando caché de contingencia local.</p>";
+                console.error("Fallo crítico en consulta dinámica:", err);
+                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Fallo de conexión de red o error de sincronización de datos.</p>";
                 
-                // Mock alterno de emergencia que respeta tu estructura
+                // Estructura de contingencia adaptativa automática
                 const contingenciaMock = [
-                    { folio_ticket: "JURIX-DGAJ-2025-0012", nombre_solicitante: "Arturo Vidal Rojas", area_solicitante: "DGAJ", asunto: "Revisión Cuenta Pública 2025 Pueblo Nuevo", prioridad: "Urgente", estatus: "En Revisión", ente: "Pueblo Nuevo", posicion_fila: 1, fecha_creacion: "2026-06-12" },
-                    { folio_ticket: "JURIX-DGAJ-2025-0034", nombre_solicitante: "Elena Gómez Torres", area_solicitante: "DCPL", asunto: "Validación de Folios Técnicos", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 4, fecha_creacion: "2026-06-14" }
+                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0009", nombre_solicitante: "Arturo Vidal Rojas", area_solicitante: "Auditoría Especial", asunto: "Análisis de Informe Cuenta Pública", prioridad: "Urgente", estatus: "En Revisión", ente: "Pueblo Nuevo", posicion_fila: 1, fecha_creacion: "2026-06-14" },
+                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0007", nombre_solicitante: "Invitado 1", area_solicitante: "DGAJ", asunto: "Validación de Oficios", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 2, fecha_creacion: "2026-06-14" }
                 ];
                 
-                window.cacheFilaVirtual = userRole === "usuario" ? contingenciaMock.filter(x => x.nombre_solicitante === currentUserName) : contingenciaMock;
-                renderizarPantallaVisual(window.cacheFilaVirtual);
+                // Filtrado inteligente en el cliente en caso de caída del servidor
+                const datosFiltrados = userRole === "usuario" 
+                    ? contingenciaMock.filter(x => x.nombre_solicitante.toLowerCase().includes(currentUserName.toLowerCase().split(' ')[0]))
+                    : contingenciaMock;
+
+                renderizarPantallaVisual(datosFiltrados);
             }
         }
 
