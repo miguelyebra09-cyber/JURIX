@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Generador de Tickets</title>
+    <title>JURIX-DGAJ - Nueva Solicitud</title>
     <style>
         :root {
             --naranja-nitido: #FF6600;
             --gris-oscuro: #333333;
             --gris-claro: #f4f4f9;
             --blanco: #ffffff;
+            --input-bloqueado: #eaeded;
         }
 
         body {
@@ -55,7 +56,7 @@
         }
 
         .container {
-            max-width: 650px;
+            max-width: 750px;
             margin: 30px auto;
             background: var(--blanco);
             padding: 30px;
@@ -67,11 +68,21 @@
             text-align: center;
             color: var(--gris-oscuro);
             margin-bottom: 25px;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
         }
 
         label {
@@ -81,38 +92,49 @@
             font-size: 0.9rem;
         }
 
-        input[type="text"], select, textarea {
+        input[type="text"], input[type="number"], select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--naranja-nitido);
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
+        }
+
+        /* Estilo para los campos bloqueados por sesión */
+        input[readonly] {
+            background-color: var(--input-bloqueado);
+            color: #7f8c8d;
+            cursor: not-allowed;
+            font-weight: 500;
+            border: 1px solid #ced4da;
+        }
+
+        .section-divider {
+            grid-column: span 2;
+            border-top: 1px dashed #ccc;
+            margin: 15px 0;
+            padding-top: 10px;
+            color: var(--naranja-nitido);
+            font-weight: bold;
             font-size: 1rem;
         }
 
-        input[type="text"]:focus, select:focus, textarea:focus {
-            border-color: var(--naranja-nitido);
-            outline: none;
-        }
-
-        .folio-box {
-            background-color: #eef7ff;
-            border-left: 5px solid #0066cc;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #0044cc;
-        }
-
+        /* --- BOTONERA --- */
         .btn-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
+            margin-top: 35px;
         }
 
         button, .btn-cancelar {
-            padding: 12px 25px;
+            padding: 12px 30px;
             font-size: 1rem;
             border: none;
             border-radius: 4px;
@@ -120,16 +142,18 @@
             font-weight: bold;
             text-decoration: none;
             text-align: center;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
         .btn-enviar {
             background-color: var(--naranja-nitido);
             color: var(--blanco);
+            box-shadow: 0 3px 6px rgba(255,102,0,0.2);
         }
 
         .btn-enviar:hover {
             background-color: #e05500;
+            transform: translateY(-1px);
         }
 
         .btn-cancelar {
@@ -140,31 +164,6 @@
         .btn-cancelar:hover {
             background-color: #777777;
         }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .custom-file-upload {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #e1e1e1;
-            color: #333;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            border: 1px solid #ccc;
-        }
-
-        .custom-file-upload:hover {
-            background-color: #d2d2d2;
-        }
-
-        #file-name {
-            margin-left: 10px;
-            font-size: 0.9rem;
-            color: #666;
-        }
     </style>
 </head>
 <body>
@@ -174,157 +173,128 @@
     </header>
 
     <nav>
-        <a href="index.html">Inicio</a>
-           </nav>
-    <nav>
-        <a href="estatus.html">Fila virtual</a>    
+        <a href="solicitud.html">Nueva Solicitud</a>
+        <a href="hallazgos.html">Cédula de Hallazgos</a>
+        <a href="index.html">Salir</a>
     </nav>
 
     <div class="container">
-        <h2>Ticket de Servicio - Área Jurídica</h2>
+        <h2>Formulario de Nueva Solicitud de Auditoría</h2>
         
-        <form id="ticketForm">
-            <div class="form-group">
-                <label for="nombre_user">Nombre Completo:</label>
-                <input type="text" id="nombre_user" required placeholder="Ej. JUAN PÉREZ">
-            </div>
+        <form id="solicitudForm">
+            <div class="form-grid">
+                
+                <div class="section-divider">Datos del Servidor Público (Sesión Activa)</div>
 
-            <div class="form-group">
-                <label for="puesto_user">Puesto:</label>
-                <input type="text" id="puesto_user" required placeholder="Ej. Auditor 3">
-            </div>
+                <div class="form-group full-width">
+                    <label for="user_nombre">Nombre Completo:</label>
+                    <input type="text" id="user_nombre" readonly>
+                </div>
 
-            <div class="form-group">
-                <label for="area_user">Área:</label>
-                <input type="text" id="area_user" required placeholder="Ej. AECF">
-            </div>
+                <div class="form-group">
+                    <label for="user_puesto">Puesto:</label>
+                    <input type="text" id="user_puesto" readonly>
+                </div>
 
-            <div class="form-group">
-                <label for="tipo_solicitud">Tipo de Solicitud:</label>
-                <select id="tipo_solicitud" required onchange="calcularFolio()">
-                    <option value="" disabled selected>-- Seleccione una opción --</option>
-                    <option value="Consulta">Consulta</option>
-                    <option value="Análisis Hallazgo">Análisis Hallazgo</option>
-                    <option value="Analisis de Pliego">Analisis de Pliego</option>
-                    <option value="Análisis de Informe">Análisis de Informe</option>
-                    <option value="Denuncia">Denuncia</option>
-                    <option value="Tarjeta Informativa">Tarjeta Informativa</option>
-                    <option value="Actividad 1">Actividad 1</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="user_area">Área Adscripción:</label>
+                    <input type="text" id="user_area" readonly>
+                </div>
 
-            <div class="form-group">
-                <label>Número de Ticket Generado:</label>
-                <div id="folioDisplay" class="folio-box">Seleccione una solicitud...</div>
-            </div>
+                <div class="section-divider">Detalles del Trámite o Ticket</div>
 
-            <div class="form-group">
-                <label>Adjuntar Documento (PDF, DOC, XLS):</label>
-                <label for="file-upload" class="custom-file-upload">
-                    Seleccionar Archivo
-                </label>
-                <input id="file-upload" type="file" accept=".pdf, .doc, .docx, .xls, .xlsx" onchange="alertaArchivo(this)">
-                <span id="file-name">Ningún archivo seleccionado</span>
-            </div>
+                <div class="form-group">
+                    <label for="servicio_solicitado">Servicio / Tipo de Trámite:</label>
+                    <select id="servicio_solicitado" required>
+                        <option value="" disabled selected>-- Seleccione Servicio --</option>
+                        <option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
+                        <option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
+                        <option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
+                        <option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
+                        <option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
+                        <option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="comentarios_user">Comentarios / Descripción Adicional:</label>
-                <textarea id="comentarios_user" rows="4" placeholder="Escriba aquí los detalles..."></textarea>
+                <div class="form-group">
+                    <label for="prioridad_tramite">Prioridad:</label>
+                    <select id="prioridad_tramite" required>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="Urgente">⚠️ Urgente</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="asunto_solicitud">Asunto / Descripción Corta:</label>
+                    <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo de esta solicitud..."></textarea>
+                </div>
             </div>
 
             <div class="btn-container">
                 <a href="index.html" class="btn-cancelar">Cancelar</a>
-                <button type="submit" class="btn-enviar">Enviar Ticket</button>
+                <button type="submit" class="btn-enviar">Generar Ticket y Continuar</button>
             </div>
         </form>
     </div>
 
     <script>
-        const SUPABASE_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitud";
+        // Url de Supabase orientada a tu tabla de solicitudes/tickets principales
+        const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
-        let folioGeneradoGlobal = "";
-
-        function alertaArchivo(input) {
-            const fileNameSpan = document.getElementById('file-name');
-            if (input.files.length > 0) {
-                fileNameSpan.textContent = input.files[0].name;
-                alert("Por favor, verifique su archivo adjunto antes de continuar.");
-            } else {
-                fileNameSpan.textContent = "Ningún archivo seleccionado";
-            }
-        }
-
-        function obtenerIdentificadorContador(opcion) {
-            switch(opcion) {
-                case "Consulta": return "DCPL_A001";
-                case "Análisis Hallazgo": return "DCPL_B001";
-                case "Analisis de Pliego": return "DCPL_B002";
-                case "Análisis de Informe": return "DCPL_B003";
-                case "Denuncia": return "DCPL_C001";
-                case "Tarjeta Informativa": return "DCPL_D001";
-                case "Actividad 1": return "DINV_ACT1";
-                default: return "DCPL_X000";
-            }
-        }
-
-        function calcularFolio() {
-            const opcion = document.getElementById('tipo_solicitud').value;
-            const display = document.getElementById('folioDisplay');
-            
-            if(!opcion) return;
-
-            let estructuraBase = "JURIX-DGAJ-DCPL-";
-            let claveServicio = "";
-
-            switch(opcion) {
-                case "Consulta": claveServicio = "A001-"; break;
-                case "Análisis Hallazgo": claveServicio = "B001-"; break;
-                case "Analisis de Pliego": claveServicio = "B002-"; break;
-                case "Análisis de Informe": claveServicio = "B003-"; break;
-                case "Denuncia": claveServicio = "C001-"; break;
-                case "Tarjeta Informativa": claveServicio = "D001-"; break;
-                case "Actividad 1": estructuraBase = "JURIX-DGAJ-DINV-"; claveServicio = ""; break;
-            }
-
-            const idContador = obtenerIdentificadorContador(opcion);
-            let numActual = localStorage.getItem(`consecutivo_${idContador}`) || 1;
-            let numFormateado = String(numActual).padStart(4, '0');
-
-            folioGeneradoGlobal = `${estructuraBase}${claveServicio}${numFormateado}`;
-            display.textContent = folioGeneradoGlobal;
-        }
-
-        document.getElementById('ticketForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            if (!folioGeneradoGlobal) {
-                alert("Por favor, seleccione un tipo de solicitud válido.");
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1. FILTRO DE SEGURIDAD INTERCONECTADO
+            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
+                alert("Acceso denegado. Por favor, inicie sesión primero en el index.");
+                window.location.href = "index.html";
                 return;
             }
 
-            const nombre = document.getElementById('nombre_user').value;
-            const puesto = document.getElementById('puesto_user').value;
-            const area = document.getElementById('area_user').value;
-            const tipo_solicitud = document.getElementById('tipo_solicitud').value;
-            const comentarios = document.getElementById('comentarios_user').value;
+            // 2. EXTRAER Y FIJAR VALORES POR DEFAULT DESDE LOCALSTORAGE
+            document.getElementById('user_nombre').value = localStorage.getItem('last_user_name') || "No detectado";
+            document.getElementById('user_puesto').value = localStorage.getItem('last_user_puesto') || "No detectado";
+            document.getElementById('user_area').value = localStorage.getItem('last_user_area') || "No detectado";
+        });
 
-            // Guardamos temporalmente los datos del usuario operativo en LocalStorage para pasarlos a la fila virtual
-            localStorage.setItem('last_user_name', nombre);
-            localStorage.setItem('last_user_puesto', puesto);
-            localStorage.setItem('last_user_area', area);
+        // 3. ENVÍO Y GENERACIÓN DE CONSECUTIVO DINÁMICO
+        document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-            const data = {
-                nombre_user: nombre,
-                puesto_user: puesto,
-                area_user: area,
-                tipo_solicitud: tipo_solicitud,
-                folio_user: folioGeneradoGlobal,
-                comentarios_user: comentarios
+            const servicio = document.getElementById('servicio_solicitado').value;
+
+            // Obtener o inicializar el consecutivo numérico para el servicio seleccionado
+            let consecutivoActual = localStorage.getItem(`consecutivo_${servicio}`);
+            if (!consecutivoActual) {
+                consecutivoActual = 1;
+            } else {
+                consecutivoActual = parseInt(consecutivoActual);
+            }
+
+            // Formatear el número a 4 dígitos (Ej: 0001)
+            const numFormateado = String(consecutivoActual).padStart(4, '0');
+            
+            // Reconstruir nomenclatura oficial corporativa JURIX
+            // Reemplaza los guiones bajos por guiones medios si aplica para la etiqueta
+            const prefijoTicket = servicio.replace('_', '-'); 
+            const folioGenerado = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
+
+            // Actualizar el almacenamiento local para el siguiente ticket (Incremento)
+            localStorage.setItem(`consecutivo_${servicio}`, consecutivoActual + 1);
+
+            // Payload para la base de datos de Supabase
+            const dataSolicitud = {
+                folio_ticket: folioGenerado,
+                nombre_solicitante: document.getElementById('user_nombre').value,
+                puesto_solicitante: document.getElementById('user_puesto').value,
+                area_solicitante: document.getElementById('user_area').value,
+                servicio: servicio,
+                prioridad: document.getElementById('prioridad_tramite').value,
+                asunto: document.getElementById('asunto_solicitud').value.trim(),
+                fecha_creacion: new Date().toISOString()
             };
 
             try {
-                const response = await fetch(SUPABASE_URL, {
+                const response = await fetch(SUPABASE_SOLICITUDES_URL, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_KEY,
@@ -332,47 +302,30 @@
                         'Content-Type': 'application/json',
                         'Prefer': 'return=minimal'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(dataSolicitud)
                 });
 
                 if (response.ok) {
-                    alert(`¡Ticket generado con éxito!\nFolio oficial: ${folioGeneradoGlobal}`);
+                    alert(`¡Ticket Creado Exitosamente!\nFolio Asignado: ${folioGenerado}`);
                     
-                    // Avanzar el contador local exclusivo de este servicio
-                    actualizarContadorLocal(tipo_solicitud);
-                    // Ejecutar el ruteo dinámico a las páginas hijas
-                    redireccionarPagina(tipo_solicitud);
+                    // Si el trámite corresponde a un análisis de hallazgo, pliego o informe (Grupo B)
+                    // lo redirigimos directo a llenar su cédula analítica heredando el folio
+                    if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
+                        window.location.href = "hallazgos.html";
+                    } else {
+                        // Trámites generales van al monitor global
+                        window.location.href = "estatus.html";
+                    }
                 } else {
-                    const errorData = await response.json();
-                    console.error("Error Supabase:", errorData);
-                    alert("Error al guardar en Supabase. Revise la consola del navegador.");
+                    const err = await response.json();
+                    console.error(err);
+                    alert("Error al registrar la solicitud en el servidor.");
                 }
-
             } catch (error) {
                 console.error("Error de red:", error);
-                alert("No se pudo conectar con Supabase.");
+                alert("Fallo de conexión con la base de datos.");
             }
         });
-
-        function actualizarContadorLocal(opcion) {
-            const idContador = obtenerIdentificadorContador(opcion);
-            let numActual = parseInt(localStorage.getItem(`consecutivo_${idContador}`)) || 1;
-            localStorage.setItem(`consecutivo_${idContador}`, numActual + 1);
-        }
-
-        // REDIRECCIÓN COMPLETA SOLICITADA
-        function redireccionarPagina(solicitud) {
-            switch(solicitud) {
-                case "Consulta": window.location.href = "CONSULTA.HTML"; break;
-                case "Análisis Hallazgo": window.location.href = "HALLAZGO.HTML"; break;
-                case "Analisis de Pliego": window.location.href = "PLIEGO.HTML"; break;
-                case "Análisis de Informe": window.location.href = "INFORME.HTML"; break;
-                case "Denuncia": window.location.href = "DENUNCIA.HTML"; break;
-                case "Tarjeta Informativa": window.location.href = "TARJETAINFO.HTML"; break;
-                case "Actividad 1": window.location.href = "ACT1.HTML"; break;
-                default: window.location.href = "index.html"; break;
-            }
-        }
     </script>
 </body>
 </html>
