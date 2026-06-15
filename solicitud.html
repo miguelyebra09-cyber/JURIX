@@ -10,6 +10,7 @@
             --gris-oscuro: #333333;
             --gris-claro: #f4f4f9;
             --blanco: #ffffff;
+            --azul-info: #0066cc;
             --input-bloqueado: #eaeded;
         }
 
@@ -67,8 +68,20 @@
         h2 {
             text-align: center;
             color: var(--gris-oscuro);
-            margin-bottom: 25px;
+            margin-bottom: 5px;
             font-size: 1.6rem;
+        }
+
+        .subtitle-folio {
+            text-align: center;
+            color: var(--azul-info);
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #eef7ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border: 1px dashed var(--azul-info);
         }
 
         .form-grid {
@@ -107,20 +120,19 @@
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
         }
 
-        /* Estilo para los campos bloqueados por sesión */
+        /* Estilo para campos bloqueados de sesión o calculados */
         input[readonly] {
             background-color: var(--input-bloqueado);
             color: #7f8c8d;
             cursor: not-allowed;
             font-weight: 500;
-            border: 1px solid #ced4da;
         }
 
         .section-divider {
             grid-column: span 2;
             border-top: 1px dashed #ccc;
             margin: 15px 0;
-            padding-top: 10px;
+            padding-top: 15px;
             color: var(--naranja-nitido);
             font-weight: bold;
             font-size: 1rem;
@@ -179,29 +191,30 @@
     </nav>
 
     <div class="container">
-        <h2>Formulario de Nueva Solicitud de Auditoría</h2>
+        <h2>Formulario de Nueva Solicitud de Trámite</h2>
+        <div id="folioTicketPrevisualizacion" class="subtitle-folio">Seleccione un Servicio para Generar Folio...</div>
         
         <form id="solicitudForm">
             <div class="form-grid">
                 
-                <div class="section-divider">Datos del Servidor Público (Sesión Activa)</div>
+                <div class="section-divider">👤 Datos del Servidor Público (Sesión Activa)</div>
 
                 <div class="form-group full-width">
                     <label for="user_nombre">Nombre Completo:</label>
-                    <input type="text" id="user_nombre" readonly>
+                    <input type="text" id="user_nombre" readonly required>
                 </div>
 
                 <div class="form-group">
                     <label for="user_puesto">Puesto:</label>
-                    <input type="text" id="user_puesto" readonly>
+                    <input type="text" id="user_puesto" readonly required>
                 </div>
 
                 <div class="form-group">
                     <label for="user_area">Área Adscripción:</label>
-                    <input type="text" id="user_area" readonly>
+                    <input type="text" id="user_area" readonly required>
                 </div>
 
-                <div class="section-divider">Detalles del Trámite o Ticket</div>
+                <div class="section-divider">📋 Detalles del Trámite o Ticket</div>
 
                 <div class="form-group">
                     <label for="servicio_solicitado">Servicio / Tipo de Trámite:</label>
@@ -217,28 +230,37 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="prioridad_tramite">Prioridad:</label>
+                    <label for="folio_calculado">Número de Ticket Interno (Folio):</label>
+                    <input type="text" id="folio_calculado" readonly placeholder="Se generará automáticamente" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prioridad_tramite">Prioridad del Trámite:</label>
                     <select id="prioridad_tramite" required>
                         <option value="Normal" selected>Normal</option>
                         <option value="Urgente">⚠️ Urgente</option>
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="fecha_registro">Fecha de Registro:</label>
+                    <input type="text" id="fecha_registro" readonly required>
+                </div>
+
                 <div class="form-group full-width">
                     <label for="asunto_solicitud">Asunto / Descripción Corta:</label>
-                    <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo de esta solicitud..."></textarea>
+                    <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
                 </div>
             </div>
 
             <div class="btn-container">
                 <a href="index.html" class="btn-cancelar">Cancelar</a>
-                <button type="submit" class="btn-enviar">Generar Ticket y Continuar</button>
+                <button type="submit" class="btn-enviar">Registrar Ticket e Ir a Cédula</button>
             </div>
         </form>
     </div>
 
     <script>
-        // Url de Supabase orientada a tu tabla de solicitudes/tickets principales
         const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
@@ -250,38 +272,47 @@
                 return;
             }
 
-            // 2. EXTRAER Y FIJAR VALORES POR DEFAULT DESDE LOCALSTORAGE
+            // 2. EXTRAER Y FIJAR VALORES POR DEFAULT DE LA SESIÓN ACTIVA
             document.getElementById('user_nombre').value = localStorage.getItem('last_user_name') || "No detectado";
             document.getElementById('user_puesto').value = localStorage.getItem('last_user_puesto') || "No detectado";
             document.getElementById('user_area').value = localStorage.getItem('last_user_area') || "No detectado";
+
+            // 3. ESTABLECER FECHA DE HOY EN PANTALLA
+            const hoy = new Date();
+            const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('fecha_registro').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
         });
 
-        // 3. ENVÍO Y GENERACIÓN DE CONSECUTIVO DINÁMICO
+        // 4. FUNCIONALIDAD DEL NÚMERO DE TICKET DINÁMICO EN TIEMPO REAL
+        document.getElementById('servicio_solicitado').addEventListener('change', function() {
+            const servicio = this.value;
+            if (!servicio) return;
+
+            // Leer el consecutivo guardado o inicializarlo en 1
+            let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
+            let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
+
+            // Formatear a 4 dígitos fijos (Ej. 0001)
+            const numFormateado = String(numActual).padStart(4, '0');
+            const prefijoTicket = servicio.replace('_', '-'); 
+            const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
+
+            // Actualizar tanto el Input oculto/bloqueado como el Banner Superior Informativo
+            document.getElementById('folio_calculado').value = ticketFinal;
+            document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
+        });
+
+        // 5. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO
         document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const servicio = document.getElementById('servicio_solicitado').value;
+            const folioGenerado = document.getElementById('folio_calculado').value;
 
-            // Obtener o inicializar el consecutivo numérico para el servicio seleccionado
-            let consecutivoActual = localStorage.getItem(`consecutivo_${servicio}`);
-            if (!consecutivoActual) {
-                consecutivoActual = 1;
-            } else {
-                consecutivoActual = parseInt(consecutivoActual);
-            }
+            // Obtener el consecutivo para incrementarlo de forma definitiva tras presionar el submit
+            let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
+            let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
 
-            // Formatear el número a 4 dígitos (Ej: 0001)
-            const numFormateado = String(consecutivoActual).padStart(4, '0');
-            
-            // Reconstruir nomenclatura oficial corporativa JURIX
-            // Reemplaza los guiones bajos por guiones medios si aplica para la etiqueta
-            const prefijoTicket = servicio.replace('_', '-'); 
-            const folioGenerado = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
-
-            // Actualizar el almacenamiento local para el siguiente ticket (Incremento)
-            localStorage.setItem(`consecutivo_${servicio}`, consecutivoActual + 1);
-
-            // Payload para la base de datos de Supabase
             const dataSolicitud = {
                 folio_ticket: folioGenerado,
                 nombre_solicitante: document.getElementById('user_nombre').value,
@@ -306,24 +337,25 @@
                 });
 
                 if (response.ok) {
-                    alert(`¡Ticket Creado Exitosamente!\nFolio Asignado: ${folioGenerado}`);
+                    // ÉXITO: Guardamos el incremento correlativo para el siguiente ticket en el LocalStorage
+                    localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
+
+                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
                     
-                    // Si el trámite corresponde a un análisis de hallazgo, pliego o informe (Grupo B)
-                    // lo redirigimos directo a llenar su cédula analítica heredando el folio
+                    // Redirección condicionada al flujo del Grupo B (Hallazgos, Pliegos, Informes)
                     if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
                         window.location.href = "hallazgos.html";
                     } else {
-                        // Trámites generales van al monitor global
                         window.location.href = "estatus.html";
                     }
                 } else {
                     const err = await response.json();
                     console.error(err);
-                    alert("Error al registrar la solicitud en el servidor.");
+                    alert("Error en la respuesta del servidor de base de datos.");
                 }
             } catch (error) {
                 console.error("Error de red:", error);
-                alert("Fallo de conexión con la base de datos.");
+                alert("Fallo crítico de conexión con la API de Supabase.");
             }
         });
     </script>
