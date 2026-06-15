@@ -513,8 +513,8 @@
         }
 
         // 2. Armamos el objeto definitivo sin variables rotas
-        const dataHallazgo = {
-            folio_user: ticketAsociado || "JURIX-DGAJ-DCPL-B003-0001",
+      const dataHallazgo = {
+            folio_user: ticketAsociado || "JURIX-DGAJ-DCPL-B001-0001",
             fecha_recepcion: fechaFormateada,
             sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
             tipo_auditoria: document.getElementById('tipo_auditoria').value,
@@ -525,12 +525,13 @@
             importe: parseFloat(document.getElementById('importe').value) || 0,
             comentarios_revision: document.getElementById('comentarios_revision').value,
             
-            // Datos del usuario que envía usando los textos de la fila virtual directamente
-            usuario_nombre: "Invitado 1",
-            puesto_usuario: "Directora DCPL",
-            area_usuario: "DGAJ"
+            // ==============================================================
+            // CONFIGURACIÓN DINÁMICA: Válida para CUALQUIER usuario logueado
+            // ==============================================================
+            usuario_nombre: localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Usuario Desconocido",
+            puesto_usuario: localStorage.getItem('jurix_puesto_usuario') || localStorage.getItem('last_user_puesto') || "Auditor",
+            area_usuario: localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ"
         };
-
 // Después de esto, tu código seguirá con el fetch() o el supabase.insert que ya tienes programado.
 
             try {
