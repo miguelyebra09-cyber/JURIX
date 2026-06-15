@@ -151,8 +151,9 @@
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const usuarioInput = document.getElementById('usuario').value.trim();
-            const passwordInput = document.getElementById('password').value;
+            // CORRECCIÓN: Convertimos el correo a minúsculas y limpiamos espacios vacíos en ambos campos
+            const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
+            const passwordInput = document.getElementById('password').value.trim();
 
             try {
                 // Consultar directamente en Supabase si el usuario y la contraseña coinciden
@@ -186,7 +187,7 @@
                         window.location.href = "estatus.html";
                     }
                 } else {
-                    alert("Credenciales incorrectas. Verifique su usuario y contraseña.");
+                    alert("Credenciales incorrectas. Verifique su usuario y contraseña (así como mayúsculas/minúsculas).");
                 }
 
             } catch (error) {
