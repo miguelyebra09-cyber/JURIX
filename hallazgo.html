@@ -421,13 +421,19 @@
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
         window.addEventListener('DOMContentLoaded', () => {
+            // INTERCONEXIÓN: Control de restricción por sesión
+            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
+                alert("Acceso denegado. Por favor, inicie sesión primero.");
+                window.location.href = "index.html";
+                return;
+            }
+
             // 1. Asignar fecha de recepción de hoy
             const hoy = new Date();
             const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
             document.getElementById('fecha_recepcion').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
 
             // 2. Extraer datos guardados desde el LocalStorage de solicitud.html
-            // Reconstruimos el último ticket generado dinámicamente según lo que se usó
             let ticketFinal = "JURIX-DGAJ-DCPL-B001-0001"; // Default por contingencia
             let tipoSolicitudDetectada = "Análisis Hallazgo"; // Default
 
@@ -456,11 +462,10 @@
             document.getElementById('lblTicketQueue').textContent = ticketFinal;
             document.getElementById('lblTipoSolicitudQueue').textContent = tipoSolicitudDetectada;
 
-            // Simulamos la obtención de los datos del usuario que metió el ticket anterior (puedes leerlos de inputs guardados si lo deseas)
-            // Por estructura profesional extraemos o dejamos listos los marcadores legibles
-            document.getElementById('lblUsuarioQueue').textContent = "Usuario Operativo DGAJ";
-            document.getElementById('lblPuestoQueue').textContent = "Auditor / Analista Legal";
-            document.getElementById('lblAreaQueue').textContent = "Dirección de lo Contencioso";
+            // INTERCONEXIÓN: Obtención automática y no editable de datos vinculados al usuario logueado
+            document.getElementById('lblUsuarioQueue').textContent = localStorage.getItem('last_user_name') || "Usuario Operativo";
+            document.getElementById('lblPuestoQueue').textContent = localStorage.getItem('last_user_puesto') || "Auditor / Analista Legal";
+            document.getElementById('lblAreaQueue').textContent = localStorage.getItem('last_user_area') || "Dirección de lo Contencioso";
 
             // 3. Lógica de Colores y Tiempos Condicionales para la Fila Virtual
             const card = document.getElementById('queueCardElement');
@@ -522,7 +527,7 @@
 
                 if (response.ok) {
                     alert(`¡Éxito!\nLos detalles de la Cédula para el ticket ${ticketAsociado} han sido registrados correctamente.`);
-                    window.location.href = "index.html";
+                    window.location.href = "estatus.html"; // Redirección natural al monitor global protegido
                 } else {
                     const err = await response.json();
                     console.error(err);
