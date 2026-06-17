@@ -88,7 +88,7 @@
 
         .role-badge {
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 20 Fort;
             font-weight: 700;
             font-size: 0.8rem;
             text-transform: uppercase;
@@ -140,7 +140,7 @@
             outline: none;
         }
 
-        /* --- CONTENEDOR VISUAL DE TURNOS --- */
+        /* --- CONTENEDOR VISUAL DE TURNOS (ESTILO FILA VIRTUAL) --- */
         .panel-control-turno {
             background: var(--blanco);
             border-radius: 8px;
@@ -162,7 +162,7 @@
         }
 
         .card-interno-turno {
-            border-left: 5px solid var(--azul-institucional);
+            border-left: 5px solid var(--naranja-principal);
             background-color: #F8FAFB;
             border-top: 1px solid #E5E8E8;
             border-right: 1px solid #E5E8E8;
@@ -170,23 +170,24 @@
             border-radius: 4px;
             padding: 20px;
             display: grid;
-            grid-template-columns: 1.2fr 1fr 0.8fr;
+            grid-template-columns: 1.1fr 1.1fr 0.8fr;
             gap: 20px;
-            align-items: center;
+            align-items: flex-start;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .card-interno-turno { grid-template-columns: 1fr; }
         }
 
         .columna-datos p {
-            margin: 8px 0;
-            font-size: 0.95rem;
+            margin: 6px 0;
+            font-size: 0.9rem;
             color: #2C3E50;
+            line-height: 1.4;
         }
 
         .columna-datos strong {
-            color: #000;
+            color: #1F3A52;
             font-weight: 600;
         }
 
@@ -195,17 +196,18 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 15px;
+            gap: 12px;
         }
 
         .badge-dictamen {
             background-color: var(--azul-badge-bg);
             color: var(--azul-badge-txt);
-            padding: 8px 20px;
+            padding: 8px 16px;
             border-radius: 30px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .estimado-tiempo {
@@ -213,13 +215,24 @@
             background: var(--blanco);
             padding: 8px 12px;
             border-radius: 4px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #555;
         }
 
-        /* --- PREPARACIÓN DE LÍNEA DE TIEMPO (NUEVA) --- */
+        .comentarios-box {
+            grid-column: 1 / -1;
+            background: #FFFEEA;
+            border: 1px solid #F39C12;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            color: #7E5109;
+        }
+
+        /* --- PREPARACIÓN DE LÍNEA DE TIEMPO --- */
         .timeline-container {
-            margin-top: 20px;
+            margin-top: 25px;
             padding-top: 15px;
             border-top: 1px solid #EAEDED;
             display: flex;
@@ -285,7 +298,6 @@
 
     <div class="container">
         
-        <!-- CUADRO DE PERFIL REACTIVO -->
         <div class="profile-bar">
             <div class="user-meta">
                 <p>Usuario Activo: <strong id="lbl-nombre-sesion">Identificando...</strong></p>
@@ -296,7 +308,6 @@
             </div>
         </div>
 
-        <!-- CONSOLA DE FILTRADO INTERACTIVO -->
         <div class="search-console">
             <h3>🔍 Consola de Inteligencia y Filtros de Búsqueda</h3>
             <div class="search-grid">
@@ -323,12 +334,12 @@
             </div>
         </div>
 
-        <!-- CONTENEDOR DINÁMICO DE TICKETS DESDE SUPABASE -->
         <div id="contenedor-tickets-maestro"></div>
 
     </div>
 
     <script>
+        const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
@@ -337,21 +348,12 @@
         let esSupervisor = false;
 
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. OBTENER INFORMACIÓN DE USUARIO LOGUEADO
-            nombreSesionReal = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name');
-            areaSesionReal = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area');
+            nombreSesionReal = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Juan Miguel Yebra Prieto";
+            areaSesionReal = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "Dirección General de Asuntos Jurídicos";
 
-            // 2. CONTROL DE FALLBACK INTEGRADO
-            if (!nombreSesionReal) {
-                nombreSesionReal = "Juan Miguel Yebra Prieto";
-                areaSesionReal = "Dirección General de Asuntos Jurídicos";
-            }
-
-            // Pintar la cabecera del perfil
             document.getElementById('lbl-nombre-sesion').innerText = nombreSesionReal;
             document.getElementById('lbl-area-sesion').innerText = areaSesionReal;
 
-            // 3. ASIGNACIÓN ESTRICTA DE PERMISOS
             const badgeRol = document.getElementById('badge-rol-contenedor');
             const nNombre = nombreSesionReal.toLowerCase();
 
@@ -365,70 +367,59 @@
                 badgeRol.className = "role-badge badge-usuario";
             }
 
-            // Sincronizar Fila Virtual
-            conectarTablaSupabaseHallazgos();
+            // Descargar y unificar los datos de ambas tablas
+            descargarYUnificarTablas();
 
-            // Enlazar busquedas reactivas
+            // Eventos de Filtros
             document.getElementById('txt-buscar-folio').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-usuario').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-sujeto').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('select-buscar-puesto').addEventListener('change', ejecutarFiltrosCampos);
         });
 
-        async function conectarTablaSupabaseHallazgos() {
+        async function descargarYUnificarTablas() {
+            const contenedor = document.getElementById('contenedor-tickets-maestro');
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando información multi-tabla de Fila Virtual...</p>";
+
             try {
-                const response = await fetch(`${URL_HALLAZGOS}?select=*&order=folio_user.asc`, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                // 1. Descarga paralela de ambas tablas
+                const [resSolicitudes, resHallazgos] = await Promise.all([
+                    fetch(`${URL_SOLICITUDES}?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
+                    fetch(`${URL_HALLAZGOS}?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } })
+                ]);
 
-                let datosProcesados = [];
-                if (response.ok) {
-                    datosProcesados = await response.json();
+                let solicitudesData = resSolicitudes.ok ? await resSolicitudes.json() : [];
+                let hallazgosData = resHallazgos.ok ? await resHallazgos.json() : [];
+
+                // MOCKS DE RESPALDO (Por si las tablas de Supabase están vacías)
+                if (solicitudesData.length === 0) {
+                    solicitudesData = [
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", nombre_solicitante: "Juan Miguel Yebra Prieto", puesto_solicitante: "Directora DCPL", servicio: "Análisis Normativo", asunto: "Revisión integral de la Cuenta Pública Estatal" },
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", nombre_solicitante: "Artuto Vidal Rojas", puesto_solicitante: "Auditor", servicio: "Revisión Financiera", asunto: "Auditoría de Fondos Federales de Seguridad" }
+                    ];
                 }
-
-                // RESPALDO INMEDIATO DE DATOS (Por si la respuesta viene en blanco)
-                if (!datosProcesados || datosProcesados.length === 0) {
-                    datosProcesados = [
-                        {
-                            folio_user: "JURIX-DGAJ-DCPL-B003-0002",
-                            sujeto_fiscalizado: "FGEG",
-                            usuario_nombre: "Artuto Vidal Rojas",
-                            puesto_usuario: "Auditor",
-                            area_usuario: "Auditoría Especial de Cumplimiento Financiero",
-                            tipo_solicitud: "Revisión de Hallazgos"
-                        },
-                        {
-                            folio_user: "JURIX-DGAJ-DCPL-B003-0001",
-                            sujeto_fiscalizado: "MCUE",
-                            usuario_nombre: "Juan Miguel Yebra Prieto",
-                            puesto_usuario: "Directora DCPL",
-                            area_usuario: "Dirección General de Asuntos Jurídicos",
-                            tipo_solicitud: "Análisis de Informe"
-                        }
+                if (hallazgosData.length === 0) {
+                    hallazgosData = [
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", sujeto_fiscalizado: "MCUE", tipo_auditoria: "Financiera", tipo_hallazgo: "Inobservancia", num_concepto: "4", fecha_recepcion: "2026-06-15", comentarios_revision: "Pendiente de solventar por parte de la entidad pública." },
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", sujeto_fiscalizado: "FGEG", tipo_auditoria: "Cumplimiento", tipo_hallazgo: "Deficiencia", num_concepto: "12", fecha_recepcion: "2026-06-16", comentarios_revision: "Se detectaron inconsistencias en las bitácoras de obra." }
                     ];
                 }
 
-                renderizarContenedoresEstiloTurno(datosProcesados);
+                // 2. PROCESO DE CRUCE LÓGICO (JOIN) POR folio_ticket
+                let ticketsUnificados = solicitudesData.map(sol => {
+                    // Buscar su par correspondiente en hallazgos
+                    const hallazgoPar = hallazgosData.find(h => h.folio_ticket === sol.folio_ticket) || {};
+                    return {
+                        ...sol,
+                        ...hallazgoPar
+                    };
+                });
+
+                renderizarContenedoresEstiloTurno(ticketsUnificados);
 
             } catch (error) {
-                console.error(error);
-                // Si falla la red, renderizamos la data local para que nunca se quede en blanco
-                const backupData = [
-                    {
-                        folio_user: "JURIX-DGAJ-DCPL-B003-0002",
-                        sujeto_fiscalizado: "FGEG",
-                        usuario_nombre: "Artuto Vidal Rojas",
-                        puesto_usuario: "Auditor",
-                        area_usuario: "Auditoría Especial de Cumplimiento Financiero",
-                        tipo_solicitud: "Revisión de Hallazgos"
-                    }
-                ];
-                renderizarContenedoresEstiloTurno(backupData);
+                console.error("Error unificando tablas: ", error);
+                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace multi-tabla. Revisa conexiones.</p>";
             }
         }
 
@@ -436,42 +427,43 @@
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
-            // FILTRADO ROBUSTO POR USUARIO O SUPERVISOR
-            const ticketsFiltradosPorPerfil = tickets.filter(t => {
-                if (esSupervisor) return true; // Supervisor puede ver todo
-                if (!t.usuario_nombre) return false;
-
-                const dbNombre = t.usuario_nombre.toLowerCase().trim();
-                const sesionLimpia = nombreSesionReal.toLowerCase().trim();
-                return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
+            // FILTRADO POR PERFIL DE SEGURIDAD
+            const ticketsFiltrados = tickets.filter(t => {
+                if (esSupervisor) return true; 
+                if (!t.nombre_solicitante) return false;
+                return t.nombre_solicitante.toLowerCase().includes(nombreSesionReal.toLowerCase().trim());
             });
 
-            if (ticketsFiltradosPorPerfil.length === 0) {
-                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets pendientes registrados bajo el usuario activo: ${nombreSesionReal}</p>`;
+            if (ticketsFiltrados.length === 0) {
+                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets vinculados al perfil: ${nombreSesionReal}</p>`;
                 return;
             }
 
-            ticketsFiltradosPorPerfil.forEach(ticket => {
-                const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
-                const sujeto = ticket.sujeto_fiscalizado || "ENTE";
-                const usuario = ticket.usuario_nombre || "Usuario no asignado";
-                const puesto = ticket.puesto_usuario || "Auditor";
-                const area = ticket.area_usuario || "Área Técnica";
-                const solicitud = ticket.tipo_solicitud || "Análisis de Informe";
+            ticketsFiltrados.forEach(ticket => {
+                // Extracción segura de Campos de Tabla "Solicitudes"
+                const folio = ticket.folio_ticket || "S/F";
+                const solicitante = ticket.nombre_solicitante || "No asignado";
+                const puesto = ticket.puesto_solicitante || "Auditor";
+                const servicio = ticket.servicio || "General";
+                const asuntoOriginal = ticket.asunto || "Sin Asunto";
                 
-                let badgeDictamen = "DICTAMEN B003";
-                let tiemposEstimados = "Est. 1 a 2 días hábiles";
+                // Limitador estricto del campo Asunto a 20 caracteres
+                const asuntoRecortado = asuntoOriginal.length > 20 ? asuntoOriginal.substring(0, 20) + "..." : asuntoOriginal;
 
-                if(sujeto === "FGEG" || sujeto === "MDHI") {
-                    badgeDictamen = "DICTAMEN B001";
-                    tiemposEstimados = "Est. 3 a 5 días hábiles";
-                }
+                // Extracción segura de Campos de Tabla "Hallazgos"
+                const sujeto = ticket.sujeto_fiscalizado || "ENTE";
+                const tipoAuditoria = ticket.tipo_auditoria || "N/A";
+                const tipoHallazgo = ticket.tipo_hallazgo || "Regular";
+                const numConcepto = ticket.num_concepto || "0";
+                const fecha = ticket.fecha_recepcion || "2026-06-16";
+                const comentarios = ticket.comentarios_revision || "Sin observaciones registradas por el momento.";
 
                 const divTarjeta = document.createElement('div');
                 divTarjeta.className = "panel-control-turno";
                 
-                divTarjeta.setAttribute('data-folio', folioUser.toLowerCase());
-                divTarjeta.setAttribute('data-usuario', usuario.toLowerCase());
+                // Atributos meta para búsquedas instantáneas
+                divTarjeta.setAttribute('data-folio', folio.toLowerCase());
+                divTarjeta.setAttribute('data-usuario', solicitante.toLowerCase());
                 divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
                 divTarjeta.setAttribute('data-puesto', puesto.toLowerCase());
 
@@ -480,26 +472,33 @@
                     <div class="card-interno-turno">
                         
                         <div class="columna-datos">
-                            <p><strong>Ticket ID:</strong> ${folioUser}</p>
-                            <p><strong>Solicitud:</strong> ${solicitud}</p>
-                            <p><strong>Usuario:</strong> ${usuario}</p>
+                            <p><strong>Ticket ID:</strong> ${folio}</p>
+                            <p><strong>Solicitante:</strong> ${solicitante}</p>
+                            <p><strong>Puesto:</strong> ${puesto}</p>
+                            <p><strong>Servicio:</strong> ${servicio}</p>
+                            <p><strong>Asunto:</strong> <span title="${asuntoOriginal}">${asuntoRecortado}</span></p>
                         </div>
 
                         <div class="columna-datos">
-                            <p><strong>Puesto:</strong> ${puesto}</p>
-                            <p><strong>Área:</strong> ${area}</p>
-                            <p><strong>Posición Fila:</strong> <span style="color:#27AE60; font-weight:700;">Turno Virtual Activo (${sujeto})</span></p>
+                            <p><strong>Ente Fiscalizado:</strong> ${sujeto}</p>
+                            <p><strong>Auditoría:</strong> ${tipoAuditoria}</p>
+                            <p><strong>Tipo Hallazgo:</strong> ${tipoHallazgo}</p>
+                            <p><strong>Núm. Concepto:</strong> ${numConcepto}</p>
+                            <p><strong>F. Recepción:</strong> ${fecha}</p>
                         </div>
 
                         <div class="columna-badge-derecha">
-                            <div class="badge-dictamen">${badgeDictamen}</div>
+                            <div class="badge-dictamen">${tipoAuditoria} - ${sujeto}</div>
                             <div class="estimado-tiempo">
-                                ⏱️ ${tiemposEstimados}
+                                ⏱️ Est. 2 a 4 Días Hábiles
                             </div>
+                        </div>
+
+                        <div class="comentarios-box">
+                            <strong>Comentarios de Revisión:</strong> ${comentarios}
                         </div>
                     </div>
 
-                    <!-- PREPARACIÓN DE LA LÍNEA DE TIEMPO INTERACTIVA -->
                     <div class="timeline-container">
                         <div class="timeline-line"></div>
                         <div class="timeline-step active">
@@ -527,6 +526,7 @@
         function ejecutarFiltrosCampos() {
             const filtroFolio = document.getElementById('txt-buscar-folio').value.toLowerCase().trim();
             const filtroUsuario = document.getElementById('txt-buscar-usuario').value.toLowerCase().trim();
+            const '../../..';
             const filtroSujeto = document.getElementById('txt-buscar-sujeto').value.toLowerCase().trim();
             const filtroPuesto = document.getElementById('select-buscar-puesto').value.toLowerCase();
 
