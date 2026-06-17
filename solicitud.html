@@ -350,6 +350,7 @@
             const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
 
             document.getElementById('folio_calculado').value = ticketFinal;
+            // Corregido a Template Literals seguros para evitar SyntaxError por comillas cruzadas
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
@@ -361,8 +362,8 @@
                 const nombreArchivo = this.files[0].name;
                 const tamanoMegaBytes = (this.files[0].size / (1024 * 1024)).toFixed(2);
                 
-                // Cambiar estilo y mandar el mensaje de éxito al adjuntar
                 statusMessage.style.color = "var(--verde-exito)";
+                // Corregido con backticks seguros
                 statusMessage.innerHTML = `<strong>✅ Archivo listo para cargarse:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
             } else {
                 statusMessage.style.color = "#666";
@@ -370,7 +371,7 @@
             }
         });
 
-        // 6. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO (CON INTERCONEXIÓN ENRUTADA)
+        // 6. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO
         document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -380,7 +381,6 @@
             let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
             let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
 
-            // Simulación del nombre de archivo si fue adjuntado para guardarlo en la base
             const inputArchivo = document.getElementById('documento_adjunto');
             const archivoNombreSoporte = inputArchivo.files.length > 0 ? inputArchivo.files[0].name : "Sin archivo adjunto";
 
@@ -404,7 +404,6 @@
             };
 
             try {
-                // Primer Paso: Insertar la Solicitud Principal
                 const response = await fetch(SUPABASE_SOLICITUDES_URL, {
                     method: 'POST',
                     headers: misHeaders,
@@ -414,17 +413,14 @@
                 if (response.ok) {
                     localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
 
-                    // =========================================================================
-                    // ENRUTAMIENTO INTELIGENTE PARALELO HACIA TABLAS DESTINO POR SERVICIO
-                    // =========================================================================
                     let urlTablaDestino = "";
                     let objetoDestino = {};
 
                     switch (servicio) {
-                        case "DCPL_B001": // Análisis de Hallazgo de Auditoría
+                        case "DCPL_B001":
                             urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
                             objetoDestino = {
-                                folio_user: folioGenerado, // Sembrado para conectar con estatus
+                                folio_user: folioGenerado,
                                 usuario_nombre: document.getElementById('user_nombre').value,
                                 puesto_usuario: document.getElementById('user_puesto').value,
                                 area_usuario: document.getElementById('user_area').value,
@@ -436,7 +432,7 @@
                             };
                             break;
 
-                        case "DCPL_B002": // Análisis de Pliego de Observaciones
+                        case "DCPL_B002":
                             urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/pliegos";
                             objetoDestino = {
                                 folio_user: folioGenerado,
@@ -444,7 +440,7 @@
                             };
                             break;
 
-                        case "DCPL_B003": // Análisis de Informe de Presunta Responsabilidad
+                        case "DCPL_B003":
                             urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/informes";
                             objetoDestino = {
                                 folio_user: folioGenerado,
@@ -452,14 +448,14 @@
                             };
                             break;
 
-                        case "DCPL_C001": // Formulación de Denuncia
+                        case "DCPL_C001":
                             urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/denuncias";
                             objetoDestino = {
                                 folio_user: folioGenerado
                             };
                             break;
 
-                        case "DCPL_D001": // Emisión de Tarjeta Informativa
+                        case "DCPL_D001":
                             urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tarjetas";
                             objetoDestino = {
                                 folio_user: folioGenerado
@@ -467,7 +463,6 @@
                             break;
                     }
 
-                    // Si corresponde a un servicio del switch, registramos el renglón relacional
                     if (urlTablaDestino !== "") {
                         const resDestino = await fetch(urlTablaDestino, {
                             method: 'POST',
@@ -475,28 +470,24 @@
                             body: JSON.stringify(objetoDestino)
                         });
                         if (resDestino.ok) {
-                            console.log("🔗 Renglón relacional pre-registrado automáticamente en la tabla correspondiente.");
+                            console.log("🔗 Renglón relacional pre-registrado.");
                         } else {
-                            console.warn("⚠️ Advertencia: Solicitud creada, pero falló el pre-registro de enlace.");
+                            console.warn("⚠️ Advertencia: Falló el pre-registro de enlace.");
                         }
                     }
 
-                    // =========================================================================
-                    // 🛡️ BLINDAJE DE INTERCONEXIÓN: Guardar todas las llaves posibles para hallazgo.html
-                    // =========================================================================
+                    // Blidanje absoluto de variables de sesión para hallazgo.html
                     localStorage.setItem('last_generated_folio', folioGenerado);
                     localStorage.setItem('jurix_folio_activo', folioGenerado);
                     localStorage.setItem('folio_ticket', folioGenerado);
                     localStorage.setItem('folio_user', folioGenerado);
                     
-                    // También guardamos los datos del usuario para quitar el "Cargando..." de la tarjeta inferior
                     localStorage.setItem('usuario_nombre', document.getElementById('user_nombre').value);
                     localStorage.setItem('puesto_usuario', document.getElementById('user_puesto').value);
                     localStorage.setItem('area_usuario', document.getElementById('user_area').value);
 
                     alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
                     
-                    // Redirigir pasando el folio directamente en la URL por si el localStorage falla
                     if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
                         window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
                     } else {
