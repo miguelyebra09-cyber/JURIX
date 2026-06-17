@@ -104,13 +104,14 @@
             font-size: 0.9rem;
         }
 
-        input[type="text"], input[type="number"], input[type="url"], select, textarea {
+        input[type="text"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
             width: 100%;
             padding: 11px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
             font-size: 0.95rem;
+            font-family: inherit;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -155,13 +156,13 @@
             justify-content: space-between;
             align-items: flex-start;
             transition: all 0.4s ease;
+            background: #fdf4f5;
+            border-left-color: #9b59b6;
         }
 
         /* Estilos de colores dinámicos según el servicio */
-        .card-b001 { background: #fffcf4; border-left-color: #f39c12; } /* Ámbar / Alerta */
-        .card-b002 { background: #f4fbf7; border-left-color: #2ecc71; } /* Verde Esmeralda */
-        .card-b003 { background: #f4f9ff; border-left-color: #3498db; } /* Azul Civil */
-        .card-default { background: #fdf4f5; border-left-color: #9b59b6; } /* Púrpura */
+        .card-RCPF { background: #fffcf4; border-left-color: #f39c12; } /* Ámbar / Financiero */
+        .card-RCPI { background: #f4fbf7; border-left-color: #2ecc71; } /* Verde / Infraestructura */
 
         .queue-grid {
             display: grid;
@@ -195,12 +196,12 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            background-color: #f4ecf7; 
+            color: #6c3483;
         }
         
-        .badge-b001 { background-color: #fdebd0; color: #b9770e; }
-        .badge-b002 { background-color: #d5f5e3; color: #1e8449; }
-        .badge-b003 { background-color: #d6eaf8; color: #21618c; }
-        .badge-default { background-color: #f4ecf7; color: #6c3483; }
+        .badge-RCPF { background-color: #fdebd0; color: #b9770e; }
+        .badge-RCPI { background-color: #d5f5e3; color: #1e8449; }
 
         .time-display {
             font-size: 0.9rem;
@@ -272,7 +273,7 @@
                 
                 <div class="form-group">
                     <label for="fecha_recepcion">Fecha de Recepción:</label>
-                    <input type="text" id="fecha_recepcion" readonly>
+                    <input type="date" id="fecha_recepcion" required>
                 </div>
 
                 <div class="form-group">
@@ -342,7 +343,6 @@
                         <option value="RCPF">💰 1.1 RCPF- Revisión Cuenta Pública-Financiero</option>
                         <option value="RCPI">👷🏼 1.2 RCPI- Revisión Cuenta Pública-Infraestructura</option>
                         <option value="Por definir">2.Por definir</option>
-                        <option value="Seleccionar">Seleccionar</option>
                     </select>
                 </div>
 
@@ -394,11 +394,11 @@
                         <div class="queue-info">
                             <p><strong>Ticket ID:</strong> <span id="lblTicketQueue">-</span></p>
                             <p><strong>Solicitud:</strong> <span id="lblTipoSolicitudQueue">-</span></p>
-                            <p><strong>Usuario:</strong> <span id="lblUsuarioQueue">Cargando...</span></p>
+                            <p><strong>Usuario:</strong> <span id="lblUsuarioQueue">Auditor Interno DGAJ</span></p>
                         </div>
                         <div class="queue-info">
-                            <p><strong>Puesto:</strong> <span id="lblPuestoQueue">Cargando...</span></p>
-                            <p><strong>Área:</strong> <span id="lblAreaQueue">Cargando...</span></p>
+                            <p><strong>Puesto:</strong> <span id="lblPuestoQueue">Dictaminador</span></p>
+                            <p><strong>Área:</strong> <span id="lblAreaQueue">Legal e Infraestructura</span></p>
                             <p><strong>Posición Fila:</strong> Turno Virtual Activo</p>
                         </div>
                     </div>
@@ -417,19 +417,19 @@
     </div>
 
     <script>
-      const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-        // 🚨 Coloca aquí tu clave 'anon public' real de Supabase (la que empieza con eyJ...)
+        const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+        // 🚨 Coloca aquí tu clave 'anon public' real de Supabase
         const SUPABASE_KEY = "TU_CLAVE_LARGA_ANON_KEY_AQUÍ"; 
 
         let folioTicketActivo = "";
 
-        // Ejecución al cargar la página
+        // Al cargar la página, recuperamos e inyectamos el folio
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. Intentar obtener el folio desde la URL (?folio=...)
+            // 1. Intentar desde URL
             const urlParams = new URLSearchParams(window.location.search);
             folioTicketActivo = urlParams.get('folio');
 
-            // 2. Si no viene en la URL, buscar exhaustivamente en el localStorage
+            // 2. Si no, buscar en localStorage
             if (!folioTicketActivo) {
                 folioTicketActivo = localStorage.getItem('last_generated_folio') || 
                                     localStorage.getItem('jurix_folio_activo') || 
@@ -437,70 +437,83 @@
                                     localStorage.getItem('folio_user');
             }
 
-            // 3. Buscar el elemento del título o caja de texto del folio para inyectarlo en tu interfaz
-            const inputFolio = document.getElementById('txt-folio') || 
-                               document.getElementById('folio_user') || 
-                               document.getElementById('folio_ticket') ||
-                               document.querySelector('.card-interno-turno p') ||
-                               document.querySelector('[id*="folio"]');
+            // Inyección visual en los componentes informativos de la UI
+            const subtitleFolio = document.getElementById('folioTicketSub');
+            const lblTicketQueue = document.getElementById('lblTicketQueue');
 
-            if (inputFolio && folioTicketActivo) {
-                if (inputFolio.tagName === "INPUT" || inputFolio.tagName === "SELECT") {
-                    inputFolio.value = folioTicketActivo;
-                    inputFolio.readOnly = true;
-                    inputFolio.style.background = "#EAECEE";
-                } else {
-                    inputFolio.innerText = "Folio Vinculado: " + folioTicketActivo;
-                }
-                console.log("🔗 Interrelación de folio exitosa en la interfaz:", folioTicketActivo);
+            if (folioTicketActivo) {
+                if (subtitleFolio) subtitleFolio.innerText = "Folio del Ticket Vinculado: " + folioTicketActivo;
+                if (lblTicketQueue) lblTicketQueue.innerText = folioTicketActivo;
+                console.log("🔗 Interrelación de folio exitosa:", folioTicketActivo);
             } else {
-                console.warn("⚠️ No se pudo inyectar visualmente el folio, pero se guardará en memoria:", folioTicketActivo);
+                if (subtitleFolio) subtitleFolio.innerText = "⚠️ Advertencia: Sin Folio de Ticket Activo";
+                console.warn("⚠️ No se encontró ningún folio activo en memoria.");
+            }
+
+            // Escuchar cambios en el Tipo de Auditoría para cambiar dinámicamente el estilo de la tarjeta virtual
+            const cmbAuditoria = document.getElementById('tipo_auditoria');
+            const queueCard = document.getElementById('queueCardElement');
+            const badgeEstatus = document.getElementById('badgeEstatus');
+            const lblTipoSolicitudQueue = document.getElementById('lblTipoSolicitudQueue');
+            const timeEstimate = document.getElementById('timeEstimate');
+
+            if (cmbAuditoria) {
+                cmbAuditoria.addEventListener('change', () => {
+                    const valor = cmbAuditoria.value;
+                    // Reset de clases dinámicas
+                    queueCard.className = "queue-card";
+                    badgeEstatus.className = "status-badge";
+                    
+                    if (valor === "RCPF") {
+                        queueCard.classList.add('card-RCPF');
+                        badgeEstatus.classList.add('badge-RCPF');
+                        badgeEstatus.innerText = "Financiero";
+                        if (lblTipoSolicitudQueue) lblTipoSolicitudQueue.innerText = "Revisión Cuenta Pública - Financiero";
+                        if (timeEstimate) timeEstimate.innerText = "Est. ~15 min";
+                    } else if (valor === "RCPI") {
+                        queueCard.classList.add('card-RCPI');
+                        badgeEstatus.classList.add('badge-RCPI');
+                        badgeEstatus.innerText = "Infraestructura";
+                        if (lblTipoSolicitudQueue) lblTipoSolicitudQueue.innerText = "Revisión Cuenta Pública - Infraestructura";
+                        if (timeEstimate) timeEstimate.innerText = "Est. ~25 min";
+                    } else {
+                        badgeEstatus.innerText = "Por Definir";
+                        if (timeEstimate) timeEstimate.innerText = "Calculando...";
+                    }
+                });
             }
         });
 
-        // Evento de guardado del Formulario (Optimizado para actualizar el registro creado por solicitud.html)
-        const adjuntarEventoEnvio = () => {
-            const miFormulario = document.getElementById('form-hallazgo') || 
-                                 document.getElementById('form-hallazgos') || 
-                                 document.querySelector('form');
-
-            if (!miFormulario) {
-                console.error("❌ No se encontró ningún elemento <form> en la página HTML para adjuntar el evento.");
-                return;
-            }
-
-            miFormulario.addEventListener('submit', async (e) => {
+        // Evento de guardado del Formulario (PATCH mediante filtro por folio_user)
+        const form = document.getElementById('hallazgoForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 if (!folioTicketActivo) {
-                    folioTicketActivo = localStorage.getItem('last_generated_folio') || 
-                                         localStorage.getItem('jurix_folio_activo') || 
-                                         localStorage.getItem('folio_ticket');
-                }
-
-                if (!folioTicketActivo) {
-                    alert("❌ Error de interrelación: No se detecta un número de Ticket activo para enlazar este hallazgo.");
+                    alert("❌ Error de interrelación: No se detecta un número de Ticket activo para enlazar esta cédula.");
                     return;
                 }
 
-                // Recolección de datos de tus campos
-                // NOTA: Ya no incluimos folio_ticket aquí adentro porque irá en la URL del PATCH para filtrar
+                // Extracción directa utilizando los ID correctos del HTML
                 const registroHallazgo = {
-                    sujeto_fiscalizado: (document.getElementById('select-sujeto') || document.getElementById('select-sujeto-fiscalizado') || {value: 'MABA_Abasolo'}).value,
-                    tipo_auditoria: (document.getElementById('select-auditoria') || document.querySelector('select[id*="auditoria"]') || {value: 'Por Asignar'}).value,
-                    tipo_hallazgo: (document.getElementById('select-tipo-hallazgo') || document.querySelector('select[id*="tipo"]') || {value: 'Observación'}).value,
-                    num_concepto: (document.getElementById('txt-concepto') || document.getElementById('txt-num-concepto') || {value: '012'}).value,
-                    fecha_recepcion: (document.getElementById('date-recepcion') || document.querySelector('input[type="date"]') || {value: ''}).value,
-                    comentarios_revision: (document.getElementById('txt-comentarios') || document.querySelector('textarea') || {value: 'Sin comentarios'}).value
+                    fecha_recepcion: document.getElementById('fecha_recepcion').value,
+                    sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
+                    tipo_auditoria: document.getElementById('tipo_auditoria').value,
+                    rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
+                    tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
+                    num_concepto: document.getElementById('num_concepto').value,
+                    link_soporte: document.getElementById('link_soporte').value || null,
+                    importe: parseFloat(document.getElementById('importe').value) || 0,
+                    comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
                 };
 
                 try {
-                    // 🔄 CAMBIO CLAVE: Usamos el parámetro eq.folio_user para actualizar el renglón específico
-                    // Si tu columna de vinculación en la tabla hallazgos se llama folio_ticket, cambia el "eq.folio_user" de abajo por "eq.folio_ticket"
+                    // Si tu columna de vinculación en la tabla de Supabase se llama "folio_ticket" en lugar de "folio_user", cámbiala aquí:
                     const urlConFiltro = `${URL_HALLAZGOS}?folio_user=eq.${encodeURIComponent(folioTicketActivo)}`;
 
                     const response = await fetch(urlConFiltro, {
-                        method: 'PATCH', // <-- Cambiado de POST a PATCH para actualizar en lugar de duplicar
+                        method: 'PATCH', 
                         headers: {
                             'apikey': SUPABASE_KEY,
                             'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -512,24 +525,17 @@
 
                     if (response.ok) {
                         alert(`✅ Cédula de Hallazgo completada con éxito para el Folio: ${folioTicketActivo}`);
-                        miFormulario.reset();
+                        form.reset();
                         window.location.href = "estatus.html";
                     } else {
-                        const errData = await response.json();
-                        alert("❌ Error en Supabase al actualizar: " + (errData.message || response.statusText));
+                        const errData = await response.json().catch(() => ({}));
+                        alert("❌ Error en Supabase al actualizar: " + (errData.message || response.statusText || response.status));
                     }
                 } catch (error) {
                     console.error("Error en la petición HTTP:", error);
                     alert("❌ Fallo de red al intentar registrar la cédula.");
                 }
             });
-        };
-
-        // Ejecutar el buscador de formularios inmediatamente
-        if (document.readyState === "loading") {
-            window.addEventListener('DOMContentLoaded', adjuntarEventoEnvio);
-        } else {
-            adjuntarEventoEnvio();
         }
     </script>
 </body>
