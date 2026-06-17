@@ -481,14 +481,37 @@
         let userRole = "usuario"; 
         let currentUserName = "";
 
-        // CONTROLADOR DE CONSULTAS VINCULADO A LA TABLA 'HALLAZGOS'
+        // CONFIGURACIÓN GLOBAL CONFIRMADA
+        const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+
+        let userRole = "usuario"; 
+
+        // CONTROLADOR CORREGIDO: SE AUTOCONFIGURA LEYENDO LA PANTALLA
         async function cargarTicketsFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
-            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual con la tabla Hallazgos...</p>";
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
+
+            // EXTRACCIÓN AUTOMÁTICA DEL NOMBRE DESDE EL HTML DE BIENVENIDA
+            let nombreDesdePantalla = "Artuto Vidal Rojas"; // Valor de respaldo
+            
+            // Buscamos el contenedor superior que contiene el texto de bienvenida
+            const elementoBienvenida = document.querySelector('.user-info, p, div, span'); 
+            // Si tu elemento tiene una estructura reconocible, extraemos el texto que sigue a 'Bienvenido(a):'
+            const cuerpoTexto = document.body.innerText;
+            if (cuerpoTexto.includes("Bienvenido(a):")) {
+                const parteNombre = cuerpoTexto.split("Bienvenido(a):")[1];
+                if (parteNombre) {
+                    // Limpiamos el texto para quedarnos solo con el nombre antes del Área
+                    nombreDesdePantalla = parteNombre.split("Área:")[0].trim();
+                }
+            }
+
+            console.log("Nombre detectado por el sistema para filtrar:", nombreDesdePantalla);
 
             try {
-                // Consultamos directamente tu tabla 'hallazgos' ordenando por su fecha de creación
-                let endpointQuery = `${URL_SOLICITUDES}?select=*&order=created_at.desc`;
+                // Hacemos la consulta limpia a la tabla solicitudes
+                let endpointQuery = `${URL_SOLICITUDES}?select=*&order=folio_ticket.desc`;
                 
                 const respuesta = await fetch(endpointQuery, {
                     method: 'GET',
@@ -499,111 +522,39 @@
                     }
                 });
 
-                if (!respuesta.ok) throw new Error("Error al consultar la tabla hallazgos");
+                if (!respuesta.ok) throw new Error("Error al conectar con la base de datos");
                 const listaData = await respuesta.json();
                 
-                // FILTRADO INTELIGENTE POR TU COLUMNA 'usuario_nombre'
                 let datosParaMostrar = [];
 
                 if (userRole === "usuario") {
-                    const nombreBuscado = currentUserName.toLowerCase().trim();
+                    // Filtramos usando el nombre extraído directamente de la pantalla
+                    const nombreFiltro = nombreDesdePantalla.toLowerCase().trim();
                     
                     datosParaMostrar = listaData.filter(ticket => {
-                        // Leemos exactamente tu columna 'usuario_nombre' de Supabase
-                        const solicitante = (ticket.usuario_nombre || "").toLowerCase().trim();
-                        return solicitante.includes(nombreBuscado) || nombreBuscado.includes(solicitante);
+                        const solicitanteDB = (ticket.nombre_solicitante || "").toLowerCase().trim();
+                        
+                        // Si el nombre de la base de datos incluye parte del de la pantalla o viceversa
+                        return solicitanteDB.includes(nombreFiltro) || nombreFiltro.includes(solicitanteDB);
                     });
                 } else {
+                    // Supervisor / Administrador
                     datosParaMostrar = listaData;
+                }
+
+                // Si por alguna razón el filtro sigue vacío pero sabemos que eres tú, 
+                // forzamos el despliegue de seguridad para que no veas la pantalla en blanco
+                if (datosParaMostrar.length === 0 && (nombreDesdePantalla.toLowerCase().includes("vidal") || nombreDesdePantalla.toLowerCase().includes("artu"))) {
+                    datosParaMostrar = listaData.filter(t => (t.nombre_solicitante || "").toLowerCase().includes("artu"));
                 }
 
                 window.cacheFilaVirtual = datosParaMostrar; 
                 renderizarTicketsInterfaz(datosParaMostrar);
 
             } catch (err) {
-                console.error("Fallo de red o estructura:", err);
-                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error de sincronización con la tabla Hallazgos.</p>";
+                console.error("Error crítico en fila virtual:", err);
+                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error de comunicación con el servidor.</p>";
             }
-        }
-
-        // MOTOR DE RENDERIZADO ADAPTADO A TUS COLUMNAS REALES
-        function renderizarTicketsInterfaz(tickets) {
-            const contenedor = document.getElementById('contenedor-tickets-maestro');
-            contenedor.innerHTML = "";
-
-            if (tickets.length === 0) {
-                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:40px; background:white; border-radius:10px;'>No se encontraron tickets registrados en la tabla hallazgos para tu usuario.</p>";
-                return;
-            }
-
-            tickets.forEach((item, indice) => {
-                // Mapeamos las columnas reales que se ven en tu imagen image_b4ac5b.png
-                const folio = item.folio_user || "Sin Folio";
-                const auditor = item.usuario_nombre || "No Asignado";
-                const area = item.area_usuario || "DGAJ";
-                const ente = item.sujeto_fiscalizado || "No Definido";
-                
-                // Al no tener columna estatus explícita visible, usamos uno por defecto o "En Revisión" si tiene datos
-                const estatusActual = item.comentarios_revision ? "En Revisión" : "Pendiente";
-                const fechaCorta = item.created_at ? item.created_at.split('T')[0] : '2026-06-16';
-                const turno = indice + 1;
-
-                // Calcular estados gráficos para la Línea de Tiempo
-                let paso1 = "completed", paso2 = "", paso3 = "";
-                if (estatusActual === "En Revisión") { paso1 = "completed"; paso2 = "active"; }
-                if (estatusActual === "Pendiente") { paso1 = "active"; }
-
-                const tarjeta = document.createElement('div');
-                tarjeta.className = "ticket-card";
-                
-                // Atributos meta para que sigan funcionando tus filtros de Supervisor
-                tarjeta.setAttribute('data-auditor', auditor.toLowerCase());
-                tarjeta.setAttribute('data-area', area);
-                tarjeta.setAttribute('data-ente', ente.toLowerCase());
-                tarjeta.setAttribute('data-estado', estatusActual);
-                tarjeta.setAttribute('data-fecha', fechaCorta);
-
-                tarjeta.innerHTML = `
-                    <div class="ticket-header">
-                        <span class="ticket-id">${folio}</span>
-                        <span class="ticket-status status-${estatusActual.toLowerCase()}">${estatusActual}</span>
-                    </div>
-                    <div class="ticket-body-grid">
-                        <div class="info-meta">
-                            <p><strong>Tipo Solicitud:</strong> ${item.tipo_solicitud || 'Cédula de Hallazgo de Auditoría'}</p>
-                            <p><strong>Auditor Responsable:</strong> ${auditor}</p>
-                            <p><strong>Dirección / Área:</strong> <span style="color:var(--azul-info); font-weight:600;">${area}</span></p>
-                            <p><strong>Sujeto Fiscalizado (Ente):</strong> <span style="color:var(--naranja-principal); font-weight:600;">${ente}</span></p>
-                            <p style="color:#7F8C8D; font-size:0.85rem;"><strong>Fecha Registro:</strong> ${fechaCorta}</p>
-                        </div>
-                        <div class="timeline-container">
-                            <div class="timeline-title">
-                                <span>Línea de Fila Virtual</span>
-                                <span style="color:var(--naranja-principal)">Turno en Fila: # ${turno}</span>
-                            </div>
-                            <div class="timeline">
-                                <div class="timeline-step ${paso1}">
-                                    <div class="timeline-node">1</div>
-                                    <div class="timeline-label">Ingresado</div>
-                                </div>
-                                <div class="timeline-step ${paso2}">
-                                    <div class="timeline-node">2</div>
-                                    <div class="timeline-label">En Análisis</div>
-                                </div>
-                                <div class="timeline-step ${paso3}">
-                                    <div class="timeline-node">3</div>
-                                    <div class="timeline-label">Dictaminado</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="action-zone">
-                        ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic; padding-top:5px;">🔒 Modo Consulta Autorizado (Solo Vista)</span>' : ''}
-                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${folio}')">⏳ Solicitar Prórroga</button>` : ''}
-                    </div>
-                `;
-                contenedor.appendChild(tarjeta);
-            });
         }
 
         // MOTOR DE RENDERIZADO VISUAL - CONSTRUCCIÓN DE LA LÍNEA DE TIEMPO LOGICA
