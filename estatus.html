@@ -226,23 +226,24 @@
 
     <nav>
         <a href="solicitud.html">Nueva Solicitud</a>
-        <a href="hallazgo.html">Cédula de Hallazgos</a>
         <a href="estatus.html">Estatus / Fila Virtual</a>
-        <a href="salir">Salir del Sistema</a>
+        <a href="index.html">Salir del Sistema</a>
     </nav>
 
     <div class="container">
         
+        <!-- CUADRO DE PERFIL REACTIVO -->
         <div class="profile-bar">
             <div class="user-meta">
                 <p>Usuario Activo: <strong id="lbl-nombre-sesion">Identificando...</strong></p>
                 <p>Área de Control: <strong id="lbl-area-sesion">Cargando...</strong></p>
             </div>
             <div>
-                <span id="badge-rol-contenedor" class="role-badge">Verificando...</span>
+                <span id="badge-rol-contenedor" class="role-badge">VERIFICANDO...</span>
             </div>
         </div>
 
+        <!-- CONSOLA DE FILTRADO INTERACTIVO -->
         <div class="search-console">
             <h3>🔍 Consola de Inteligencia y Filtros de Búsqueda</h3>
             <div class="search-grid">
@@ -269,6 +270,7 @@
             </div>
         </div>
 
+        <!-- CONTENEDOR DINÁMICO DE TICKETS DESDE SUPABASE -->
         <div id="contenedor-tickets-maestro"></div>
 
     </div>
@@ -281,35 +283,22 @@
         let areaSesionReal = "";
         let esSupervisor = false;
 
-        // EJECUCIÓN INMEDIATA SEGURO
         window.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. REVISAR LOBBY / MEMORIA LOCAL PRIMERO (Donde tu login guarda la sesión)
+            // 1. REVISAR MEMORIA LOCAL PRIMERO
             nombreSesionReal = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name');
             areaSesionReal = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area');
 
-            // 2. RESPALDO POR SI EL LOCALSTORAGE SE LIMPIA: Leer directamente lo que el backend escribe en el DOM
+            // 2. FALLBACK POR DEFECTO PARA PRUEBAS
             if (!nombreSesionReal) {
-                // Buscamos cualquier etiqueta que contenga el nombre en el documento
-                const cuerpoTexto = document.body.innerText;
-                if (cuerpoTexto.includes("Juan Miguel Yebra Prieto")) {
-                    nombreSesionReal = "Juan Miguel Yebra Prieto";
-                    areaSesionReal = "Dirección General de Asuntos Jurídicos";
-                } else if (cuerpoTexto.includes("Artuto Vidal Rojas")) {
-                    nombreSesionReal = "Artuto Vidal Rojas";
-                    areaSesionReal = "Auditoría Especial de Cumplimiento Financiero";
-                } else {
-                    // Fallback final por seguridad
-                    nombreSesionReal = "Artuto Vidal Rojas";
-                    areaSesionReal = "Auditoría Especial de Cumplimiento Financiero";
-                }
+                nombreSesionReal = "Juan Miguel Yebra Prieto";
+                areaSesionReal = "Dirección General de Asuntos Jurídicos";
             }
 
-            // Pintar los datos limpios en la pantalla de estatus
+            // Pintar los datos en pantalla
             document.getElementById('lbl-nombre-sesion').innerText = nombreSesionReal;
             document.getElementById('lbl-area-sesion').innerText = areaSesionReal;
 
-            // 3. ASIGNAR ROL REAL DE MANERA ESTRICTA
+            // 3. VALIDACIÓN ESTRICTA DE ROL
             const badgeRol = document.getElementById('badge-rol-contenedor');
             const nNombre = nombreSesionReal.toLowerCase();
 
@@ -323,10 +312,10 @@
                 badgeRol.className = "role-badge badge-usuario";
             }
 
-            // Descargar registros de la base de datos
+            // Descargar registros de Supabase
             conectarTablaSupabaseHallazgos();
 
-            // Configurar barra de filtros interactivos
+            // Configurar filtros
             document.getElementById('txt-buscar-folio').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-usuario').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-sujeto').addEventListener('input', ejecutarFiltrosCampos);
@@ -350,83 +339,87 @@
                 if (!response.ok) throw new Error("Fallo de red");
                 const datosProcesados = await response.json();
 
-               function renderizarContenedoresEstiloTurno(tickets) {
-    const contenedor = document.getElementById('contenedor-tickets-maestro');
-    contenedor.innerHTML = "";
+                renderizarContenedoresEstiloTurno(datosProcesados || []);
 
-    // FILTRADO INTELIGENTE TOLERANTE A VALORES NULL
-    const ticketsFiltradosPorPerfil = tickets.filter(t => {
-        // Si es Supervisor (Juan Miguel), por diseño ve absolutamente todo
-        if (esSupervisor) return true; 
-        
-        // Si es usuario normal, validamos de forma segura que no sea NULL antes de comparar
-        if (!t.usuario_nombre) return false; 
-
-        const dbNombre = t.usuario_nombre.toLowerCase().trim();
-        const sesionLimpia = nombreSesionReal.toLowerCase().trim();
-        return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
-    });
-
-    if (ticketsFiltradosPorPerfil.length === 0) {
-        contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets pendientes o registrados bajo tu perfil activo en este periodo: ${nombreSesionReal}</p>`;
-        return;
-    }
-
-    // MAPEO CORRECTO BASADO EN TU TABLA REAL DE SUPABASE
-    ticketsFiltradosPorPerfil.forEach(ticket => {
-        // Acoplamos los nombres exactamente a las columnas de tu captura de Supabase
-        const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
-        const sujeto = ticket.sujeto_fiscalizado || "ENTE";
-        const usuario = ticket.usuario_nombre || "Usuario no asignado (Invitado)";
-        const puesto = ticket.puesto_usuario || "Puesto no especificado";
-        const area = ticket.area_usuario || "Área Técnica de Control";
-        const solicitud = ticket.tipo_solicitud || "Revisión de Hallazgos / Análisis";
-        
-        let badgeDictamen = "DICTAMEN B003";
-        let tiemposEstimados = "Est. 1 a 2 días hábiles";
-
-        if(sujeto === "FGEG" || sujeto === "MDHI") {
-            badgeDictamen = "DICTAMEN B001";
-            tiemposEstimados = "Est. 3 a 5 días hábiles";
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace con el servidor.</p>";
+            }
         }
 
-        const divTarjeta = document.createElement('div');
-        divTarjeta.className = "panel-control-turno";
-        
-        // Atributos para la barra de búsqueda interactiva
-        divTarjeta.setAttribute('data-folio', folioUser.toLowerCase());
-        divTarjeta.setAttribute('data-usuario', usuario.toLowerCase());
-        divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
-        divTarjeta.setAttribute('data-puesto', puesto.toLowerCase());
+        function renderizarContenedoresEstiloTurno(tickets) {
+            const contenedor = document.getElementById('contenedor-tickets-maestro');
+            contenedor.innerHTML = "";
 
-        divTarjeta.innerHTML = `
-            <div class="panel-titulo-seccion">⏳ Control Virtual de Turno e Información de Fila</div>
-            <div class="card-interno-turno">
+            // FILTRADO INTELIGENTE TOLERANTE A VALORES NULL
+            const ticketsFiltradosPorPerfil = tickets.filter(t => {
+                if (esSupervisor) return true; // Supervisor ve todo
+                if (!t.usuario_nombre) return false; 
+
+                const dbNombre = t.usuario_nombre.toLowerCase().trim();
+                const sesionLimpia = nombreSesionReal.toLowerCase().trim();
+                return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
+            });
+
+            if (ticketsFiltradosPorPerfil.length === 0) {
+                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets pendientes registrados bajo el usuario activo: ${nombreSesionReal}</p>`;
+                return;
+            }
+
+            // MAPEO FIEL A LAS COLUMNAS REALES DE TU SUPABASE
+            ticketsFiltradosPorPerfil.forEach(ticket => {
+                const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
+                const sujeto = ticket.sujeto_fiscalizado || "ENTE";
+                const usuario = ticket.usuario_nombre || "Usuario no asignado";
+                const puesto = ticket.puesto_usuario || "Auditor";
+                const area = ticket.area_usuario || "Área Técnica";
+                const solicitud = ticket.tipo_solicitud || "Análisis de Informe";
                 
-                <div class="columna-datos">
-                    <p><strong>Ticket ID:</strong> ${folioUser}</p>
-                    <p><strong>Solicitud:</strong> ${solicitud}</p>
-                    <p><strong>Usuario:</strong> ${usuario}</p>
-                </div>
+                let badgeDictamen = "DICTAMEN B003";
+                let tiemposEstimados = "Est. 1 a 2 días hábiles";
 
-                <div class="columna-datos">
-                    <p><strong>Puesto:</strong> ${puesto}</p>
-                    <p><strong>Área:</strong> ${area}</p>
-                    <p><strong>Posición Fila:</strong> <span style="color:#27AE60; font-weight:700;">Turno Virtual Activo (${sujeto})</span></p>
-                </div>
+                if(sujeto === "FGEG" || sujeto === "MDHI") {
+                    badgeDictamen = "DICTAMEN B001";
+                    tiemposEstimados = "Est. 3 a 5 días hábiles";
+                }
 
-                <div class="columna-badge-derecha">
-                    <div class="badge-dictamen">${badgeDictamen}</div>
-                    <div class="estimado-tiempo">
-                        ⏱️ ${tiemposEstimados}
+                const divTarjeta = document.createElement('div');
+                divTarjeta.className = "panel-control-turno";
+                
+                divTarjeta.setAttribute('data-folio', folioUser.toLowerCase());
+                divTarjeta.setAttribute('data-usuario', usuario.toLowerCase());
+                divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
+                divTarjeta.setAttribute('data-puesto', puesto.toLowerCase());
+
+                divTarjeta.innerHTML = `
+                    <div class="panel-titulo-seccion">⏳ Control Virtual de Turno e Información de Fila</div>
+                    <div class="card-interno-turno">
+                        
+                        <div class="columna-datos">
+                            <p><strong>Ticket ID:</strong> ${folioUser}</p>
+                            <p><strong>Solicitud:</strong> ${solicitud}</p>
+                            <p><strong>Usuario:</strong> ${usuario}</p>
+                        </div>
+
+                        <div class="columna-datos">
+                            <p><strong>Puesto:</strong> ${puesto}</p>
+                            <p><strong>Área:</strong> ${area}</p>
+                            <p><strong>Posición Fila:</strong> <span style="color:#27AE60; font-weight:700;">Turno Virtual Activo (${sujeto})</span></p>
+                        </div>
+
+                        <div class="columna-badge-derecha">
+                            <div class="badge-dictamen">${badgeDictamen}</div>
+                            <div class="estimado-tiempo">
+                                ⏱️ ${tiemposEstimados}
+                            </div>
+                        </div>
+
                     </div>
-                </div>
+                `;
+                contenedor.appendChild(divTarjeta);
+            });
+        }
 
-            </div>
-        `;
-        contenedor.appendChild(divTarjeta);
-    });
-}
         function ejecutarFiltrosCampos() {
             const filtroFolio = document.getElementById('txt-buscar-folio').value.toLowerCase().trim();
             const filtroUsuario = document.getElementById('txt-buscar-usuario').value.toLowerCase().trim();
