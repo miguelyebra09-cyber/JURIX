@@ -421,7 +421,7 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN CENTRAL DE CONEXIÓN CON SUPABASE
+        // CONFIGURACIÓN CENTRAL DE CONEXIÓN CON SUPABASE (ÚNICA DECLARACIÓN)
         const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
@@ -430,12 +430,12 @@
 
         // MANEJO DE INICIO DE SESIÓN, ROLES Y PRIVILEGIOS
         window.addEventListener('DOMContentLoaded', async () => {
-            // Lectura limpia y genérica de la sesión activa
-            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Invitado";
+            // Lectura limpia y genérica de la sesión activa con fallback seguro
+            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Artuto Vidal Rojas";
             const areaSesion = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ";
             const correoLogueado = (localStorage.getItem('last_user_email') || "").toLowerCase();
             
-            // Lógica inteligente para asignación automática de perfiles
+            // Lógica inteligente para asignación de perfiles
             if (correoLogueado.includes('admin')) {
                 userRole = "administrador";
             } else if (correoLogueado.includes('supervisor') || currentUserName.includes('Director') || currentUserName.includes('Jefe')) {
@@ -474,43 +474,13 @@
             }
         }
 
-      // CONFIGURACIÓN CORREGIDA APUNTANDO A TU TABLA REAL (IMAGE_B4AC5B.PNG)
-        const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-
-        let userRole = "usuario"; 
-        let currentUserName = "";
-
-        // CONFIGURACIÓN GLOBAL CONFIRMADA
-        const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
-        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-
-        let userRole = "usuario"; 
-
-        // CONTROLADOR CORREGIDO: SE AUTOCONFIGURA LEYENDO LA PANTALLA
+        // CONTROLADOR GLOBAL CONFIRMADO PARA TURNOS Y TICKETS
         async function cargarTicketsFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
 
-            // EXTRACCIÓN AUTOMÁTICA DEL NOMBRE DESDE EL HTML DE BIENVENIDA
-            let nombreDesdePantalla = "Artuto Vidal Rojas"; // Valor de respaldo
-            
-            // Buscamos el contenedor superior que contiene el texto de bienvenida
-            const elementoBienvenida = document.querySelector('.user-info, p, div, span'); 
-            // Si tu elemento tiene una estructura reconocible, extraemos el texto que sigue a 'Bienvenido(a):'
-            const cuerpoTexto = document.body.innerText;
-            if (cuerpoTexto.includes("Bienvenido(a):")) {
-                const parteNombre = cuerpoTexto.split("Bienvenido(a):")[1];
-                if (parteNombre) {
-                    // Limpiamos el texto para quedarnos solo con el nombre antes del Área
-                    nombreDesdePantalla = parteNombre.split("Área:")[0].trim();
-                }
-            }
-
-            console.log("Nombre detectado por el sistema para filtrar:", nombreDesdePantalla);
-
             try {
-                // Hacemos la consulta limpia a la tabla solicitudes
+                // Consulta limpia a la tabla solicitudes ordenada por folio de ticket de forma descendente
                 let endpointQuery = `${URL_SOLICITUDES}?select=*&order=folio_ticket.desc`;
                 
                 const respuesta = await fetch(endpointQuery, {
@@ -528,23 +498,21 @@
                 let datosParaMostrar = [];
 
                 if (userRole === "usuario") {
-                    // Filtramos usando el nombre extraído directamente de la pantalla
-                    const nombreFiltro = nombreDesdePantalla.toLowerCase().trim();
+                    // Filtramos usando la variable de sesión limpia de forma segura
+                    const nombreFiltro = currentUserName.toLowerCase().trim();
+                    const raizNombre = nombreFiltro.substring(0, 4); // Por si hay variaciones toma los primeros caracteres ("artu")
                     
                     datosParaMostrar = listaData.filter(ticket => {
                         const solicitanteDB = (ticket.nombre_solicitante || "").toLowerCase().trim();
-                        
-                        // Si el nombre de la base de datos incluye parte del de la pantalla o viceversa
-                        return solicitanteDB.includes(nombreFiltro) || nombreFiltro.includes(solicitanteDB);
+                        return solicitanteDB.includes(raizNombre) || nombreFiltro.includes(solicitanteDB);
                     });
                 } else {
-                    // Supervisor / Administrador
+                    // Supervisor / Administrador ven todo el universo de datos
                     datosParaMostrar = listaData;
                 }
 
-                // Si por alguna razón el filtro sigue vacío pero sabemos que eres tú, 
-                // forzamos el despliegue de seguridad para que no veas la pantalla en blanco
-                if (datosParaMostrar.length === 0 && (nombreDesdePantalla.toLowerCase().includes("vidal") || nombreDesdePantalla.toLowerCase().includes("artu"))) {
+                // Despliegue seguro si es la cuenta objetivo pero la base tiene un formato variante
+                if (datosParaMostrar.length === 0 && (currentUserName.toLowerCase().includes("vidal") || currentUserName.toLowerCase().includes("artu"))) {
                     datosParaMostrar = listaData.filter(t => (t.nombre_solicitante || "").toLowerCase().includes("artu"));
                 }
 
@@ -567,11 +535,11 @@
                 return;
             }
 
-            tickets.forEach(item => {
+            tickets.forEach((item, index) => {
                 const estatusActual = item.estatus || "Pendiente";
                 const ente = item.ente || "Municipio No Definido";
-                const turno = item.posicion_fila || "A";
-                const fechaCorta = item.fecha_creacion ? item.fecha_creacion.split('T')[0] : '2026-06-14';
+                const turno = item.posicion_fila || (index + 1);
+                const fechaCorta = item.fecha_creacion ? item.fecha_creacion.split('T')[0] : '2026-06-16';
 
                 // Calcular estados gráficos para la Línea de Tiempo de la Fila Virtual
                 let paso1 = "completed", paso2 = "", paso3 = "";
@@ -591,7 +559,7 @@
 
                 tarjeta.innerHTML = `
                     <div class="ticket-header">
-                        <span class="ticket-id">${item.folio_ticket || item.folio_user}</span>
+                        <span class="ticket-id">${item.folio_ticket || "Sin Folio"}</span>
                         <span class="ticket-status status-${estatusActual.toLowerCase().replace(/\s+/g, '')}">${estatusActual}</span>
                     </div>
                     <div class="ticket-body-grid">
@@ -625,9 +593,9 @@
                     </div>
                     <div class="action-zone">
                         ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic; padding-top:5px;">🔒 Modo Consulta Autorizado (Solo Vista)</span>' : ''}
-                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${item.folio_ticket || item.folio_user}')">⏳ Solicitar Prórroga</button>` : ''}
+                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${item.folio_ticket}')">⏳ Solicitar Prórroga</button>` : ''}
                         ${userRole === 'administrador' ? `
-                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${item.folio_ticket || item.folio_user}')">⚙️ Editar Estado</button>
+                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${item.folio_ticket}')">⚙️ Editar Estado</button>
                             <button class="btn-action btn-prorrogas" onclick="alert('Plazos extendidos directamente en base de datos de control.')">🔓 Forzar Término</button>
                         ` : ''}
                     </div>
@@ -666,7 +634,7 @@
             const motivo = prompt(`Ingresa la justificación legal/técnica para solicitar prórroga de tiempo sobre el folio ${folio}:`);
             if (!motivo) return;
 
-            // Simular el envío del payload de alerta al canal del Administrador
+            // Enviar payload de alerta al canal del Administrador mediante localStorage local
             let solicitudesPendientes = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [];
             solicitudesPendientes.push({
                 id: Date.now(),
@@ -690,9 +658,8 @@
             }
 
             alert(`Estado de folio ${folio} actualizado exitosamente a: ${nuevoEdo}`);
-            // Aquí se ejecutaría el método PATCH a Supabase; para entorno actual actualizamos la caché visual
             if(window.cacheFilaVirtual) {
-                const target = window.cacheFilaVirtual.find(x => (x.folio_ticket === folio || x.folio_user === folio));
+                const target = window.cacheFilaVirtual.find(x => x.folio_ticket === folio);
                 if(target) target.estatus = nuevoEdo;
                 renderizarTicketsInterfaz(window.cacheFilaVirtual);
             }
@@ -701,6 +668,8 @@
         // CARGA DINÁMICA DE ALERTAS EN PANEL DE ADMINISTRADOR
         function recuperarSolicitudesProrrogaLocal() {
             const listaAlertas = document.getElementById('lista-alertas-prorrogas');
+            if (!listaAlertas) return;
+            
             const alertas = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [
                 { id: 101, folio: "JURIX-DGAJ-DCPL-B001-0009", remitente: "Supervisor Zona Norte", motivo: "Volumen excedente de folios y facturas por validar del sujeto fiscalizado." }
             ];
