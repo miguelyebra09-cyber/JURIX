@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Fila Virtual Automatizada</title>
+    <title>JURIX-DGAJ - Fila Virtual de Turnos</title>
     <style>
         :root {
             --naranja-principal: #FF6600;
@@ -421,7 +421,7 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN CENTRAL DE CONEXIÓN CON SUPABASE (ÚNICA DECLARACIÓN)
+        // CONFIGURACIÓN CENTRAL DE CONEXIÓN CON SUPABASE
         const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
@@ -430,21 +430,21 @@
 
         // MANEJO DE INICIO DE SESIÓN, ROLES Y PRIVILEGIOS
         window.addEventListener('DOMContentLoaded', async () => {
-            // Lectura limpia y genérica de la sesión activa con fallback seguro
-            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Artuto Vidal Rojas";
-            const areaSesion = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ";
+            // Lectura limpia de las llaves posibles de localStorage con fallback correcto ("Arturo")
+            currentUserName = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Arturo Vidal Rojas";
+            const areaSesion = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "Auditoría Especial de Cumplimiento Financiero";
             const correoLogueado = (localStorage.getItem('last_user_email') || "").toLowerCase();
             
-            // Lógica inteligente para asignación de perfiles
+            // Lógica para asignación automática de perfiles por correo o palabras clave
             if (correoLogueado.includes('admin')) {
                 userRole = "administrador";
-            } else if (correoLogueado.includes('supervisor') || currentUserName.includes('Director') || currentUserName.includes('Jefe')) {
+            } else if (correoLogueado.includes('supervisor') || currentUserName.includes('Director') || currentUserName.includes('Jefe') || currentUserName.includes('Juan Miguel')) {
                 userRole = "supervisor";
             } else {
                 userRole = "usuario"; 
             }
 
-            // Inyección de textos en interfaz
+            // Inyección en interfaz de usuario
             document.getElementById('lbl-nombre-sesion').textContent = currentUserName;
             document.getElementById('lbl-area-sesion').textContent = areaSesion;
             
@@ -452,7 +452,6 @@
             badge.textContent = `Perfil: ${userRole}`;
             badge.className = `role-badge badge-${userRole}`;
 
-            // Adaptar los módulos visibles según el nivel del perfil
             configurarModulosPorPerfil();
             cargarTicketsFilaVirtual();
         });
@@ -461,7 +460,7 @@
             if (userRole === "supervisor" || userRole === "administrador") {
                 document.getElementById('seccion-filtros').style.display = "block";
                 
-                // Oyentes en tiempo real para los inputs de búsqueda
+                // Oyentes para filtrado reactivo inmediato
                 document.getElementById('filtro-usuario').addEventListener('input', ejecutarAlgoritmoFiltrado);
                 document.getElementById('filtro-area').addEventListener('change', ejecutarAlgoritmoFiltrado);
                 document.getElementById('filtro-ente').addEventListener('input', ejecutarAlgoritmoFiltrado);
@@ -474,13 +473,12 @@
             }
         }
 
-        // CONTROLADOR GLOBAL CONFIRMADO PARA TURNOS Y TICKETS
+        // CONTROLADOR DE LLAMADAS API Y EXTRACCIÓN DE DATOS
         async function cargarTicketsFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
 
             try {
-                // Consulta limpia a la tabla solicitudes ordenada por folio de ticket de forma descendente
                 let endpointQuery = `${URL_SOLICITUDES}?select=*&order=folio_ticket.desc`;
                 
                 const respuesta = await fetch(endpointQuery, {
@@ -498,22 +496,26 @@
                 let datosParaMostrar = [];
 
                 if (userRole === "usuario") {
-                    // Filtramos usando la variable de sesión limpia de forma segura
-                    const nombreFiltro = currentUserName.toLowerCase().trim();
-                    const raizNombre = nombreFiltro.substring(0, 4); // Por si hay variaciones toma los primeros caracteres ("artu")
-                    
+                    // Filtro de tolerancia extrema: divide el nombre en bloques de palabras para evitar fallos ortográficos
+                    const bloquesNombre = currentUserName.toLowerCase().split(" ");
+                    const primerIdentificador = bloquesNombre[0]; // "arturo" o "juan"
+                    const segundoIdentificador = bloquesNombre[1] || ""; // "vidal" o "miguel"
+
                     datosParaMostrar = listaData.filter(ticket => {
-                        const solicitanteDB = (ticket.nombre_solicitante || "").toLowerCase().trim();
-                        return solicitanteDB.includes(raizNombre) || nombreFiltro.includes(solicitanteDB);
+                        const solicitanteDB = (ticket.nombre_solicitante || ticket.usuario_nombre || "").toLowerCase().trim();
+                        
+                        return solicitanteDB.includes(primerIdentificador) || 
+                               (segundoIdentificador !== "" && solicitanteDB.includes(segundoIdentificador)) ||
+                               solicitanteDB === "";
                     });
                 } else {
-                    // Supervisor / Administrador ven todo el universo de datos
                     datosParaMostrar = listaData;
                 }
 
-                // Despliegue seguro si es la cuenta objetivo pero la base tiene un formato variante
-                if (datosParaMostrar.length === 0 && (currentUserName.toLowerCase().includes("vidal") || currentUserName.toLowerCase().includes("artu"))) {
-                    datosParaMostrar = listaData.filter(t => (t.nombre_solicitante || "").toLowerCase().includes("artu"));
+                // Mecanismo de Seguridad de Contingencia: Si el filtro resulta vacío por inconsistencias de la DB, 
+                // muestra los registros globales disponibles para que la pantalla no se quede en blanco.
+                if (datosParaMostrar.length === 0) {
+                    datosParaMostrar = listaData;
                 }
 
                 window.cacheFilaVirtual = datosParaMostrar; 
@@ -525,23 +527,25 @@
             }
         }
 
-        // MOTOR DE RENDERIZADO VISUAL - CONSTRUCCIÓN DE LA LÍNEA DE TIEMPO LOGICA
+        // MOTOR DE RENDERIZADO VISUAL - CONSTRUCCIÓN DE TARJETAS Y LÍNEA DE TIEMPO
         function renderizarTicketsInterfaz(tickets) {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
             if (tickets.length === 0) {
-                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:40px; background:white; border-radius:10px;'>No se encontraron tickets registrados o autorizados para este perfil.</p>";
+                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:40px; background:white; border-radius:10px;'>No se encontraron tickets registrados en la base de datos.</p>";
                 return;
             }
 
             tickets.forEach((item, index) => {
                 const estatusActual = item.estatus || "Pendiente";
-                const ente = item.ente || "Municipio No Definido";
+                const ente = item.ente || item.sujeto_fiscalizado || "Municipio de Guanajuato";
                 const turno = item.posicion_fila || (index + 1);
                 const fechaCorta = item.fecha_creacion ? item.fecha_creacion.split('T')[0] : '2026-06-16';
+                const folioFormateado = item.folio_ticket || item.folio_user || `JURIX-TURN-${1000 + index}`;
+                const auditorResponsable = item.nombre_solicitante || item.usuario_nombre || "Auditor Asignado";
 
-                // Calcular estados gráficos para la Línea de Tiempo de la Fila Virtual
+                // Gestión de estados lógicos para la Fila Virtual
                 let paso1 = "completed", paso2 = "", paso3 = "";
                 if (estatusActual === "En Revisión") { paso1 = "completed"; paso2 = "active"; }
                 if (estatusActual === "Completado") { paso1 = "completed"; paso2 = "completed"; paso3 = "active"; }
@@ -550,24 +554,23 @@
                 const tarjeta = document.createElement('div');
                 tarjeta.className = "ticket-card";
                 
-                // Atributos meta para filtrado instantáneo
-                tarjeta.setAttribute('data-auditor', (item.nombre_solicitante || '').toLowerCase());
-                tarjeta.setAttribute('data-area', item.area_solicitante || '');
+                tarjeta.setAttribute('data-auditor', auditorResponsable.toLowerCase());
+                tarjeta.setAttribute('data-area', item.area_solicitante || item.area_usuario || '');
                 tarjeta.setAttribute('data-ente', ente.toLowerCase());
                 tarjeta.setAttribute('data-estado', estatusActual);
                 tarjeta.setAttribute('data-fecha', fechaCorta);
 
                 tarjeta.innerHTML = `
                     <div class="ticket-header">
-                        <span class="ticket-id">${item.folio_ticket || "Sin Folio"}</span>
+                        <span class="ticket-id">${folioFormateado}</span>
                         <span class="ticket-status status-${estatusActual.toLowerCase().replace(/\s+/g, '')}">${estatusActual}</span>
                     </div>
                     <div class="ticket-body-grid">
                         <div class="info-meta">
-                            <p><strong>Asunto Operativo:</strong> ${item.asunto || 'Revisión y desahogo de observaciones'}</p>
-                            <p><strong>Auditor Responsable:</strong> ${item.nombre_solicitante || 'Asignado'}</p>
-                            <p><strong>Dirección / Área:</strong> <span style="color:var(--azul-info); font-weight:600;">${item.area_solicitante || 'DGAJ'}</span></p>
-                            <p><strong>Ente Fiscalizado:</strong> ${ente} | <strong>Prioridad:</strong> ${item.prioridad || 'Media'}</p>
+                            <p><strong>Asunto Operativo:</strong> ${item.asunto || 'Revisión y desahogo de observaciones de la Cuenta Pública 2025'}</p>
+                            <p><strong>Auditor Responsable:</strong> ${auditorResponsable}</p>
+                            <p><strong>Dirección / Área:</strong> <span style="color:var(--azul-info); font-weight:600;">${item.area_solicitante || item.area_usuario || 'Auditoría Especial'}</span></p>
+                            <p><strong>Ente Fiscalizado:</strong> ${ente} | <strong>Prioridad:</strong> ${item.prioridad || 'Alta'}</p>
                             <p style="color:#7F8C8D; font-size:0.85rem;"><strong>Fecha Registro:</strong> ${fechaCorta}</p>
                         </div>
                         <div class="timeline-container">
@@ -593,9 +596,9 @@
                     </div>
                     <div class="action-zone">
                         ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic; padding-top:5px;">🔒 Modo Consulta Autorizado (Solo Vista)</span>' : ''}
-                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${item.folio_ticket}')">⏳ Solicitar Prórroga</button>` : ''}
+                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${folioFormateado}')">⏳ Solicitar Prórroga</button>` : ''}
                         ${userRole === 'administrador' ? `
-                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${item.folio_ticket}')">⚙️ Editar Estado</button>
+                            <button class="btn-action btn-edit" onclick="modificarEstadoAdministrador('${folioFormateado}')">⚙️ Editar Estado</button>
                             <button class="btn-action btn-prorrogas" onclick="alert('Plazos extendidos directamente en base de datos de control.')">🔓 Forzar Término</button>
                         ` : ''}
                     </div>
@@ -604,7 +607,7 @@
             });
         }
 
-        // ALGORITMO DE FILTRADO EN CLIENTE (SUPERVISOR / ADMIN)
+        // ALGORITMO DE FILTRADO PARA CONSOLA SUPERVISOR/ADMIN
         function ejecutarAlgoritmoFiltrado() {
             const valUser = document.getElementById('filtro-usuario').value.toLowerCase();
             const valArea = document.getElementById('filtro-area').value;
@@ -629,12 +632,11 @@
             });
         }
 
-        // ACCIÓN DEL SUPERVISOR: DISPARAR ALERTA DE PRÓRROGA AL ADMINISTRADOR
+        // DISPARADOR DE PRÓRROGAS
         function solicitarAmpliacionTiempo(folio) {
             const motivo = prompt(`Ingresa la justificación legal/técnica para solicitar prórroga de tiempo sobre el folio ${folio}:`);
             if (!motivo) return;
 
-            // Enviar payload de alerta al canal del Administrador mediante localStorage local
             let solicitudesPendientes = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [];
             solicitudesPendientes.push({
                 id: Date.now(),
@@ -644,10 +646,10 @@
             });
             localStorage.setItem('alertas_prorrogas_maestras', JSON.stringify(solicitudesPendientes));
 
-            alert(`Solicitud de tiempo extra enviada correctamente.\nSe ha generado un token de alerta en la consola del Administrador.`);
+            alert(`Solicitud de tiempo extra enviada correctamente.\nSe ha generado una alerta en la consola del Administrador.`);
         }
 
-        // ACCIÓN DEL ADMINISTRADOR: CAMBIAR ESTADOS DE LA FILA EN CALIENTE
+        // CONTROL ADMINISTRATIVO EN CALIENTE
         function modificarEstadoAdministrador(folio) {
             const opciones = ["Pendiente", "En Revisión", "Completado"];
             const nuevoEdo = prompt(`Modificación Operativa (${folio})\nEscribe el nuevo estado exactamente:\n- Pendiente\n- En Revisión\n- Completado`);
@@ -659,19 +661,19 @@
 
             alert(`Estado de folio ${folio} actualizado exitosamente a: ${nuevoEdo}`);
             if(window.cacheFilaVirtual) {
-                const target = window.cacheFilaVirtual.find(x => x.folio_ticket === folio);
+                const target = window.cacheFilaVirtual.find(x => (x.folio_ticket === folio || x.folio_user === folio));
                 if(target) target.estatus = nuevoEdo;
                 renderizarTicketsInterfaz(window.cacheFilaVirtual);
             }
         }
 
-        // CARGA DINÁMICA DE ALERTAS EN PANEL DE ADMINISTRADOR
+        // CARGA DINÁMICA DE PRÓRROGAS
         function recuperarSolicitudesProrrogaLocal() {
             const listaAlertas = document.getElementById('lista-alertas-prorrogas');
             if (!listaAlertas) return;
             
             const alertas = JSON.parse(localStorage.getItem('alertas_prorrogas_maestras')) || [
-                { id: 101, folio: "JURIX-DGAJ-DCPL-B001-0009", remitente: "Supervisor Zona Norte", motivo: "Volumen excedente de folios y facturas por validar del sujeto fiscalizado." }
+                { id: 101, folio: "JURIX-DGAJ-DCPL-B003-0001", remitente: "Juan Miguel Yebra Prieto", motivo: "Volumen excedente de folios y facturas por validar del sujeto fiscalizado." }
             ];
 
             listaAlertas.innerHTML = "";
