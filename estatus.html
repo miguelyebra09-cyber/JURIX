@@ -88,7 +88,7 @@
 
         .role-badge {
             padding: 8px 16px;
-            border-radius: 20 Fort;
+            border-radius: 20px;
             font-weight: 700;
             font-size: 0.8rem;
             text-transform: uppercase;
@@ -140,7 +140,7 @@
             outline: none;
         }
 
-        /* --- CONTENEDOR VISUAL DE TURNOS (ESTILO FILA VIRTUAL) --- */
+        /* --- CONTENEDOR VISUAL DE TURNOS --- */
         .panel-control-turno {
             background: var(--blanco);
             border-radius: 8px;
@@ -170,7 +170,7 @@
             border-radius: 4px;
             padding: 20px;
             display: grid;
-            grid-template-columns: 1.1fr 1.1fr 0.8fr;
+            grid-template-columns: 1.2fr 1.2fr 0.8fr;
             gap: 20px;
             align-items: flex-start;
         }
@@ -230,7 +230,7 @@
             color: #7E5109;
         }
 
-        /* --- PREPARACIÓN DE LÍNEA DE TIEMPO --- */
+        /* --- LÍNEA DE TIEMPO --- */
         .timeline-container {
             margin-top: 25px;
             padding-top: 15px;
@@ -291,9 +291,8 @@
 
     <nav>
         <a href="solicitud.html">Nueva Solicitud</a>
-        <a href="hallazgo.html">Cédula de Hallazgos</a>
         <a href="estatus.html">Estatus / Fila Virtual</a>
-        <a href="salir">Salir del Sistema</a>
+        <a href="index.hmtl">Salir del Sistema</a>
     </nav>
 
     <div class="container">
@@ -367,10 +366,10 @@
                 badgeRol.className = "role-badge badge-usuario";
             }
 
-            // Descargar y unificar los datos de ambas tablas
+            // Descargar y unificar tablas de Supabase
             descargarYUnificarTablas();
 
-            // Eventos de Filtros
+            // Eventos de Filtrado en Tiempo Real
             document.getElementById('txt-buscar-folio').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-usuario').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-sujeto').addEventListener('input', ejecutarFiltrosCampos);
@@ -382,7 +381,7 @@
             contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando información multi-tabla de Fila Virtual...</p>";
 
             try {
-                // 1. Descarga paralela de ambas tablas
+                // 1. Descarga en paralelo de ambas tablas de origen
                 const [resSolicitudes, resHallazgos] = await Promise.all([
                     fetch(`${URL_SOLICITUDES}?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
                     fetch(`${URL_HALLAZGOS}?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } })
@@ -391,23 +390,22 @@
                 let solicitudesData = resSolicitudes.ok ? await resSolicitudes.json() : [];
                 let hallazgosData = resHallazgos.ok ? await resHallazgos.json() : [];
 
-                // MOCKS DE RESPALDO (Por si las tablas de Supabase están vacías)
+                // Mocks de respaldo por si fallan las peticiones HTTP o las tablas están vacías
                 if (solicitudesData.length === 0) {
                     solicitudesData = [
                         { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", nombre_solicitante: "Juan Miguel Yebra Prieto", puesto_solicitante: "Directora DCPL", servicio: "Análisis Normativo", asunto: "Revisión integral de la Cuenta Pública Estatal" },
-                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", nombre_solicitante: "Artuto Vidal Rojas", puesto_solicitante: "Auditor", servicio: "Revisión Financiera", asunto: "Auditoría de Fondos Federales de Seguridad" }
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", nombre_solicitante: "Artuto Vidal Rojas", puesto_solicitante: "Auditor", servicio: "Revisión Financiera", asunto: "Auditoría de Fondos Federales" }
                     ];
                 }
                 if (hallazgosData.length === 0) {
                     hallazgosData = [
                         { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", sujeto_fiscalizado: "MCUE", tipo_auditoria: "Financiera", tipo_hallazgo: "Inobservancia", num_concepto: "4", fecha_recepcion: "2026-06-15", comentarios_revision: "Pendiente de solventar por parte de la entidad pública." },
-                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", sujeto_fiscalizado: "FGEG", tipo_auditoria: "Cumplimiento", tipo_hallazgo: "Deficiencia", num_concepto: "12", fecha_recepcion: "2026-06-16", comentarios_revision: "Se detectaron inconsistencias en las bitácoras de obra." }
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", sujeto_fiscalizado: "FGEG", tipo_auditoria: "Cumplimiento", tipo_hallazgo: "Deficiencia", num_concepto: "12", fecha_recepcion: "2026-06-16", comentarios_revision: "Se detectaron inconsistencias en bitácoras." }
                     ];
                 }
 
-                // 2. PROCESO DE CRUCE LÓGICO (JOIN) POR folio_ticket
+                // 2. CRUCE LÓGICO DE INFORMACIÓN POR folio_ticket (Inner-Left Join)
                 let ticketsUnificados = solicitudesData.map(sol => {
-                    // Buscar su par correspondiente en hallazgos
                     const hallazgoPar = hallazgosData.find(h => h.folio_ticket === sol.folio_ticket) || {};
                     return {
                         ...sol,
@@ -419,7 +417,7 @@
 
             } catch (error) {
                 console.error("Error unificando tablas: ", error);
-                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace multi-tabla. Revisa conexiones.</p>";
+                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace multi-tabla. Revisa conexiones en la base de datos.</p>";
             }
         }
 
@@ -427,7 +425,7 @@
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
-            // FILTRADO POR PERFIL DE SEGURIDAD
+            // Filtro de seguridad según el perfil de inicio de sesión
             const ticketsFiltrados = tickets.filter(t => {
                 if (esSupervisor) return true; 
                 if (!t.nombre_solicitante) return false;
@@ -435,33 +433,33 @@
             });
 
             if (ticketsFiltrados.length === 0) {
-                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets vinculados al perfil: ${nombreSesionReal}</p>`;
+                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets vinculados al perfil activo: ${nombreSesionReal}</p>`;
                 return;
             }
 
             ticketsFiltrados.forEach(ticket => {
-                // Extracción segura de Campos de Tabla "Solicitudes"
+                // Campos de la tabla "solicitudes"
                 const folio = ticket.folio_ticket || "S/F";
                 const solicitante = ticket.nombre_solicitante || "No asignado";
                 const puesto = ticket.puesto_solicitante || "Auditor";
                 const servicio = ticket.servicio || "General";
                 const asuntoOriginal = ticket.asunto || "Sin Asunto";
                 
-                // Limitador estricto del campo Asunto a 20 caracteres
+                // Limitador a 20 caracteres solicitado
                 const asuntoRecortado = asuntoOriginal.length > 20 ? asuntoOriginal.substring(0, 20) + "..." : asuntoOriginal;
 
-                // Extracción segura de Campos de Tabla "Hallazgos"
+                // Campos de la tabla "hallazgos"
                 const sujeto = ticket.sujeto_fiscalizado || "ENTE";
                 const tipoAuditoria = ticket.tipo_auditoria || "N/A";
                 const tipoHallazgo = ticket.tipo_hallazgo || "Regular";
                 const numConcepto = ticket.num_concepto || "0";
                 const fecha = ticket.fecha_recepcion || "2026-06-16";
-                const comentarios = ticket.comentarios_revision || "Sin observaciones registradas por el momento.";
+                const comentarios = ticket.comentarios_revision || "Sin observaciones registradas.";
 
                 const divTarjeta = document.createElement('div');
                 divTarjeta.className = "panel-control-turno";
                 
-                // Atributos meta para búsquedas instantáneas
+                // Atributos de búsqueda por metadatos
                 divTarjeta.setAttribute('data-folio', folio.toLowerCase());
                 divTarjeta.setAttribute('data-usuario', solicitante.toLowerCase());
                 divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
@@ -526,7 +524,6 @@
         function ejecutarFiltrosCampos() {
             const filtroFolio = document.getElementById('txt-buscar-folio').value.toLowerCase().trim();
             const filtroUsuario = document.getElementById('txt-buscar-usuario').value.toLowerCase().trim();
-            const '../../..';
             const filtroSujeto = document.getElementById('txt-buscar-sujeto').value.toLowerCase().trim();
             const filtroPuesto = document.getElementById('select-buscar-puesto').value.toLowerCase();
 
