@@ -449,6 +449,7 @@
         });
 
         // Evento de guardado del Formulario de Hallazgos
+       // Evento de guardado del Formulario de Hallazgos
         document.getElementById('form-hallazgo').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -461,10 +462,9 @@
                 return;
             }
 
-            // Mapeo exacto de los campos de tu formulario hacia las columnas de Supabase
-            // ATENCIÓN: Forzamos el envío de 'folio_user' mapeado con el número de ticket
+            // CORRECCIÓN AQUÍ: Cambiamos 'folio_user' por el nombre real de la columna: 'folio_ticket'
             const registroHallazgo = {
-                folio_user: folioParaGuardar, // <-- AQUÍ SE REALIZA LA UNIÓN DE AMBAS TABLAS
+                folio_ticket: folioParaGuardar, // <-- Nombre exacto de tu columna en Supabase
                 sujeto_fiscalizado: document.getElementById('select-sujeto').value,
                 tipo_auditoria: document.getElementById('select-auditoria').value,
                 tipo_hallazgo: document.getElementById('select-tipo-hallazgo').value,
@@ -488,8 +488,6 @@
                 if (response.ok) {
                     alert(`✅ Cédula de Hallazgo registrada con éxito y enlazada al Ticket: ${folioParaGuardar}`);
                     document.getElementById('form-hallazgo').reset();
-                    
-                    // Redirección automática a la fila virtual para supervisar el estatus actualizado
                     window.location.href = "estatus.html";
                 } else {
                     const errData = await response.json();
