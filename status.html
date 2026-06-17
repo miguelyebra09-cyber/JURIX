@@ -474,14 +474,21 @@
             }
         }
 
-       // CONTROLADOR DE CONSULTAS MAESTRAS - FILTRADO INTELIGENTE INTEGRADO
+      // CONFIGURACIÓN CORREGIDA APUNTANDO A TU TABLA REAL (IMAGE_B4AC5B.PNG)
+        const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+
+        let userRole = "usuario"; 
+        let currentUserName = "";
+
+        // CONTROLADOR DE CONSULTAS VINCULADO A LA TABLA 'HALLAZGOS'
         async function cargarTicketsFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
-            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual con la tabla Hallazgos...</p>";
 
             try {
-                // 1. Traemos TODOS los tickets de la tabla para asegurar que no se pierda ninguno por problemas de URL
-                let endpointQuery = `${URL_SOLICITUDES}?select=*&order=fecha_creacion.desc`;
+                // Consultamos directamente tu tabla 'hallazgos' ordenando por su fecha de creación
+                let endpointQuery = `${URL_SOLICITUDES}?select=*&order=created_at.desc`;
                 
                 const respuesta = await fetch(endpointQuery, {
                     method: 'GET',
@@ -492,24 +499,21 @@
                     }
                 });
 
-                if (!respuesta.ok) throw new Error("Error de conexión");
+                if (!respuesta.ok) throw new Error("Error al consultar la tabla hallazgos");
                 const listaData = await respuesta.json();
                 
-                // 2. FILTRADO INTELIGENTE SEGÚN EL PERFIL EN EL CLIENTE:
+                // FILTRADO INTELIGENTE POR TU COLUMNA 'usuario_nombre'
                 let datosParaMostrar = [];
 
                 if (userRole === "usuario") {
-                    // Si es usuario estándar, filtramos en JavaScript buscando CUALQUIER coincidencia parcial
-                    // Esto evita problemas con nombres guardados a medias, errores de dedo o espacios extras.
                     const nombreBuscado = currentUserName.toLowerCase().trim();
                     
                     datosParaMostrar = listaData.filter(ticket => {
-                        // Buscamos coincidencia en la columna 'nombre_solicitante' o cualquier columna alternativa de usuario
-                        const solicitante = (ticket.nombre_solicitante || ticket.usuario || ticket.nombre || "").toLowerCase();
-                        return solicitante.includes(nombreBuscado) || nombreBuscado.includes(solicitante.split(' ')[0]);
+                        // Leemos exactamente tu columna 'usuario_nombre' de Supabase
+                        const solicitante = (ticket.usuario_nombre || "").toLowerCase().trim();
+                        return solicitante.includes(nombreBuscado) || nombreBuscado.includes(solicitante);
                     });
                 } else {
-                    // Si es Supervisor o Administrador, ve la totalidad de los elementos
                     datosParaMostrar = listaData;
                 }
 
@@ -517,15 +521,89 @@
                 renderizarTicketsInterfaz(datosParaMostrar);
 
             } catch (err) {
-                console.error("Fallo de red:", err);
-                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error de sincronización de datos con el servidor.</p>";
-                
-                // Contingencia automática local si el servidor no responde
-                const mockContingencia = [
-                    { folio_ticket: "JURIX-2026-001", nombre_solicitante: "Juan Miguel Yebra Prieto", area_solicitante: "Dirección General de Asuntos Jurídicos", asunto: "Validación de Oficios de Legalidad", prioridad: "Normal", estatus: "En Revisión", ente: "Guanajuato", posicion_fila: 1, fecha_creacion: "2026-06-16" }
-                ];
-                renderizarTicketsInterfaz(mockContingencia);
+                console.error("Fallo de red o estructura:", err);
+                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error de sincronización con la tabla Hallazgos.</p>";
             }
+        }
+
+        // MOTOR DE RENDERIZADO ADAPTADO A TUS COLUMNAS REALES
+        function renderizarTicketsInterfaz(tickets) {
+            const contenedor = document.getElementById('contenedor-tickets-maestro');
+            contenedor.innerHTML = "";
+
+            if (tickets.length === 0) {
+                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; padding:40px; background:white; border-radius:10px;'>No se encontraron tickets registrados en la tabla hallazgos para tu usuario.</p>";
+                return;
+            }
+
+            tickets.forEach((item, indice) => {
+                // Mapeamos las columnas reales que se ven en tu imagen image_b4ac5b.png
+                const folio = item.folio_user || "Sin Folio";
+                const auditor = item.usuario_nombre || "No Asignado";
+                const area = item.area_usuario || "DGAJ";
+                const ente = item.sujeto_fiscalizado || "No Definido";
+                
+                // Al no tener columna estatus explícita visible, usamos uno por defecto o "En Revisión" si tiene datos
+                const estatusActual = item.comentarios_revision ? "En Revisión" : "Pendiente";
+                const fechaCorta = item.created_at ? item.created_at.split('T')[0] : '2026-06-16';
+                const turno = indice + 1;
+
+                // Calcular estados gráficos para la Línea de Tiempo
+                let paso1 = "completed", paso2 = "", paso3 = "";
+                if (estatusActual === "En Revisión") { paso1 = "completed"; paso2 = "active"; }
+                if (estatusActual === "Pendiente") { paso1 = "active"; }
+
+                const tarjeta = document.createElement('div');
+                tarjeta.className = "ticket-card";
+                
+                // Atributos meta para que sigan funcionando tus filtros de Supervisor
+                tarjeta.setAttribute('data-auditor', auditor.toLowerCase());
+                tarjeta.setAttribute('data-area', area);
+                tarjeta.setAttribute('data-ente', ente.toLowerCase());
+                tarjeta.setAttribute('data-estado', estatusActual);
+                tarjeta.setAttribute('data-fecha', fechaCorta);
+
+                tarjeta.innerHTML = `
+                    <div class="ticket-header">
+                        <span class="ticket-id">${folio}</span>
+                        <span class="ticket-status status-${estatusActual.toLowerCase()}">${estatusActual}</span>
+                    </div>
+                    <div class="ticket-body-grid">
+                        <div class="info-meta">
+                            <p><strong>Tipo Solicitud:</strong> ${item.tipo_solicitud || 'Cédula de Hallazgo de Auditoría'}</p>
+                            <p><strong>Auditor Responsable:</strong> ${auditor}</p>
+                            <p><strong>Dirección / Área:</strong> <span style="color:var(--azul-info); font-weight:600;">${area}</span></p>
+                            <p><strong>Sujeto Fiscalizado (Ente):</strong> <span style="color:var(--naranja-principal); font-weight:600;">${ente}</span></p>
+                            <p style="color:#7F8C8D; font-size:0.85rem;"><strong>Fecha Registro:</strong> ${fechaCorta}</p>
+                        </div>
+                        <div class="timeline-container">
+                            <div class="timeline-title">
+                                <span>Línea de Fila Virtual</span>
+                                <span style="color:var(--naranja-principal)">Turno en Fila: # ${turno}</span>
+                            </div>
+                            <div class="timeline">
+                                <div class="timeline-step ${paso1}">
+                                    <div class="timeline-node">1</div>
+                                    <div class="timeline-label">Ingresado</div>
+                                </div>
+                                <div class="timeline-step ${paso2}">
+                                    <div class="timeline-node">2</div>
+                                    <div class="timeline-label">En Análisis</div>
+                                </div>
+                                <div class="timeline-step ${paso3}">
+                                    <div class="timeline-node">3</div>
+                                    <div class="timeline-label">Dictaminado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-zone">
+                        ${userRole === 'usuario' ? '<span style="font-size:0.85rem; color:#BDC3C7; font-style:italic; padding-top:5px;">🔒 Modo Consulta Autorizado (Solo Vista)</span>' : ''}
+                        ${userRole === 'supervisor' ? `<button class="btn-action btn-prorrogas" onclick="solicitarAmpliacionTiempo('${folio}')">⏳ Solicitar Prórroga</button>` : ''}
+                    </div>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
         }
 
         // MOTOR DE RENDERIZADO VISUAL - CONSTRUCCIÓN DE LA LÍNEA DE TIEMPO LOGICA
