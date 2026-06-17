@@ -106,7 +106,7 @@
             font-size: 0.9rem;
         }
 
-        input[type="text"], input[type="number"], select, textarea {
+        .form-group input[type="text"], .form-group input[type="number"], select, textarea {
             width: 100%;
             padding: 11px;
             border: 1px solid #ccc;
@@ -240,7 +240,6 @@
         <form id="solicitudForm">
             <div class="form-grid">
                 
-                <!-- SECCIÓN 1: DATOS DE USUARIO POR DEFAULT (NO EDITABLES) -->
                 <div class="section-divider">👤 Datos del Servidor Público (Sesión Activa)</div>
 
                 <div class="form-group full-width">
@@ -258,7 +257,6 @@
                     <input type="text" id="user_area" readonly required>
                 </div>
 
-                <!-- SECCIÓN 2: DETALLES TÉCNICOS DEL TICKET -->
                 <div class="section-divider">📋 Detalles del Trámite o Ticket</div>
 
                 <div class="form-group">
@@ -297,7 +295,6 @@
                     <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
                 </div>
 
-                <!-- SECCIÓN 3: ADJUNTAR DOCUMENTO DE SOPORTE -->
                 <div class="section-divider">📂 Expediente Digital / Documento Adjunto</div>
                 
                 <div class="form-group full-width">
@@ -373,7 +370,7 @@
             }
         });
 
-        // 6. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO
+        // 6. ENVÍO DE DATOS A SUPABASE E INCREMENTO DEL CONSECUTIVO (CON INTERCONEXIÓN ENRUTADA)
         document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -399,20 +396,94 @@
                 fecha_creacion: new Date().toISOString()
             };
 
+            const misHeaders = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            };
+
             try {
+                // Primer Paso: Insertar la Solicitud Principal
                 const response = await fetch(SUPABASE_SOLICITUDES_URL, {
                     method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
+                    headers: misHeaders,
                     body: JSON.stringify(dataSolicitud)
                 });
 
                 if (response.ok) {
                     localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
+
+                    // =========================================================================
+                    // ENRUTAMIENTO INTELIGENTE PARALELO HACIA TABLAS DESTINO POR SERVICIO
+                    // =========================================================================
+                    let urlTablaDestino = "";
+                    let objetoDestino = {};
+
+                    switch (servicio) {
+                        case "DCPL_B001": // Análisis de Hallazgo de Auditoría
+                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+                            objetoDestino = {
+                                folio_user: folioGenerado, // Sembrado para conectar con estatus
+                                usuario_nombre: document.getElementById('user_nombre').value,
+                                puesto_usuario: document.getElementById('user_puesto').value,
+                                area_usuario: document.getElementById('user_area').value,
+                                tipo_solicitud: "Análisis de Hallazgo",
+                                sujeto_fiscalizado: "PENDIENTE",
+                                tipo_auditoria: "Por Asignar",
+                                tipo_hallazgo: "En Espera",
+                                comentarios_revision: "Tu solicitud ha sido recibida con éxito. Está en la fila virtual esperando asignación de un supervisor jurídico."
+                            };
+                            break;
+
+                        case "DCPL_B002": // Análisis de Pliego de Observaciones
+                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/pliegos";
+                            objetoDestino = {
+                                folio_user: folioGenerado,
+                                estatus_revision: "Enviado a Pliegos"
+                            };
+                            break;
+
+                        case "DCPL_B003": // Análisis de Informe de Presunta Responsabilidad
+                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/informes";
+                            objetoDestino = {
+                                folio_user: folioGenerado,
+                                estatus_revision: "Enviado a Informes"
+                            };
+                            break;
+
+                        case "DCPL_C001": // Formulación de Denuncia
+                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/denuncias";
+                            objetoDestino = {
+                                folio_user: folioGenerado
+                            };
+                            break;
+
+                        case "DCPL_D001": // Emisión de Tarjeta Informativa
+                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tarjetas";
+                            objetoDestino = {
+                                folio_user: folioGenerado
+                            };
+                            break;
+                    }
+
+                    // Si corresponde a un servicio del switch, registramos el renglón relacional
+                    if (urlTablaDestino !== "") {
+                        const resDestino = await fetch(urlTablaDestino, {
+                            method: 'POST',
+                            headers: misHeaders,
+                            body: JSON.stringify(objetoDestino)
+                        });
+                        if (resDestino.ok) {
+                            console.log("🔗 Renglón relacional pre-registrado automáticamente en la tabla correspondiente.");
+                        } else {
+                            console.warn("⚠️ Advertencia: Solicitud creada, pero falló el pre-registro de enlace.");
+                        }
+                    }
+
+                    // Guardar folios en la sesión del navegador para páginas consecutivas
+                    localStorage.setItem('last_generated_folio', folioGenerado);
+                    localStorage.setItem('jurix_folio_activo', folioGenerado);
 
                     alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}\nDocumento Vinculado: ${archivoNombreSoporte}`);
                     
