@@ -481,14 +481,24 @@
                         }
                     }
 
-                    // Guardar folios en la sesión del navegador para páginas consecutivas
+                    // =========================================================================
+                    // 🛡️ BLINDAJE DE INTERCONEXIÓN: Guardar todas las llaves posibles para hallazgo.html
+                    // =========================================================================
                     localStorage.setItem('last_generated_folio', folioGenerado);
                     localStorage.setItem('jurix_folio_activo', folioGenerado);
-
-                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}\nDocumento Vinculado: ${archivoNombreSoporte}`);
+                    localStorage.setItem('folio_ticket', folioGenerado);
+                    localStorage.setItem('folio_user', folioGenerado);
                     
+                    // También guardamos los datos del usuario para quitar el "Cargando..." de la tarjeta inferior
+                    localStorage.setItem('usuario_nombre', document.getElementById('user_nombre').value);
+                    localStorage.setItem('puesto_usuario', document.getElementById('user_puesto').value);
+                    localStorage.setItem('area_usuario', document.getElementById('user_area').value);
+
+                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
+                    
+                    // Redirigir pasando el folio directamente en la URL por si el localStorage falla
                     if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
-                        window.location.href = "hallazgo.html";
+                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
                     } else {
                         window.location.href = "estatus.html";
                     }
