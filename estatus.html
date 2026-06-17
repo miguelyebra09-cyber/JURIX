@@ -350,86 +350,83 @@
                 if (!response.ok) throw new Error("Fallo de red");
                 const datosProcesados = await response.json();
 
-                renderizarContenedoresEstiloTurno(datosProcesados || []);
+               function renderizarContenedoresEstiloTurno(tickets) {
+    const contenedor = document.getElementById('contenedor-tickets-maestro');
+    contenedor.innerHTML = "";
 
-            } catch (error) {
-                console.error(error);
-                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace con el servidor.</p>";
-            }
+    // FILTRADO INTELIGENTE TOLERANTE A VALORES NULL
+    const ticketsFiltradosPorPerfil = tickets.filter(t => {
+        // Si es Supervisor (Juan Miguel), por diseño ve absolutamente todo
+        if (esSupervisor) return true; 
+        
+        // Si es usuario normal, validamos de forma segura que no sea NULL antes de comparar
+        if (!t.usuario_nombre) return false; 
+
+        const dbNombre = t.usuario_nombre.toLowerCase().trim();
+        const sesionLimpia = nombreSesionReal.toLowerCase().trim();
+        return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
+    });
+
+    if (ticketsFiltradosPorPerfil.length === 0) {
+        contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets pendientes o registrados bajo tu perfil activo en este periodo: ${nombreSesionReal}</p>`;
+        return;
+    }
+
+    // MAPEO CORRECTO BASADO EN TU TABLA REAL DE SUPABASE
+    ticketsFiltradosPorPerfil.forEach(ticket => {
+        // Acoplamos los nombres exactamente a las columnas de tu captura de Supabase
+        const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
+        const sujeto = ticket.sujeto_fiscalizado || "ENTE";
+        const usuario = ticket.usuario_nombre || "Usuario no asignado (Invitado)";
+        const puesto = ticket.puesto_usuario || "Puesto no especificado";
+        const area = ticket.area_usuario || "Área Técnica de Control";
+        const solicitud = ticket.tipo_solicitud || "Revisión de Hallazgos / Análisis";
+        
+        let badgeDictamen = "DICTAMEN B003";
+        let tiemposEstimados = "Est. 1 a 2 días hábiles";
+
+        if(sujeto === "FGEG" || sujeto === "MDHI") {
+            badgeDictamen = "DICTAMEN B001";
+            tiemposEstimados = "Est. 3 a 5 días hábiles";
         }
 
-        function renderizarContenedoresEstiloTurno(tickets) {
-            const contenedor = document.getElementById('contenedor-tickets-maestro');
-            contenedor.innerHTML = "";
+        const divTarjeta = document.createElement('div');
+        divTarjeta.className = "panel-control-turno";
+        
+        // Atributos para la barra de búsqueda interactiva
+        divTarjeta.setAttribute('data-folio', folioUser.toLowerCase());
+        divTarjeta.setAttribute('data-usuario', usuario.toLowerCase());
+        divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
+        divTarjeta.setAttribute('data-puesto', puesto.toLowerCase());
 
-            // FILTRADO INTELIGENTE POR USUARIO LOGUEADO
-            const ticketsFiltradosPorPerfil = tickets.filter(t => {
-                if (esSupervisor) return true; // Supervisor ve todo sin restricciones
+        divTarjeta.innerHTML = `
+            <div class="panel-titulo-seccion">⏳ Control Virtual de Turno e Información de Fila</div>
+            <div class="card-interno-turno">
                 
-                // Usuario normal (Artuto) solo ve los suyos correspondientes
-                const dbNombre = (t.usuario_nombre || "").toLowerCase().trim();
-                const sesionLimpia = nombreSesionReal.toLowerCase().trim();
-                return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
-            });
+                <div class="columna-datos">
+                    <p><strong>Ticket ID:</strong> ${folioUser}</p>
+                    <p><strong>Solicitud:</strong> ${solicitud}</p>
+                    <p><strong>Usuario:</strong> ${usuario}</p>
+                </div>
 
-            if (ticketsFiltradosPorPerfil.length === 0) {
-                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets registrados bajo el usuario activo: ${nombreSesionReal}</p>`;
-                return;
-            }
+                <div class="columna-datos">
+                    <p><strong>Puesto:</strong> ${puesto}</p>
+                    <p><strong>Área:</strong> ${area}</p>
+                    <p><strong>Posición Fila:</strong> <span style="color:#27AE60; font-weight:700;">Turno Virtual Activo (${sujeto})</span></p>
+                </div>
 
-            ticketsFiltradosPorPerfil.forEach(ticket => {
-                const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
-                const sujeto = ticket.sujeto_fiscalizado || "ENTE";
-                const usuario = ticket.usuario_nombre || "Usuario no asignado";
-                const puesto = ticket.puesto_usuario || "Auditor";
-                const area = ticket.area_usuario || "Área Técnica";
-                const solicitud = ticket.tipo_solicitud || "Análisis de Informe";
-                
-                let badgeDictamen = "DICTAMEN B003";
-                let tiemposEstimados = "Est. 1 a 2 días hábiles";
-
-                if(sujeto === "FGEG" || sujeto === "MDHI") {
-                    badgeDictamen = "DICTAMEN B001";
-                    tiemposEstimados = "Est. 3 a 5 días hábiles";
-                }
-
-                const divTarjeta = document.createElement('div');
-                divTarjeta.className = "panel-control-turno";
-                
-                divTarjeta.setAttribute('data-folio', folioUser.toLowerCase());
-                divTarjeta.setAttribute('data-usuario', usuario.toLowerCase());
-                divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
-                divTarjeta.setAttribute('data-puesto', puesto.toLowerCase());
-
-                divTarjeta.innerHTML = `
-                    <div class="panel-titulo-seccion">⏳ Control Virtual de Turno e Información de Fila</div>
-                    <div class="card-interno-turno">
-                        
-                        <div class="columna-datos">
-                            <p><strong>Ticket ID:</strong> ${folioUser}</p>
-                            <p><strong>Solicitud:</strong> ${solicitud}</p>
-                            <p><strong>Usuario:</strong> ${usuario}</p>
-                        </div>
-
-                        <div class="columna-datos">
-                            <p><strong>Puesto:</strong> ${puesto}</p>
-                            <p><strong>Área:</strong> ${area}</p>
-                            <p><strong>Posición Fila:</strong> <span style="color:#27AE60; font-weight:700;">Turno Virtual Activo (${sujeto})</span></p>
-                        </div>
-
-                        <div class="columna-badge-derecha">
-                            <div class="badge-dictamen">${badgeDictamen}</div>
-                            <div class="estimado-tiempo">
-                                ⏱️ ${tiemposEstimados}
-                            </div>
-                        </div>
-
+                <div class="columna-badge-derecha">
+                    <div class="badge-dictamen">${badgeDictamen}</div>
+                    <div class="estimado-tiempo">
+                        ⏱️ ${tiemposEstimados}
                     </div>
-                `;
-                contenedor.appendChild(divTarjeta);
-            });
-        }
+                </div>
 
+            </div>
+        `;
+        contenedor.appendChild(divTarjeta);
+    });
+}
         function ejecutarFiltrosCampos() {
             const filtroFolio = document.getElementById('txt-buscar-folio').value.toLowerCase().trim();
             const filtroUsuario = document.getElementById('txt-buscar-usuario').value.toLowerCase().trim();
