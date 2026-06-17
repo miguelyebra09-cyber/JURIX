@@ -417,125 +417,64 @@
     </div>
 
     <script>
-        const SUPABASE_HALLAZGOS_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+       const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+        // Asegúrate de conservar tu clave 'anon public' real aquí (la que empieza con eyJ...)
+        const SUPABASE_KEY = "TU_CLAVE_LARGA_ANON_KEY_AQUÍ"; 
 
+        let folioTicketActivo = "";
+
+        // Al cargar el documento, recuperamos e inyectamos el Folio de Interconexión
         window.addEventListener('DOMContentLoaded', () => {
-            // INTERCONEXIÓN: Control de restricción por sesión
-            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
-                alert("Acceso denegado. Por favor, inicie sesión primero.");
-                window.location.href = "index.html";
-                return;
+            // 1. Intentar obtener el folio desde los parámetros de la URL (?folio=...)
+            const urlParams = new URLSearchParams(window.location.search);
+            folioTicketActivo = urlParams.get('folio');
+
+            // 2. Si no viene en la URL, buscar el último folio generado en el localStorage
+            if (!folioTicketActivo) {
+                folioTicketActivo = localStorage.getItem('last_generated_folio') || localStorage.getItem('jurix_folio_activo');
             }
 
-            // 1. Asignar fecha de recepción de hoy
-            const hoy = new Date();
-            const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            document.getElementById('fecha_recepcion').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
-
-            // 2. Extraer datos guardados desde el LocalStorage de solicitud.html
-            let ticketFinal = "JURIX-DGAJ-DCPL-B001-0001"; // Default por contingencia
-            let tipoSolicitudDetectada = "Análisis Hallazgo"; // Default
-
-            // Buscar cuál contador se usó en la última pantalla para armar el folio
-            const servicios = ['DCPL_A001', 'DCPL_B001', 'DCPL_B002', 'DCPL_B003', 'DCPL_C001', 'DCPL_D001', 'DINV_ACT1', 'DINV_ACT2', 'DSUB_ACT3', 'DSUB_ACT4'];
-            
-            for (let svc of servicios) {
-                let valor = localStorage.getItem(`consecutivo_${svc}`);
-                if (valor) {
-                    let numActual = parseInt(valor) - 1;
-                    if (numActual < 1) numActual = 1;
-                    let numFormateado = String(numActual).padStart(4, '0');
-                    
-                    // Mapeos correspondientes para la interfaz visual
-                    if (svc === 'DCPL_A001') { ticketFinal = `JURIX-DGAJ-DCPL-A001-${numFormateado}`; tipoSolicitudDetectada = "Consulta"; }
-                    if (svc === 'DCPL_B001') { ticketFinal = `JURIX-DGAJ-DCPL-B001-${numFormateado}`; tipoSolicitudDetectada = "Análisis Hallazgo"; }
-                    if (svc === 'DCPL_B002') { ticketFinal = `JURIX-DGAJ-DCPL-B002-${numFormateado}`; tipoSolicitudDetectada = "Analisis de Pliego"; }
-                    if (svc === 'DCPL_B003') { ticketFinal = `JURIX-DGAJ-DCPL-B003-${numFormateado}`; tipoSolicitudDetectada = "Análisis de Informe"; }
-                    if (svc === 'DCPL_C001') { ticketFinal = `JURIX-DGAJ-DCPL-C001-${numFormateado}`; tipoSolicitudDetectada = "Denuncia"; }
-                    if (svc === 'DCPL_D001') { ticketFinal = `JURIX-DGAJ-DCPL-D001-${numFormateado}`; tipoSolicitudDetectada = "Tarjeta Informativa"; }
-                }
-            }
-
-            // Inyectar datos del ticket en la UI
-            document.getElementById('folioTicketSub').textContent = `Ticket Relacionado: ${ticketFinal}`;
-            document.getElementById('lblTicketQueue').textContent = ticketFinal;
-            document.getElementById('lblTipoSolicitudQueue').textContent = tipoSolicitudDetectada;
-
-            // INTERCONEXIÓN: Obtención automática y no editable de datos vinculados al usuario logueado
-            document.getElementById('lblUsuarioQueue').textContent = localStorage.getItem('last_user_name') || "Usuario Operativo";
-            document.getElementById('lblPuestoQueue').textContent = localStorage.getItem('last_user_puesto') || "Auditor / Analista Legal";
-            document.getElementById('lblAreaQueue').textContent = localStorage.getItem('last_user_area') || "Dirección de lo Contencioso";
-
-            // 3. Lógica de Colores y Tiempos Condicionales para la Fila Virtual
-            const card = document.getElementById('queueCardElement');
-            const badge = document.getElementById('badgeEstatus');
-            const timeDiv = document.getElementById('timeEstimate');
-
-            if (ticketFinal.includes("-B001-")) {
-                card.className = "queue-card card-b001";
-                badge.className = "status-badge badge-b001";
-                badge.textContent = "Revisión B001";
-                timeDiv.textContent = "⏱️ Est. 24 a 36 horas aprox.";
-            } else if (ticketFinal.includes("-B002-")) {
-                card.className = "queue-card card-b002";
-                badge.className = "status-badge badge-b002";
-                badge.textContent = "Validación B002";
-                timeDiv.textContent = "⏱️ Est. 1 Día hábil";
-            } else if (ticketFinal.includes("-B003-")) {
-                card.className = "queue-card card-b003";
-                badge.className = "status-badge badge-b003";
-                badge.textContent = "Dictamen B003";
-                timeDiv.textContent = "⏱️ Est. 1 a 2 días hábiles";
+            // 3. Inyectar de forma automática en el campo visual correspondiente
+            // (Usamos 'txt-folio' o el ID que tenga asignado tu input de folio en el formulario)
+            const inputFolio = document.getElementById('txt-folio') || document.getElementById('folio_user');
+            if (inputFolio && folioTicketActivo) {
+                inputFolio.value = folioTicketActivo;
+                // Lo hacemos de solo lectura para evitar errores humanos y garantizar la interrelación
+                inputFolio.readOnly = true; 
+                inputFolio.style.background = "#EAECEE";
+                console.log("🔗 Interrelación exitosa. Folio conectado automáticamente:", folioTicketActivo);
             } else {
-                card.className = "queue-card card-default";
-                badge.className = "status-badge badge-default";
-                badge.textContent = "Trámite General";
-                timeDiv.textContent = "⏱️ Est. 12 a 24 horas aprox.";
+                console.warn("⚠️ No se detectó ningún ticket activo en la sesión para enlazar.");
             }
         });
 
-        // Enviar a Supabase (Tabla hallazgos)
-        document.getElementById('hallazgoForm').addEventListener('submit', async function(e) {
+        // Evento de guardado del Formulario de Hallazgos
+        document.getElementById('form-hallazgo').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const ticketAsociado = document.getElementById('lblTicketQueue').textContent;
-           // ASÍ DEBE QUEDAR TU BLOQUE DE RECOPILACIÓN DE DATOS PARA EL ENVÍO:
-// 1. Convertimos la fecha (DD/MM/AAAA) al formato que Supabase acepta (AAAA-MM-DD)
-        const fechaVisible = document.getElementById('fecha_recepcion').value;
-        let fechaFormateada = new Date().toISOString().split('T')[0];
-        
-        if (fechaVisible && fechaVisible.includes('/')) {
-            const partes = fechaVisible.split('/');
-            if (partes.length === 3) {
-                fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
-            }
-        }
+            // Garantizamos capturar el folio ya sea del input o de la variable global de sesión
+            const inputFolio = document.getElementById('txt-folio') || document.getElementById('folio_user');
+            const folioParaGuardar = inputFolio ? inputFolio.value.trim() : folioTicketActivo;
 
-        // 2. Armamos el objeto definitivo sin variables rotas
-      const dataHallazgo = {
-            folio_user: ticketAsociado || "JURIX-DGAJ-DCPL-B001-0001",
-            fecha_recepcion: fechaFormateada,
-            sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
-            tipo_auditoria: document.getElementById('tipo_auditoria').value,
-            rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
-            tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
-            num_concepto: document.getElementById('num_concepto').value,
-            link_soporte: document.getElementById('link_soporte').value,
-            importe: parseFloat(document.getElementById('importe').value) || 0,
-            comentarios_revision: document.getElementById('comentarios_revision').value,
-            
-            // ==============================================================
-            // CONFIGURACIÓN DINÁMICA: Válida para CUALQUIER usuario logueado
-            // ==============================================================
-            usuario_nombre: localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Usuario Desconocido",
-            puesto_usuario: localStorage.getItem('jurix_puesto_usuario') || localStorage.getItem('last_user_puesto') || "Auditor",
-            area_usuario: localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "DGAJ"
-        };
-// Después de esto, tu código seguirá con el fetch() o el supabase.insert que ya tienes programado.
+            if (!folioParaGuardar) {
+                alert("❌ Error de interrelación: No se puede registrar el hallazgo porque no hay un número de Ticket (Folio) vinculado.");
+                return;
+            }
+
+            // Mapeo exacto de los campos de tu formulario hacia las columnas de Supabase
+            // ATENCIÓN: Forzamos el envío de 'folio_user' mapeado con el número de ticket
+            const registroHallazgo = {
+                folio_user: folioParaGuardar, // <-- AQUÍ SE REALIZA LA UNIÓN DE AMBAS TABLAS
+                sujeto_fiscalizado: document.getElementById('select-sujeto').value,
+                tipo_auditoria: document.getElementById('select-auditoria').value,
+                tipo_hallazgo: document.getElementById('select-tipo-hallazgo').value,
+                num_concepto: document.getElementById('txt-concepto').value,
+                fecha_recepcion: document.getElementById('date-recepcion').value,
+                comentarios_revision: document.getElementById('txt-comentarios').value
+            };
 
             try {
-                const response = await fetch(SUPABASE_HALLAZGOS_URL, {
+                const response = await fetch(URL_HALLAZGOS, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_KEY,
@@ -543,20 +482,22 @@
                         'Content-Type': 'application/json',
                         'Prefer': 'return=minimal'
                     },
-                    body: JSON.stringify(dataHallazgo)
+                    body: JSON.stringify(registroHallazgo)
                 });
 
                 if (response.ok) {
-                    alert(`¡Éxito!\nLos detalles de la Cédula para el ticket ${ticketAsociado} han sido registrados correctamente.`);
-                    window.location.href = "estatus.html"; // Redirección natural al monitor global protegido
+                    alert(`✅ Cédula de Hallazgo registrada con éxito y enlazada al Ticket: ${folioParaGuardar}`);
+                    document.getElementById('form-hallazgo').reset();
+                    
+                    // Redirección automática a la fila virtual para supervisar el estatus actualizado
+                    window.location.href = "estatus.html";
                 } else {
-                    const err = await response.json();
-                    console.error(err);
-                    alert("Error en el registro. Verifique sus columnas en Supabase.");
+                    const errData = await response.json();
+                    alert("❌ Error al guardar en Supabase: " + (errData.message || response.statusText));
                 }
             } catch (error) {
-                console.error("Error de red:", error);
-                alert("Error de conexión al servidor.");
+                console.error("Error en la petición HTTP:", error);
+                alert("❌ Fallo de conexión de red al intentar registrar el hallazgo.");
             }
         });
     </script>
