@@ -140,10 +140,6 @@
             outline: none;
         }
 
-        .search-group input:focus, .search-group select:focus {
-            border-color: var(--naranja-principal);
-        }
-
         /* --- CONTENEDOR VISUAL DE TURNOS --- */
         .panel-control-turno {
             background: var(--blanco);
@@ -220,10 +216,6 @@
             font-size: 0.85rem;
             color: #555;
         }
-
-        #contenedor-tickets-maestro {
-            min-height: 150px;
-        }
     </style>
 </head>
 <body>
@@ -241,13 +233,13 @@
 
     <div class="container">
         
-        <div class="profile-bar" id="contenedor-perfil-sistema">
-            <div class="user-meta" id="datos-usuario-render">
-                <p id="txt-captura-usuario">Bienvenido(a): <strong id="lbl-nombre-sesion">Artuto Vidal Rojas</strong></p>
-                <p id="txt-captura-area">Área: <strong id="lbl-area-sesion">Auditoría Especial de Cumplimiento Financiero</strong></p>
+        <div class="profile-bar">
+            <div class="user-meta">
+                <p>Usuario Activo: <strong id="lbl-nombre-sesion">Identificando...</strong></p>
+                <p>Área de Control: <strong id="lbl-area-sesion">Cargando...</strong></p>
             </div>
             <div>
-                <span id="badge-rol-contenedor" class="role-badge badge-usuario">Evaluando Perfil...</span>
+                <span id="badge-rol-contenedor" class="role-badge">Verificando...</span>
             </div>
         </div>
 
@@ -282,7 +274,6 @@
     </div>
 
     <script>
-        // CREDENCIALES DE TU TABLA "hallazgos" (IMAGEN 1)
         const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
@@ -290,56 +281,61 @@
         let areaSesionReal = "";
         let esSupervisor = false;
 
+        // EJECUCIÓN INMEDIATA SEGURO
         window.addEventListener('DOMContentLoaded', () => {
-            // MOTOR ULTRA-EXTRACTOR INTELIGENTE DE TEXTO EN PANTALLA
-            // Limpia "Bienvenido(a):", "Usuario:" y espacios raros automáticamente
-            const nodoMetaUsuario = document.getElementById('datos-usuario-render');
             
-            if (nodoMetaUsuario) {
-                const contenidoCompleto = nodoMetaUsuario.innerText || "";
-                
-                // Expresiones regulares para extraer la data sin importar el formato visual "Usuario:" o "Bienvenido(a):"
-                const matchUsuario = contenidoCompleto.match(/(?:Bienvenido\(a\):|Usuario:)\s*([^\n]+)/i);
-                const matchArea = contenidoCompleto.match(/Área:\s*([^\n]+)/i);
+            // 1. REVISAR LOBBY / MEMORIA LOCAL PRIMERO (Donde tu login guarda la sesión)
+            nombreSesionReal = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name');
+            areaSesionReal = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area');
 
-                nombreSesionReal = matchUsuario ? matchUsuario[1].trim() : "Artuto Vidal Rojas";
-                areaSesionReal = matchArea ? matchArea[1].trim() : "Auditoría Especial de Cumplimiento Financiero";
+            // 2. RESPALDO POR SI EL LOCALSTORAGE SE LIMPIA: Leer directamente lo que el backend escribe en el DOM
+            if (!nombreSesionReal) {
+                // Buscamos cualquier etiqueta que contenga el nombre en el documento
+                const cuerpoTexto = document.body.innerText;
+                if (cuerpoTexto.includes("Juan Miguel Yebra Prieto")) {
+                    nombreSesionReal = "Juan Miguel Yebra Prieto";
+                    areaSesionReal = "Dirección General de Asuntos Jurídicos";
+                } else if (cuerpoTexto.includes("Artuto Vidal Rojas")) {
+                    nombreSesionReal = "Artuto Vidal Rojas";
+                    areaSesionReal = "Auditoría Especial de Cumplimiento Financiero";
+                } else {
+                    // Fallback final por seguridad
+                    nombreSesionReal = "Artuto Vidal Rojas";
+                    areaSesionReal = "Auditoría Especial de Cumplimiento Financiero";
+                }
             }
 
-            // Corrección de la lógica de privilegios: 
-            // Si el nombre contiene Juan Miguel o el área contiene DGAJ o Asuntos Jurídicos, se activa el perfil de SUPERVISOR de inmediato
-            const badgeRol = document.getElementById('badge-rol-contenedor');
-            const normalizadoNombre = nombreSesionReal.toLowerCase();
-            const normalizadoArea = areaSesionReal.toLowerCase();
+            // Pintar los datos limpios en la pantalla de estatus
+            document.getElementById('lbl-nombre-sesion').innerText = nombreSesionReal;
+            document.getElementById('lbl-area-sesion').innerText = areaSesionReal;
 
-            if (normalizadoNombre.includes("juan miguel") || normalizadoArea.includes("dgaj") || normalizadoArea.includes("asuntos jurídicos")) {
+            // 3. ASIGNAR ROL REAL DE MANERA ESTRICTA
+            const badgeRol = document.getElementById('badge-rol-contenedor');
+            const nNombre = nombreSesionReal.toLowerCase();
+
+            if (nNombre.includes("juan miguel") || nNombre.includes("yebra") || areaSesionReal.toLowerCase().includes("dgaj")) {
                 esSupervisor = true;
-                if(badgeRol) {
-                    badgeRol.innerText = "PERFIL: SUPERVISOR";
-                    badgeRol.className = "role-badge badge-supervisor";
-                }
+                badgeRol.innerText = "PERFIL: SUPERVISOR";
+                badgeRol.className = "role-badge badge-supervisor";
             } else {
                 esSupervisor = false;
-                if(badgeRol) {
-                    badgeRol.innerText = "PERFIL: USUARIO";
-                    badgeRol.className = "role-badge badge-usuario";
-                }
+                badgeRol.innerText = "PERFIL: USUARIO";
+                badgeRol.className = "role-badge badge-usuario";
             }
 
-            // Descargar la fila virtual real de Supabase
+            // Descargar registros de la base de datos
             conectarTablaSupabaseHallazgos();
 
-            // Escuchadores de la barra de búsqueda reactiva
+            // Configurar barra de filtros interactivos
             document.getElementById('txt-buscar-folio').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-usuario').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-sujeto').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('select-buscar-puesto').addEventListener('change', ejecutarFiltrosCampos);
         });
 
-        // CONEXIÓN SÍNCRONA CON LA TABLA DE SUPABASE "hallazgos"
         async function conectarTablaSupabaseHallazgos() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
-            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando con la tabla 'hallazgos' de Supabase...</p>";
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando información de Fila Virtual...</p>";
 
             try {
                 const response = await fetch(`${URL_HALLAZGOS}?select=*&order=folio_user.asc`, {
@@ -351,58 +347,33 @@
                     }
                 });
 
-                if (!response.ok) throw new Error("Fallo de comunicación RLS");
+                if (!response.ok) throw new Error("Fallo de red");
                 const datosProcesados = await response.json();
 
-                // Respaldos automáticos en caso de que la base de datos se limpie o no retorne JSON
-                let listaFinal = datosProcesados;
-                if (!listaFinal || listaFinal.length === 0) {
-                    listaFinal = [
-                        {
-                            folio_user: "JURIX-DGAJ-DCPL-B003-0001",
-                            sujeto_fiscalizado: "MCUE",
-                            usuario_nombre: "Juan Miguel Yebra Prieto",
-                            puesto_usuario: "Directora DCPL",
-                            area_usuario: "Dirección General de Asuntos Jurídicos",
-                            tipo_solicitud: "Análisis de Informe"
-                        },
-                        {
-                            folio_user: "JURIX-DGAJ-DCPL-B003-0002",
-                            sujeto_fiscalizado: "FGEG",
-                            usuario_nombre: "Artuto Vidal Rojas",
-                            puesto_usuario: "Auditor",
-                            area_usuario: "Auditoría Especial de Cumplimiento Financiero",
-                            tipo_solicitud: "Revisión de Hallazgos"
-                        }
-                    ];
-                }
-
-                renderizarContenedoresEstiloTurno(listaFinal);
+                renderizarContenedoresEstiloTurno(datosProcesados || []);
 
             } catch (error) {
-                console.error("Error Supabase: ", error);
-                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de sincronización con Supabase. Verifica políticas RLS en la tabla 'hallazgos'.</p>";
+                console.error(error);
+                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace con el servidor.</p>";
             }
         }
 
-        // CONTROL EXCLUSIVO DE VISUALIZACIÓN POR PERFIL LOGUEADO
         function renderizarContenedoresEstiloTurno(tickets) {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
-            // FILTRADO INTELIGENTE POR USUARIO
+            // FILTRADO INTELIGENTE POR USUARIO LOGUEADO
             const ticketsFiltradosPorPerfil = tickets.filter(t => {
-                if (esSupervisor) return true; // El supervisor (Juan Miguel) tiene permitido ver absolutamente todo lo de la DB
+                if (esSupervisor) return true; // Supervisor ve todo sin restricciones
                 
-                // Si es un usuario común (Artuto Vidal), solo verá registros donde usuario_nombre coincida con su pantalla
-                const nombreRegistroDB = (t.usuario_nombre || "").toLowerCase().trim();
-                const sesionActualLimpia = nombreSesionReal.toLowerCase().trim();
-                
-                return nombreRegistroDB === sesionActualLimpia || nombreRegistroDB === "" || nombreRegistroDB.includes("invitado");
+                // Usuario normal (Artuto) solo ve los suyos correspondientes
+                const dbNombre = (t.usuario_nombre || "").toLowerCase().trim();
+                const sesionLimpia = nombreSesionReal.toLowerCase().trim();
+                return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
             });
 
             if (ticketsFiltradosPorPerfil.length === 0) {
-                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets pendientes o registrados bajo tu perfil activo (${nombreSesionReal}) en este periodo.</p>`;
+                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets registrados bajo el usuario activo: ${nombreSesionReal}</p>`;
                 return;
             }
 
@@ -410,8 +381,8 @@
                 const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
                 const sujeto = ticket.sujeto_fiscalizado || "ENTE";
                 const usuario = ticket.usuario_nombre || "Usuario no asignado";
-                const puesto = ticket.puesto_usuario || "Puesto Regular";
-                const area = ticket.area_usuario || "Dirección Solicitante";
+                const puesto = ticket.puesto_usuario || "Auditor";
+                const area = ticket.area_usuario || "Área Técnica";
                 const solicitud = ticket.tipo_solicitud || "Análisis de Informe";
                 
                 let badgeDictamen = "DICTAMEN B003";
@@ -459,7 +430,6 @@
             });
         }
 
-        // MOTOR REAC-BUSQUEDA MULTICAMPO
         function ejecutarFiltrosCampos() {
             const filtroFolio = document.getElementById('txt-buscar-folio').value.toLowerCase().trim();
             const filtroUsuario = document.getElementById('txt-buscar-usuario').value.toLowerCase().trim();
