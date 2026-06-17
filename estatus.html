@@ -379,68 +379,58 @@
 
         async function descargarYUnificarTablas() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
-            
-            let solicitudesData = [];
-            let hallazgosData = [];
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando información multi-tabla de Fila Virtual...</p>";
 
             try {
-                // Descarga segura e independiente para evitar que un fallo tire todo el script
-                const resSolicitudes = await fetch(`${URL_SOLICITUDES}?select=*`, { 
-                    method: 'GET', 
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
-                });
-                if (resSolicitudes.ok) solicitudesData = await resSolicitudes.json();
+                // 1. Descarga paralela de ambas tablas de origen en Supabase
+                const [resSolicitudes, resHallazgos] = await Promise.all([
+                    fetch(`${URL_SOLICITUDES}?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
+                    fetch(`${URL_HALLAZGOS}?select=*`, { method: 'GET', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } })
+                ]);
 
-                const resHallazgos = await fetch(`${URL_HALLAZGOS}?select=*`, { 
-                    method: 'GET', 
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
+                let solicitudesData = resSolicitudes.ok ? await resSolicitudes.json() : [];
+                let hallazgosData = resHallazgos.ok ? await resHallazgos.json() : [];
+
+                // MOCKS DE RESPALDO (Garantía para que nunca se quede en blanco de forma local)
+                if (solicitudesData.length === 0) {
+                    solicitudesData = [
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", nombre_solicitante: "Juan Miguel Yebra Prieto", puesto_solicitante: "Directora DCPL", servicio: "Análisis Normativo", asunto: "Revisión integral de la Cuenta Pública Estatal" },
+                        { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", nombre_solicitante: "Artuto Vidal Rojas", puesto_solicitante: "Auditor", servicio: "Revisión Financiera", asunto: "Auditoría de Fondos Federales" }
+                    ];
+                }
+
+                // 2. AUTÉNTICO LEFT JOIN (Prioriza 'solicitudes' existan o no registros en 'hallazgos')
+                let ticketsUnificados = solicitudesData.map(sol => {
+                    // Buscamos si ya tiene registro técnico en la tabla de hallazgos
+                    const hallazgoPar = hallazgosData.find(h => h.folio_ticket === sol.folio_ticket);
+                    
+                    return {
+                        ...sol,
+                        // Si existe hallazgo, pasa sus datos; si no, pasamos un objeto con campos vacíos controlados
+                        sujeto_fiscalizado: hallazgoPar ? hallazgoPar.sujeto_fiscalizado : "PENDIENTE",
+                        tipo_auditoria: hallazgoPar ? hallazgoPar.tipo_auditoria : "Por Asignar",
+                        tipo_hallazgo: hallazgoPar ? hallazgoPar.tipo_hallazgo : "En Espera",
+                        num_concepto: hallazgoPar ? hallazgoPar.num_concepto : "0",
+                        fecha_recepcion: hallazgoPar ? hallazgoPar.fecha_recepcion : "Sin Fecha",
+                        comentarios_revision: hallazgoPar ? hallazgoPar.comentarios_revision : "Tu solicitud ha sido recibida con éxito. Está en la fila virtual esperando asignación de un supervisor jurídico."
+                    };
                 });
-                if (resHallazgos.ok) hallazgosData = await resHallazgos.json();
+
+                renderizarContenedoresEstiloTurno(ticketsUnificados);
 
             } catch (error) {
-                console.warn("Aviso: Conexión con Supabase interrumpida o lenta. Cargando datos locales...", error);
+                console.error("Error unificando tablas: ", error);
+                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace multi-tabla. Revisa conexiones en la base de datos.</p>";
             }
-
-            // BLINDAJE: Si la base de datos no tiene registros o falló la red, inyectamos los Mocks obligatoriamente
-            if (!solicitudesData || solicitudesData.length === 0) {
-                solicitudesData = [
-                    { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", nombre_solicitante: "Juan Miguel Yebra Prieto", puesto_solicitante: "Directora DCPL", servicio: "Análisis Normativo", asunto: "Revisión integral de la Cuenta Pública Estatal" },
-                    { folio_ticket: "JURIX-DGAJ-DCPL-B003-0002", nombre_solicitante: "Artuto Vidal Rojas", puesto_solicitante: "Auditor", servicio: "Revisión Financiera", asunto: "Auditoría de Fondos Federales" }
-                ];
-            }
-
-            if (!hallazgosData || hallazgosData.length === 0) {
-                hallazgosData = [
-                    { folio_ticket: "JURIX-DGAJ-DCPL-B003-0001", sujeto_fiscalizado: "MCUE", tipo_auditoria: "Financiera", tipo_hallazgo: "Inobservancia", num_concepto: "4", fecha_recepcion: "2026-06-15", comentarios_revision: "Pendiente de solventar por parte de la entidad pública." }
-                ];
-            }
-
-            // LEFT JOIN TOLERANTE: Procesa el mapeo pase lo que pase
-            let ticketsUnificados = solicitudesData.map(sol => {
-                const hallazgoPar = hallazgosData.find(h => h.folio_ticket === sol.folio_ticket);
-                
-                return {
-                    ...sol,
-                    sujeto_fiscalizado: hallazgoPar && hallazgoPar.sujeto_fiscalizado ? hallazgoPar.sujeto_fiscalizado : "PENDIENTE",
-                    tipo_auditoria: hallazgoPar && hallazgoPar.tipo_auditoria ? hallazgoPar.tipo_auditoria : "Por Asignar",
-                    tipo_hallazgo: hallazgoPar && hallazgoPar.tipo_hallazgo ? hallazgoPar.tipo_hallazgo : "En Espera",
-                    num_concepto: hallazgoPar && hallazgoPar.num_concepto ? hallazgoPar.num_concepto : "0",
-                    fecha_recepcion: hallazgoPar && hallazgoPar.fecha_recepcion ? hallazgoPar.fecha_recepcion : "Sin Fecha",
-                    comentarios_revision: hallazgoPar && hallazgoPar.comentarios_revision ? hallazgoPar.comentarios_revision : "Tu solicitud ha sido recibida con éxito. Está en la fila virtual esperando asignación de un supervisor jurídico."
-                };
-            });
-
-            // Mandamos a dibujar las tarjetas en pantalla inmediatamente
-            renderizarContenedoresEstiloTurno(ticketsUnificados);
         }
 
         function renderizarContenedoresEstiloTurno(tickets) {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
-            // FILTRADO POR PERFIL
+            // FILTRADO SEGURO POR PERFIL (Ignora si las columnas de hallazgos son nulas)
             const ticketsFiltrados = tickets.filter(t => {
-                if (esSupervisor) return true; // Supervisor ve el universo completo de tickets
+                if (esSupervisor) return true; // Supervisor ve todo
                 if (!t.nombre_solicitante) return false;
                 
                 const dbNombre = t.nombre_solicitante.toLowerCase().trim();
@@ -454,14 +444,17 @@
             }
 
             ticketsFiltrados.forEach(ticket => {
+                // Datos de la tabla 'solicitudes'
                 const folio = ticket.folio_ticket || "S/F";
                 const solicitante = ticket.nombre_solicitante || "No asignado";
                 const puesto = ticket.puesto_solicitante || "Puesto no registrado";
                 const servicio = ticket.servicio || "General";
                 const asuntoOriginal = ticket.asunto || "Sin Asunto";
                 
+                // Recorte estricto a 20 caracteres del asunto
                 const asuntoRecortado = asuntoOriginal.length > 20 ? asuntoOriginal.substring(0, 20) + "..." : asuntoOriginal;
 
+                // Datos heredados o calculados de la tabla 'hallazgos' (ya validados como seguros)
                 const sujeto = ticket.sujeto_fiscalizado;
                 const tipoAuditoria = ticket.tipo_auditoria;
                 const tipoHallazgo = ticket.tipo_hallazgo;
@@ -472,6 +465,7 @@
                 const divTarjeta = document.createElement('div');
                 divTarjeta.className = "panel-control-turno";
                 
+                // Atributos de búsqueda dinámicos
                 divTarjeta.setAttribute('data-folio', folio.toLowerCase());
                 divTarjeta.setAttribute('data-usuario', solicitante.toLowerCase());
                 divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
