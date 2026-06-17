@@ -341,16 +341,16 @@
     </div>
 
     <script>
+        // ⚠️ VERIFICA QUE ESTA SEA TU CLAVE PÚBLICA LARGA (ANON KEY) QUE EMPIEZA CON "eyJ..."
         const URL_SOLICITUDES = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy"; // <-- Si tienes la clave larga que empieza con eyJ..., cámbiala aquí.
 
         let nombreSesionReal = "";
         let areaSesionReal = "";
         let esSupervisor = false;
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Jalar credenciales desde el almacenamiento de sesión
             nombreSesionReal = localStorage.getItem('jurix_nombre_usuario') || localStorage.getItem('last_user_name') || "Juan Miguel Yebra Prieto";
             areaSesionReal = localStorage.getItem('jurix_area_usuario') || localStorage.getItem('last_user_area') || "Dirección General de Asuntos Jurídicos";
 
@@ -360,7 +360,6 @@
             const badgeRol = document.getElementById('badge-rol-contenedor');
             const nNombre = nombreSesionReal.toLowerCase();
 
-            // Validación de rol Supervisor vs Auditor
             if (nNombre.includes("juan miguel") || nNombre.includes("yebra") || areaSesionReal.toLowerCase().includes("dgaj")) {
                 esSupervisor = true;
                 badgeRol.innerText = "PERFIL: SUPERVISOR";
@@ -371,10 +370,8 @@
                 badgeRol.className = "role-badge badge-usuario";
             }
 
-            // Ejecutar la descarga multi-tabla sincrónica
             descargarYUnificarTablas();
 
-            // Escuchas de la consola de filtrado
             document.getElementById('txt-buscar-folio').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-usuario').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-sujeto').addEventListener('input', ejecutarFiltrosCampos);
@@ -388,34 +385,48 @@
             let solicitudesData = [];
             let hallazgosData = [];
 
+            // Configuramos los headers estándar y obligatorios para la REST API de Supabase
+            const misHeaders = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+
             try {
-                // Peticiones paralelas nativas a Supabase
+                // Añadimos un ordenamiento por defecto para asegurar que el RLS responda
                 const [resSolicitudes, resHallazgos] = await Promise.all([
-                    fetch(`${URL_SOLICITUDES}?select=*`, { 
-                        method: 'GET', 
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
-                    }),
-                    fetch(`${URL_HALLAZGOS}?select=*`, { 
-                        method: 'GET', 
-                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } 
-                    })
+                    fetch(`${URL_SOLICITUDES}?select=*&order=folio_ticket.asc`, { method: 'GET', headers: misHeaders }),
+                    fetch(`${URL_HALLAZGOS}?select=*`, { method: 'GET', headers: misHeaders })
                 ]);
 
-                if (resSolicitudes.ok) solicitudesData = await resSolicitudes.json();
-                if (resHallazgos.ok) hallazgosData = await resHallazgos.json();
+                if (resSolicitudes.ok) {
+                    solicitudesData = await resSolicitudes.json();
+                } else {
+                    console.error("Error en Solicitudes. Código HTTP:", resSolicitudes.status);
+                }
+
+                if (resHallazgos.ok) {
+                    hallazgosData = await resHallazgos.json();
+                } else {
+                    console.error("Error en Hallazgos. Código HTTP:", resHallazgos.status);
+                }
 
             } catch (error) {
-                console.error("Fallo de red en Supabase:", error);
+                console.error("Fallo crítico de conexión de red:", error);
             }
 
-            // Si falló por completo la red o está vacía, no dejamos colgada la pantalla
+            // Si Supabase falló o las tablas devolvieron vacío, mostramos el mensaje de advertencia detallado
             if (!solicitudesData || solicitudesData.length === 0) {
-                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ No se pudieron recuperar datos desde Supabase o las tablas están vacías.</p>";
+                contenedor.innerHTML = `
+                    <div style="text-align:center; padding:20px; background:#FADBD8; border:1px solid #CD6155; border-radius:8px; color:#78281F; max-width:600px; margin:20px auto;">
+                        <strong>⚠️ Error de Comunicación con la Base de Datos</strong>
+                        <p style="margin:5px 0 0 0; font-size:0.9rem;">No se recibieron registros de la tabla 'solicitudes'. Verifica que la SUPABASE_KEY sea la correcta o que las políticas RLS permitan la lectura pública.</p>
+                    </div>`;
                 return;
             }
 
-            // INTERRELACIÓN DE TABLAS TIPO LEFT JOIN SÓLIDO
-            // Recorremos cada registro de 'solicitudes' y buscamos su par en 'hallazgos' mediante 'folio_ticket'
+            // Realizamos la interrelación exacta (Left Join) basada en tu Table Editor
             let ticketsUnificados = solicitudesData.map(sol => {
                 const hallazgoPar = hallazgosData ? hallazgosData.find(h => String(h.folio_ticket).trim() === String(sol.folio_ticket).trim()) : null;
                 
@@ -437,15 +448,13 @@
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
-            // FILTRADO DE SEGURIDAD POR PERFIL DE USUARIO
             const ticketsFiltrados = tickets.filter(t => {
-                if (esSupervisor) return true; // Supervisor ve todo el universo
+                if (esSupervisor) return true; 
                 if (!t.nombre_solicitante) return false;
                 
                 const dbNombre = String(t.nombre_solicitante).toLowerCase().trim();
                 const sesionLimpia = String(nombreSesionReal).toLowerCase().trim();
                 
-                // Mapeo tolerante para que Marisol Luna Sosa vea sus registros perfectamente
                 return dbNombre.includes(sesionLimpia) || sesionLimpia.includes(dbNombre);
             });
 
@@ -481,8 +490,6 @@
                 divTarjeta.innerHTML = `
                     <div class="panel-titulo-seccion">⏳ Control Virtual de Turno e Información de Fila</div>
                     <div class="card-interno-turno">
-                        
-                        <!-- ORIGEN: TABLA SOLICITUDES -->
                         <div class="columna-datos">
                             <p><strong>Ticket ID:</strong> ${folio}</p>
                             <p><strong>Solicitante:</strong> ${solicitante}</p>
@@ -490,8 +497,6 @@
                             <p><strong>Servicio:</strong> ${servicio}</p>
                             <p><strong>Asunto:</strong> <span title="${asuntoOriginal}">${asuntoRecortado}</span></p>
                         </div>
-
-                        <!-- ORIGEN: TABLA HALLAZGOS INTERRELACIONADA -->
                         <div class="columna-datos">
                             <p><strong>Ente Fiscalizado:</strong> ${sujeto}</p>
                             <p><strong>Auditoría:</strong> ${tipoAuditoria}</p>
@@ -499,40 +504,20 @@
                             <p><strong>Núm. Concepto:</strong> ${numConcepto}</p>
                             <p><strong>F. Recepción:</strong> ${fecha}</p>
                         </div>
-
-                        <!-- ESTADOS -->
                         <div class="columna-badge-derecha">
                             <div class="badge-dictamen">${sujeto}</div>
-                            <div class="estimado-tiempo">
-                                ⏱️ Fila Virtual Activa
-                            </div>
+                            <div class="estimado-tiempo">⏱️ Fila Virtual Activa</div>
                         </div>
-
-                        <!-- COMENTARIOS DE REVISIÓN -->
                         <div class="comentarios-box">
                             <strong>Estatus de Revisión:</strong> ${comentarios}
                         </div>
                     </div>
-
-                    <!-- LÍNEA DE TIEMPO INTERACTIVA -->
                     <div class="timeline-container">
                         <div class="timeline-line"></div>
-                        <div class="timeline-step active">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-text">Enviado</div>
-                        </div>
-                        <div class="timeline-step">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-text">En Revisión</div>
-                        </div>
-                        <div class="timeline-step">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-text">Validando</div>
-                        </div>
-                        <div class="timeline-step">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-text">Dictaminado</div>
-                        </div>
+                        <div class="timeline-step active"><div class="timeline-dot"></div><div class="timeline-text">Enviado</div></div>
+                        <div class="timeline-step"><div class="timeline-dot"></div><div class="timeline-text">En Revisión</div></div>
+                        <div class="timeline-step"><div class="timeline-dot"></div><div class="timeline-text">Validando</div></div>
+                        <div class="timeline-step"><div class="timeline-dot"></div><div class="timeline-text">Dictaminado</div></div>
                     </div>
                 `;
                 contenedor.appendChild(divTarjeta);
