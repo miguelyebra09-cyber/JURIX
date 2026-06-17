@@ -419,7 +419,7 @@
     <script>
       const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
         // 🚨 Coloca aquí tu clave 'anon public' real de Supabase (la que empieza con eyJ...)
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4"; 
+        const SUPABASE_KEY = "TU_CLAVE_LARGA_ANON_KEY_AQUÍ"; 
 
         let folioTicketActivo = "";
 
@@ -429,7 +429,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             folioTicketActivo = urlParams.get('folio');
 
-            // 2. Si no viene en la URL, buscar exhaustivamente en el localStorage con múltiples nombres posibles
+            // 2. Si no viene en la URL, buscar exhaustivamente en el localStorage
             if (!folioTicketActivo) {
                 folioTicketActivo = localStorage.getItem('last_generated_folio') || 
                                     localStorage.getItem('jurix_folio_activo') || 
@@ -438,7 +438,6 @@
             }
 
             // 3. Buscar el elemento del título o caja de texto del folio para inyectarlo en tu interfaz
-            // Busca por los IDs probables o la clase que usas en el diseño azul "Cargando Folio del Ticket..."
             const inputFolio = document.getElementById('txt-folio') || 
                                document.getElementById('folio_user') || 
                                document.getElementById('folio_ticket') ||
@@ -446,13 +445,11 @@
                                document.querySelector('[id*="folio"]');
 
             if (inputFolio && folioTicketActivo) {
-                // Si es un input de formulario lo llena y bloquea
                 if (inputFolio.tagName === "INPUT" || inputFolio.tagName === "SELECT") {
                     inputFolio.value = folioTicketActivo;
                     inputFolio.readOnly = true;
                     inputFolio.style.background = "#EAECEE";
                 } else {
-                    // Si es un contenedor de texto (div, p, span, h3) inserta el texto directo
                     inputFolio.innerText = "Folio Vinculado: " + folioTicketActivo;
                 }
                 console.log("🔗 Interrelación de folio exitosa en la interfaz:", folioTicketActivo);
@@ -461,9 +458,8 @@
             }
         });
 
-        // Evento de guardado del Formulario (Garantiza que no falle si no encuentra el ID 'form-hallazgo')
+        // Evento de guardado del Formulario (Optimizado para actualizar el registro creado por solicitud.html)
         const adjuntarEventoEnvio = () => {
-            // Intenta buscar el formulario por ID, y si no existe, agarra el primer <form> que encuentre en tu HTML
             const miFormulario = document.getElementById('form-hallazgo') || 
                                  document.getElementById('form-hallazgos') || 
                                  document.querySelector('form');
@@ -476,7 +472,6 @@
             miFormulario.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // Si por alguna razón la variable global está vacía, intentamos recuperarla de último momento
                 if (!folioTicketActivo) {
                     folioTicketActivo = localStorage.getItem('last_generated_folio') || 
                                          localStorage.getItem('jurix_folio_activo') || 
@@ -488,9 +483,9 @@
                     return;
                 }
 
-                // Recolección de datos tolerante a los IDs de tus campos select e inputs
+                // Recolección de datos de tus campos
+                // NOTA: Ya no incluimos folio_ticket aquí adentro porque irá en la URL del PATCH para filtrar
                 const registroHallazgo = {
-                    folio_ticket: folioTicketActivo, // Llave de interconexión exacta de la tabla hallazgos
                     sujeto_fiscalizado: (document.getElementById('select-sujeto') || document.getElementById('select-sujeto-fiscalizado') || {value: 'MABA_Abasolo'}).value,
                     tipo_auditoria: (document.getElementById('select-auditoria') || document.querySelector('select[id*="auditoria"]') || {value: 'Por Asignar'}).value,
                     tipo_hallazgo: (document.getElementById('select-tipo-hallazgo') || document.querySelector('select[id*="tipo"]') || {value: 'Observación'}).value,
@@ -500,8 +495,12 @@
                 };
 
                 try {
-                    const response = await fetch(URL_HALLAZGOS, {
-                        method: 'POST',
+                    // 🔄 CAMBIO CLAVE: Usamos el parámetro eq.folio_user para actualizar el renglón específico
+                    // Si tu columna de vinculación en la tabla hallazgos se llama folio_ticket, cambia el "eq.folio_user" de abajo por "eq.folio_ticket"
+                    const urlConFiltro = `${URL_HALLAZGOS}?folio_user=eq.${encodeURIComponent(folioTicketActivo)}`;
+
+                    const response = await fetch(urlConFiltro, {
+                        method: 'PATCH', // <-- Cambiado de POST a PATCH para actualizar en lugar de duplicar
                         headers: {
                             'apikey': SUPABASE_KEY,
                             'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -512,12 +511,12 @@
                     });
 
                     if (response.ok) {
-                        alert(`✅ Cédula de Hallazgo registrada con éxito y vinculada al Folio: ${folioTicketActivo}`);
+                        alert(`✅ Cédula de Hallazgo completada con éxito para el Folio: ${folioTicketActivo}`);
                         miFormulario.reset();
                         window.location.href = "estatus.html";
                     } else {
                         const errData = await response.json();
-                        alert("❌ Error en Supabase: " + (errData.message || response.statusText));
+                        alert("❌ Error en Supabase al actualizar: " + (errData.message || response.statusText));
                     }
                 } catch (error) {
                     console.error("Error en la petición HTTP:", error);
