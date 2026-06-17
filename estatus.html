@@ -64,7 +64,7 @@
             padding: 0 20px;
         }
 
-        /* --- CUADRO DE PERFIL ORIGINAL --- */
+        /* --- CUADRO DE PERFIL DINÁMICO --- */
         .profile-bar {
             background: var(--blanco);
             padding: 20px 25px;
@@ -144,7 +144,7 @@
             border-color: var(--naranja-principal);
         }
 
-        /* --- DISEÑO V VISUAL SOLICITADO --- */
+        /* --- CONTENEDOR VISUAL DE TURNOS --- */
         .panel-control-turno {
             background: var(--blanco);
             border-radius: 8px;
@@ -229,7 +229,7 @@
 <body>
 
     <header>
-        <h1 id="txt-dinamico-titulo">JURIX-DGAJ - Fila Virtual de Control</h1>
+        <h1>JURIX-DGAJ - Fila Virtual de Control</h1>
     </header>
 
     <nav>
@@ -241,13 +241,13 @@
 
     <div class="container">
         
-        <div class="profile-bar">
-            <div class="user-meta">
-                <p>Bienvenido(a): <strong id="lbl-nombre-sesion">Artuto Vidal Rojas</strong></p>
-                <p>Área: <strong id="lbl-area-sesion">Auditoría Especial de Cumplimiento Financiero</strong></p>
+        <div class="profile-bar" id="contenedor-perfil-sistema">
+            <div class="user-meta" id="datos-usuario-render">
+                <p id="txt-captura-usuario">Bienvenido(a): <strong id="lbl-nombre-sesion">Artuto Vidal Rojas</strong></p>
+                <p id="txt-captura-area">Área: <strong id="lbl-area-sesion">Auditoría Especial de Cumplimiento Financiero</strong></p>
             </div>
             <div>
-                <span id="badge-rol-contenedor" class="role-badge badge-usuario">PERFIL: USUARIO</span>
+                <span id="badge-rol-contenedor" class="role-badge badge-usuario">Evaluando Perfil...</span>
             </div>
         </div>
 
@@ -282,7 +282,7 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE CONEXIÓN CON TU TABLA DE SUPABASE "hallazgos"
+        // CREDENCIALES DE TU TABLA "hallazgos" (IMAGEN 1)
         const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
@@ -291,42 +291,57 @@
         let esSupervisor = false;
 
         window.addEventListener('DOMContentLoaded', () => {
-            // EXTRACCIÓN AUTOMÁTICA DIRECTO DESDE LA PANTALLA (Sin depender de variables estáticas externas)
-            const elementoNombre = document.getElementById('lbl-nombre-sesion');
-            const elementoArea = document.getElementById('lbl-area-sesion');
-            const badgeRol = document.getElementById('badge-rol-contenedor');
+            // MOTOR ULTRA-EXTRACTOR INTELIGENTE DE TEXTO EN PANTALLA
+            // Limpia "Bienvenido(a):", "Usuario:" y espacios raros automáticamente
+            const nodoMetaUsuario = document.getElementById('datos-usuario-render');
+            
+            if (nodoMetaUsuario) {
+                const contenidoCompleto = nodoMetaUsuario.innerText || "";
+                
+                // Expresiones regulares para extraer la data sin importar el formato visual "Usuario:" o "Bienvenido(a):"
+                const matchUsuario = contenidoCompleto.match(/(?:Bienvenido\(a\):|Usuario:)\s*([^\n]+)/i);
+                const matchArea = contenidoCompleto.match(/Área:\s*([^\n]+)/i);
 
-            nombreSesionReal = elementoNombre ? elementoNombre.innerText.trim() : "Artuto Vidal Rojas";
-            areaSesionReal = elementoArea ? elementoArea.innerText.trim() : "Auditoría Especial de Cumplimiento Financiero";
-
-            // Validación dinámica de roles e intercambio visual automático de Badges
-            if (nombreSesionReal.toLowerCase().includes("juan miguel") || areaSesionReal.toLowerCase().includes("dgaj")) {
-                esSupervisor = true;
-                badgeRol.innerText = "PERFIL: SUPERVISOR";
-                badgeRol.className = "role-badge badge-supervisor";
-            } else {
-                esSupervisor = false;
-                badgeRol.innerText = "PERFIL: USUARIO";
-                badgeRol.className = "role-badge badge-usuario";
+                nombreSesionReal = matchUsuario ? matchUsuario[1].trim() : "Artuto Vidal Rojas";
+                areaSesionReal = matchArea ? matchArea[1].trim() : "Auditoría Especial de Cumplimiento Financiero";
             }
 
-            // Llamar a la base de datos real utilizando tu tabla "hallazgos"
+            // Corrección de la lógica de privilegios: 
+            // Si el nombre contiene Juan Miguel o el área contiene DGAJ o Asuntos Jurídicos, se activa el perfil de SUPERVISOR de inmediato
+            const badgeRol = document.getElementById('badge-rol-contenedor');
+            const normalizadoNombre = nombreSesionReal.toLowerCase();
+            const normalizadoArea = areaSesionReal.toLowerCase();
+
+            if (normalizadoNombre.includes("juan miguel") || normalizadoArea.includes("dgaj") || normalizadoArea.includes("asuntos jurídicos")) {
+                esSupervisor = true;
+                if(badgeRol) {
+                    badgeRol.innerText = "PERFIL: SUPERVISOR";
+                    badgeRol.className = "role-badge badge-supervisor";
+                }
+            } else {
+                esSupervisor = false;
+                if(badgeRol) {
+                    badgeRol.innerText = "PERFIL: USUARIO";
+                    badgeRol.className = "role-badge badge-usuario";
+                }
+            }
+
+            // Descargar la fila virtual real de Supabase
             conectarTablaSupabaseHallazgos();
 
-            // Enlazar los inputs de la consola al motor de filtros interactivos
+            // Escuchadores de la barra de búsqueda reactiva
             document.getElementById('txt-buscar-folio').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-usuario').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('txt-buscar-sujeto').addEventListener('input', ejecutarFiltrosCampos);
             document.getElementById('select-buscar-puesto').addEventListener('change', ejecutarFiltrosCampos);
         });
 
-        // DESCARGA DE INFORMACIÓN CON LAS COLUMNAS REALES DE TU TABLA (IMAGEN 1)
+        // CONEXIÓN SÍNCRONA CON LA TABLA DE SUPABASE "hallazgos"
         async function conectarTablaSupabaseHallazgos() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
-            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando con la tabla hallazgos de Supabase...</p>";
+            contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando con la tabla 'hallazgos' de Supabase...</p>";
 
             try {
-                // Hacemos el fetch pidiendo los datos ordenados por folio
                 const response = await fetch(`${URL_HALLAZGOS}?select=*&order=folio_user.asc`, {
                     method: 'GET',
                     headers: {
@@ -336,10 +351,10 @@
                     }
                 });
 
-                if (!response.ok) throw new Error("Fallo de conexión");
+                if (!response.ok) throw new Error("Fallo de comunicación RLS");
                 const datosProcesados = await response.json();
 
-                // MOCK DE CONTINGENCIA EXACTO si la tabla está vacía temporalmente en pruebas locales
+                // Respaldos automáticos en caso de que la base de datos se limpie o no retorne JSON
                 let listaFinal = datosProcesados;
                 if (!listaFinal || listaFinal.length === 0) {
                     listaFinal = [
@@ -362,37 +377,36 @@
                     ];
                 }
 
-                // Renderizamos en base a las reglas de negocio
                 renderizarContenedoresEstiloTurno(listaFinal);
 
             } catch (error) {
-                console.error("Error al mapear Supabase: ", error);
-                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de enlace con la tabla 'hallazgos'. Revisa los privilegios RLS de Supabase.</p>";
+                console.error("Error Supabase: ", error);
+                contenedor.innerHTML = "<p style='color:red; text-align:center;'>⚠️ Error de sincronización con Supabase. Verifica políticas RLS en la tabla 'hallazgos'.</p>";
             }
         }
 
-        // CONSTRUCCIÓN VISUAL ATRACTIVA - CLON DE LA IMAGEN 2
+        // CONTROL EXCLUSIVO DE VISUALIZACIÓN POR PERFIL LOGUEADO
         function renderizarContenedoresEstiloTurno(tickets) {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "";
 
-            // Regla de Perfiles: Si es Usuario normal, solo ve lo suyo. Si es Supervisor, ve todo.
+            // FILTRADO INTELIGENTE POR USUARIO
             const ticketsFiltradosPorPerfil = tickets.filter(t => {
-                if (esSupervisor) return true; // Supervisor ve todo lo de la base de datos
+                if (esSupervisor) return true; // El supervisor (Juan Miguel) tiene permitido ver absolutamente todo lo de la DB
                 
-                // Usuario común: Comparamos si el registro de la DB coincide con el nombre en pantalla
-                const solicitanteDB = (t.usuario_nombre || "").toLowerCase().trim();
-                const sesionActual = nombreSesionReal.toLowerCase().trim();
-                return solicitanteDB === sesionActual || solicitanteDB === "" || solicitanteDB === "null" || solicitanteDB.includes("invitado");
+                // Si es un usuario común (Artuto Vidal), solo verá registros donde usuario_nombre coincida con su pantalla
+                const nombreRegistroDB = (t.usuario_nombre || "").toLowerCase().trim();
+                const sesionActualLimpia = nombreSesionReal.toLowerCase().trim();
+                
+                return nombreRegistroDB === sesionActualLimpia || nombreRegistroDB === "" || nombreRegistroDB.includes("invitado");
             });
 
             if (ticketsFiltradosPorPerfil.length === 0) {
-                contenedor.innerHTML = "<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No se encontraron tickets registrados o autorizados para este perfil.</p>";
+                contenedor.innerHTML = `<p style='text-align:center; color:#95A5A6; background:#fff; padding:35px; border-radius:8px; border: 1px dashed #ccc;'>No existen tickets pendientes o registrados bajo tu perfil activo (${nombreSesionReal}) en este periodo.</p>`;
                 return;
             }
 
             ticketsFiltradosPorPerfil.forEach(ticket => {
-                // MAPEO DIRECTO CON LAS COLUMNAS ASIGNADAS EN TU IMAGEN 1 DE SUPABASE
                 const folioUser = ticket.folio_user || "JURIX-DGAJ-DCPL-B003-0001";
                 const sujeto = ticket.sujeto_fiscalizado || "ENTE";
                 const usuario = ticket.usuario_nombre || "Usuario no asignado";
@@ -400,7 +414,6 @@
                 const area = ticket.area_usuario || "Dirección Solicitante";
                 const solicitud = ticket.tipo_solicitud || "Análisis de Informe";
                 
-                // Lógica de badges visuales e indicación de tiempos dinámicos
                 let badgeDictamen = "DICTAMEN B003";
                 let tiemposEstimados = "Est. 1 a 2 días hábiles";
 
@@ -412,13 +425,11 @@
                 const divTarjeta = document.createElement('div');
                 divTarjeta.className = "panel-control-turno";
                 
-                // Meta tags de búsqueda para la consola reactiva
                 divTarjeta.setAttribute('data-folio', folioUser.toLowerCase());
                 divTarjeta.setAttribute('data-usuario', usuario.toLowerCase());
                 divTarjeta.setAttribute('data-sujeto', sujeto.toLowerCase());
                 divTarjeta.setAttribute('data-puesto', puesto.toLowerCase());
 
-                // Estructura HTML idéntica a tu captura 2
                 divTarjeta.innerHTML = `
                     <div class="panel-titulo-seccion">⏳ Control Virtual de Turno e Información de Fila</div>
                     <div class="card-interno-turno">
@@ -448,7 +459,7 @@
             });
         }
 
-        // MOTOR ASÍNCRONO DE BÚSQUEDA CRUZADA POR CAMPOS INDEPENDIENTES
+        // MOTOR REAC-BUSQUEDA MULTICAMPO
         function ejecutarFiltrosCampos() {
             const filtroFolio = document.getElementById('txt-buscar-folio').value.toLowerCase().trim();
             const filtroUsuario = document.getElementById('txt-buscar-usuario').value.toLowerCase().trim();
@@ -463,7 +474,6 @@
                 const cumpleSujeto = tarjeta.getAttribute('data-sujeto').includes(filtroSujeto);
                 const cumplePuesto = filtroPuesto === "" || tarjeta.getAttribute('data-puesto').includes(filtroPuesto);
 
-                // Si cumple de forma simultánea con los campos rellenados, se muestra
                 if (cumpleFolio && cumpleUsuario && cumpleSujeto && cumplePuesto) {
                     tarjeta.style.display = "block";
                 } else {
