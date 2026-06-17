@@ -474,22 +474,15 @@
             }
         }
 
-        // CONTROLADOR DE CONSULTAS MAESTRAS DESDE EL SERVIDOR (RESILIENTE A ERRORES DE CAPTURA)
+       // CONTROLADOR DE CONSULTAS MAESTRAS - FILTRADO INTELIGENTE INTEGRADO
         async function cargarTicketsFilaVirtual() {
             const contenedor = document.getElementById('contenedor-tickets-maestro');
             contenedor.innerHTML = "<p style='text-align:center; color:#7F8C8D;'>Sincronizando Fila Virtual en tiempo real...</p>";
 
             try {
+                // 1. Traemos TODOS los tickets de la tabla para asegurar que no se pierda ninguno por problemas de URL
                 let endpointQuery = `${URL_SOLICITUDES}?select=*&order=fecha_creacion.desc`;
                 
-                // RESTRICCIÓN DE SEGURIDAD POR PERFIL:
-                // Si es un 'usuario' común, usamos 'ilike' con el primer bloque de su nombre para asegurar que jale
-                // sus propios tickets aunque existan errores de dedo o espacios en el registro de la base de datos.
-                if (userRole === "usuario" && currentUserName !== "Invitado") {
-                    const raizNombre = currentUserName.trim().split(' ')[0];
-                    endpointQuery += `&nombre_solicitante=ilike.*${encodeURIComponent(raizNombre)}*`;
-                }
-
                 const respuesta = await fetch(endpointQuery, {
                     method: 'GET',
                     headers: {
@@ -502,24 +495,36 @@
                 if (!respuesta.ok) throw new Error("Error de conexión");
                 const listaData = await respuesta.json();
                 
-                window.cacheFilaVirtual = listaData; 
-                renderizarTicketsInterfaz(listaData);
+                // 2. FILTRADO INTELIGENTE SEGÚN EL PERFIL EN EL CLIENTE:
+                let datosParaMostrar = [];
+
+                if (userRole === "usuario") {
+                    // Si es usuario estándar, filtramos en JavaScript buscando CUALQUIER coincidencia parcial
+                    // Esto evita problemas con nombres guardados a medias, errores de dedo o espacios extras.
+                    const nombreBuscado = currentUserName.toLowerCase().trim();
+                    
+                    datosParaMostrar = listaData.filter(ticket => {
+                        // Buscamos coincidencia en la columna 'nombre_solicitante' o cualquier columna alternativa de usuario
+                        const solicitante = (ticket.nombre_solicitante || ticket.usuario || ticket.nombre || "").toLowerCase();
+                        return solicitante.includes(nombreBuscado) || nombreBuscado.includes(solicitante.split(' ')[0]);
+                    });
+                } else {
+                    // Si es Supervisor o Administrador, ve la totalidad de los elementos
+                    datosParaMostrar = listaData;
+                }
+
+                window.cacheFilaVirtual = datosParaMostrar; 
+                renderizarTicketsInterfaz(datosParaMostrar);
 
             } catch (err) {
                 console.error("Fallo de red:", err);
-                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error al conectar con el servidor de datos. Desplegando caché de contingencia.</p>";
+                contenedor.innerHTML = "<p style='color:var(--rojo-alerta); text-align:center;'>⚠️ Error de sincronización de datos con el servidor.</p>";
                 
-                // Contingencia en memoria si falla la red externa
+                // Contingencia automática local si el servidor no responde
                 const mockContingencia = [
-                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0009", nombre_solicitante: "Arturo Vidal Rojas", area_solicitante: "Auditoría Especial", asunto: "Análisis de Informe Cuenta Pública", prioridad: "Urgente", estatus: "En Revisión", ente: "Pueblo Nuevo", posicion_fila: 1, fecha_creacion: "2026-06-14" },
-                    { folio_ticket: "JURIX-DGAJ-DCPL-B001-0007", nombre_solicitante: "Juan Miguel Yebra Prieto", area_solicitante: "DGAJ", asunto: "Validación de Oficios de Legalidad", prioridad: "Normal", estatus: "Pendiente", ente: "San Diego de la Unión", posicion_fila: 2, fecha_creacion: "2026-06-14" }
+                    { folio_ticket: "JURIX-2026-001", nombre_solicitante: "Juan Miguel Yebra Prieto", area_solicitante: "Dirección General de Asuntos Jurídicos", asunto: "Validación de Oficios de Legalidad", prioridad: "Normal", estatus: "En Revisión", ente: "Guanajuato", posicion_fila: 1, fecha_creacion: "2026-06-16" }
                 ];
-                
-                const filtrados = userRole === "usuario" 
-                    ? mockContingencia.filter(x => x.nombre_solicitante.toLowerCase().includes(currentUserName.toLowerCase().split(' ')[0]))
-                    : mockContingencia;
-
-                renderizarTicketsInterfaz(filtrados);
+                renderizarTicketsInterfaz(mockContingencia);
             }
         }
 
