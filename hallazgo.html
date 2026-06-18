@@ -145,6 +145,44 @@
             margin: 2px;
            font-weight: bold;
         }
+
+        /* --- CONTENEDOR DE OPCIONES DE SÍNTESIS --- */
+        .ai-synthesis-box {
+            margin-top: 10px;
+            background-color: #f0f7ff;
+            border: 1px solid #bae6fd;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+
+        .synthesis-options-container {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .synthesis-btn-option {
+            background-color: var(--blanco);
+            border: 1px solid #7dd3fc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #0369a1;
+            transition: all 0.2s ease;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .synthesis-btn-option:hover {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+            color: #0369a1;
+            transform: translateX(3px);
+        }
  
         /* --- FILA VIRTUAL AVANZADA Y DINÁMICA --- */
         .queue-section {
@@ -392,7 +430,8 @@
                    <label for="titulo_observacion">📋 Título de la Observación:</label>
                    <input type="text" id="titulo_observacion" placeholder="Escriba el título del hallazgo..." required>
                </div>
- <div class="form-group">
+ 
+            <div class="form-group">
     <label for="rubro_combobox">🗂️ Rubro Específico:</label>
     <select id="rubro_combobox" required>
         <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
@@ -649,6 +688,7 @@
         </optgroup>
     </select>
 </div>
+
  
                <div class="form-group">
                    <label for="importe">💲 Importe ($):</label>
@@ -663,10 +703,25 @@
                <div class="form-group full-width">
                    <label for="condicion_hallazgo">⚖️ Condición:</label>
                    <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
+                   
                    <div class="ai-keywords-box">
                        <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
                        <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
                    </div>
+
+                   <!-- NUEVO MODULO DE SÍNTESIS DE IA -->
+                   <div class="ai-synthesis-box">
+                       <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
+                       <div id="synthesisOptions" class="synthesis-options-container">
+                           <span style="color: #666; font-style: italic;">Esperando texto en la condición para generar síntesis breves...</span>
+                       </div>
+                   </div>
+               </div>
+
+               <!-- CAMPO DONDE SE CAPTURA LA SÍNTESIS FINAL SELECCIONADA -->
+               <div class="form-group full-width">
+                   <label for="sintesis_condicion">📝 Síntesis de Condición (5-8 palabras):</label>
+                   <input type="text" id="sintesis_condicion" placeholder="Selecciona una opción de arriba o escribe una síntesis breve..." required>
                </div>
  
                <div class="form-group full-width">
@@ -797,24 +852,25 @@
                 e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(numero);
             });
  
-            // Extractor IA Lógico Semántico del Campo Condición
+            // Extractor IA Lógico Semántico del Campo Condición y Generador de Síntesis
             const txtCondicion = document.getElementById('condicion_hallazgo');
             const containerKeywords = document.getElementById('keywordsContainer');
+            const containerSynthesis = document.getElementById('synthesisOptions');
+            const txtSintesisFinal = document.getElementById('sintesis_condicion');
+            const cmbSujeto = document.getElementById('sujeto_fiscalizado');
  
             txtCondicion.addEventListener('input', () => {
-                let texto = txtCondicion.value.toLowerCase();
+                let texto = txtCondicion.value.toLowerCase().trim();
                 
-                // Diccionario extendido de patrones de auditoría jurídica (RegEx)
+                // 1. ANÁLISIS DE PALABRAS CLAVE (MANTIENE TU LÓGICA)
                 const patronesAI = [
-                    /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, // Adverbio + Verbo
-                    /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, // Al + Infinitivo
-                    /(?:aplicación|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, // Sustantivaciones
-                    /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi // Verbos individuales
+                    /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, 
+                    /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, 
+                    /(?:aplicación|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, 
+                    /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi 
                 ];
  
                 palabrasClaveExtraidas = [];
-                
-                // Ejecución dinámica de la búsqueda de patrones sobre la Condición
                 patronesAI.forEach(regex => {
                     let coincidencias = texto.match(regex);
                     if (coincidencias) {
@@ -822,7 +878,6 @@
                     }
                 });
  
-                // Eliminar duplicados en caso de que se encimen las reglas de captura
                 palabrasClaveExtraidas = [...new Set(palabrasClaveExtraidas)];
  
                 if (palabrasClaveExtraidas.length > 0) {
@@ -830,8 +885,65 @@
                 } else {
                     containerKeywords.innerHTML = "<span style='color: #999;'>Analizando... (No se detectan verbos rectores aún)</span>";
                 }
+
+                // 2. MOTOR DINÁMICO DE SÍNTESIS (NUEVO REGEX SEMÁNTICO)
+                if (texto.length < 15) {
+                    containerSynthesis.innerHTML = "<span style='color: #666; font-style: italic;'>Escribe una condición más extensa para estructurar las opciones...</span>";
+                    return;
+                }
+
+                // Obtener el nombre limpio del Sujeto Fiscalizado seleccionado
+                let sujetoNombre = "El sujeto";
+                if(cmbSujeto.value) {
+                    let optionText = cmbSujeto.options[cmbSujeto.selectedIndex].text;
+                    sujetoNombre = optionText.split('-')[0].split('_')[1] || optionText.split('-')[0] || "El municipio";
+                    sujetoNombre = sujetoNombre.trim();
+                }
+
+                // Búsqueda inteligente de conceptos jurídicos en el texto del usuario
+                let conceptoIncumplimiento = texto.includes("contrat") ? "incumplimiento contractual" : 
+                                             texto.includes("estimaci") ? "estimación tardía" : "sanción administrativa";
+                
+                let conceptoPena = texto.includes("multa") ? "multa" : 
+                                   texto.includes("sanci") ? "sanción" : "penalización";
+
+                // Modelos de síntesis estructurados de 5 a 8 palabras según tus ejemplos de diseño
+                let opcionesGeneradas = [
+                    `${sujetoNombre} no acreditó ${conceptoPena} por ${conceptoIncumplimiento}`,
+                    `Falta acreditación de ${conceptoPena} al contratista`,
+                    `Incumplimiento contractual sin ${conceptoPena} al contratista`
+                ];
+
+                // Ajustes contextuales finos si la condición habla de autorizaciones o retrasos
+                if (texto.includes("tard") || texto.includes("retras") || texto.includes("autoriz")) {
+                    opcionesGeneradas[1] = `Autorización tardía sin aplicación de ${conceptoPena} contractual`;
+                    opcionesGeneradas[2] = `No se acreditó ${conceptoPena} por estimación tardía`;
+                }
+
+                // Renderizar los botones interactivos
+                containerSynthesis.innerHTML = opcionesGeneradas.map((opcion, index) => {
+                    // Limpiar mayúscula inicial por estética uniforme
+                    let opcionFormateada = opcion.charAt(0).toUpperCase() + opcion.slice(1);
+                    let numPalabras = opcionFormateada.split(/\s+/).length;
+                    return `
+                        <button type="button" class="synthesis-btn-option" onclick="seleccionarSintesis('${opcionFormateada}')">
+                            ✨ "${opcionFormateada}" <span style="float: right; font-size: 0.75rem; color: #7f8c8d;">(${numPalabras} palabras)</span>
+                        </button>
+                    `;
+                }).join('');
             });
         });
+
+        // Función global para capturar la opción seleccionada con el clic
+        function seleccionarSintesis(textoSeleccionado) {
+            const txtSintesisFinal = document.getElementById('sintesis_condicion');
+            if (txtSintesisFinal) {
+                txtSintesisFinal.value = textoSeleccionado;
+                // Breve efecto visual de confirmación en el input
+                txtSintesisFinal.style.backgroundColor = "#e8f8f5";
+                setTimeout(() => { txtSintesisFinal.style.backgroundColor = ""; }, 400);
+            }
+        }
  
         // Evento Submit y Envío estructurado a Supabase
         const form = document.getElementById('hallazgoForm');
@@ -851,7 +963,7 @@
                     fecha_recepcion: document.getElementById('fecha_recepcion').value,
                     sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
                     tipo_auditoria: document.getElementById('tipo_auditoria').value,
-                    rubro_hallazgo: document.getElementById('rubro_hallazgo').value, // Aunque esté inhabilitado visualmente se extrae el string correcto
+                    rubro_hallazgo: document.getElementById('rubro_hallazgo').value, 
                     tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
                     num_concepto: document.getElementById('num_concepto').value,
                     titulo_observacion: document.getElementById('titulo_observacion').value,
@@ -859,7 +971,8 @@
                     importe: parseFloat(rawImporte) || 0,
                     link_soporte: document.getElementById('link_soporte').value || null,
                     condicion: document.getElementById('condicion_hallazgo').value,
-                    palabras_clave_ia: palabrasClaveExtraidas.join(', '), // Almacenado como cadena separada por comas
+                    palabras_clave_ia: palabrasClaveExtraidas.join(', '), 
+                    sintesis_condicion: document.getElementById('sintesis_condicion').value, // NUEVO CAMPO ENVIADO A SUPABASE
                     comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
                 };
  
