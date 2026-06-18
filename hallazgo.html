@@ -11,6 +11,7 @@
             --gris-claro: #f4f4f9;
             --blanco: #ffffff;
             --azul-info: #0066cc;
+            --verde-exito: #2ecc71;
         }
 
         body {
@@ -126,6 +127,25 @@
             cursor: not-allowed;
         }
 
+        .ai-keywords-box {
+            margin-top: 8px;
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .keyword-tag {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin: 2px;
+            font-weight: bold;
+        }
+
         /* --- FILA VIRTUAL AVANZADA Y DINÁMICA --- */
         .queue-section {
             margin-top: 35px;
@@ -160,9 +180,8 @@
             border-left-color: #9b59b6;
         }
 
-        /* Estilos de colores dinámicos según el servicio */
-        .card-RCPF { background: #fffcf4; border-left-color: #f39c12; } /* Ámbar / Financiero */
-        .card-RCPI { background: #f4fbf7; border-left-color: #2ecc71; } /* Verde / Infraestructura */
+        .card-RCPF { background: #fffcf4; border-left-color: #f39c12; }
+        .card-RCPI { background: #f4fbf7; border-left-color: #2ecc71; }
 
         .queue-grid {
             display: grid;
@@ -273,7 +292,7 @@
                 
                 <div class="form-group">
                     <label for="fecha_recepcion">Fecha de Recepción:</label>
-                    <input type="date" id="fecha_recepcion" required>
+                    <input type="date" id="fecha_recepcion" readonly required>
                 </div>
 
                 <div class="form-group">
@@ -348,7 +367,7 @@
 
                 <div class="form-group">
                     <label for="rubro_hallazgo">Rubro de Hallazgo:</label>
-                    <select id="rubro_hallazgo" required>
+                    <select id="rubro_hallazgo" required disabled>
                         <option value="" disabled selected>-- Seleccione Rubro --</option>
                         <option value="Financiero">Financiero</option>
                         <option value="Infraestructura">Infraestructura</option>
@@ -366,7 +385,24 @@
 
                 <div class="form-group">
                     <label for="num_concepto">🔢 Núm / Concepto en Cédula:</label>
-                    <input type="text" id="num_concepto" required placeholder="Ej. Con-01">
+                    <input type="text" id="num_concepto" required placeholder="Ej. 001">
+                </div>
+
+                <div class="form-group">
+                    <label for="titulo_observacion">📋 Título de la Observación:</label>
+                    <input type="text" id="titulo_observacion" placeholder="Escriba el título del hallazgo..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="rubro_combobox">🗂️ Rubro Específico:</label>
+                    <select id="rubro_combobox" required>
+                        <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
+                        </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="importe">💲 Importe ($):</label>
+                    <input type="text" id="importe" placeholder="$0.00" required>
                 </div>
 
                 <div class="form-group">
@@ -374,9 +410,13 @@
                     <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
                 </div>
 
-                <div class="form-group">
-                    <label for="importe">💲 Importe ($):</label>
-                    <input type="number" id="importe" step="0.01" min="0" placeholder="0.00" required>
+                <div class="form-group full-width">
+                    <label for="condicion_hallazgo">⚖️ Condición:</label>
+                    <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
+                    <div class="ai-keywords-box">
+                        <strong>🤖 Palabras Clave de la Condición (Análisis IA Logix):</strong>
+                        <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
+                    </div>
                 </div>
 
                 <div class="form-group full-width">
@@ -418,18 +458,24 @@
 
     <script>
         const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-        // 🚨 Coloca aquí tu clave 'anon public' real de Supabase
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4"; 
 
         let folioTicketActivo = "";
+        let palabrasClaveExtraidas = [];
 
-        // Al cargar la página, recuperamos e inyectamos el folio
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. Intentar desde URL
+            // Asignar fecha del sistema automáticamente
+            const txtFecha = document.getElementById('fecha_recepcion');
+            const hoy = new Date();
+            const yyyy = hoy.getFullYear();
+            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dd = String(hoy.getDate()).padStart(2, '0');
+            txtFecha.value = `${yyyy}-${mm}-${dd}`;
+
+            // Recuperación de Folio
             const urlParams = new URLSearchParams(window.location.search);
             folioTicketActivo = urlParams.get('folio');
 
-            // 2. Si no, buscar en localStorage
             if (!folioTicketActivo) {
                 folioTicketActivo = localStorage.getItem('last_generated_folio') || 
                                     localStorage.getItem('jurix_folio_activo') || 
@@ -437,21 +483,19 @@
                                     localStorage.getItem('folio_user');
             }
 
-            // Inyección visual en los componentes informativos de la UI
             const subtitleFolio = document.getElementById('folioTicketSub');
             const lblTicketQueue = document.getElementById('lblTicketQueue');
 
             if (folioTicketActivo) {
                 if (subtitleFolio) subtitleFolio.innerText = "Folio del Ticket Vinculado: " + folioTicketActivo;
                 if (lblTicketQueue) lblTicketQueue.innerText = folioTicketActivo;
-                console.log("🔗 Interrelación de folio exitosa:", folioTicketActivo);
             } else {
                 if (subtitleFolio) subtitleFolio.innerText = "⚠️ Advertencia: Sin Folio de Ticket Activo";
-                console.warn("⚠️ No se encontró ningún folio activo en memoria.");
             }
 
-            // Escuchar cambios en el Tipo de Auditoría para cambiar dinámicamente el estilo de la tarjeta virtual
+            // Cambios de Tipo de Auditoría y Rubro Automático
             const cmbAuditoria = document.getElementById('tipo_auditoria');
+            const cmbRubro = document.getElementById('rubro_hallazgo');
             const queueCard = document.getElementById('queueCardElement');
             const badgeEstatus = document.getElementById('badgeEstatus');
             const lblTipoSolicitudQueue = document.getElementById('lblTipoSolicitudQueue');
@@ -460,56 +504,110 @@
             if (cmbAuditoria) {
                 cmbAuditoria.addEventListener('change', () => {
                     const valor = cmbAuditoria.value;
-                    // Reset de clases dinámicas
                     queueCard.className = "queue-card";
                     badgeEstatus.className = "status-badge";
                     
                     if (valor === "RCPF") {
+                        cmbRubro.value = "Financiero";
                         queueCard.classList.add('card-RCPF');
                         badgeEstatus.classList.add('badge-RCPF');
                         badgeEstatus.innerText = "Financiero";
                         if (lblTipoSolicitudQueue) lblTipoSolicitudQueue.innerText = "Revisión Cuenta Pública - Financiero";
                         if (timeEstimate) timeEstimate.innerText = "Est. ~15 min";
                     } else if (valor === "RCPI") {
+                        cmbRubro.value = "Infraestructura";
                         queueCard.classList.add('card-RCPI');
                         badgeEstatus.classList.add('badge-RCPI');
                         badgeEstatus.innerText = "Infraestructura";
                         if (lblTipoSolicitudQueue) lblTipoSolicitudQueue.innerText = "Revisión Cuenta Pública - Infraestructura";
                         if (timeEstimate) timeEstimate.innerText = "Est. ~25 min";
                     } else {
+                        cmbRubro.value = "";
                         badgeEstatus.innerText = "Por Definir";
                         if (timeEstimate) timeEstimate.innerText = "Calculando...";
                     }
                 });
             }
+
+            // Formatear el concepto numérico a 3 dígitos obligatorios ("000")
+            const txtConcepto = document.getElementById('num_concepto');
+            txtConcepto.addEventListener('blur', () => {
+                let valor = txtConcepto.value.trim();
+                if(valor && !isNaN(valor)) {
+                    txtConcepto.value = valor.padStart(3, '0');
+                }
+            });
+
+            // Máscara y formato de Pesos en tiempo real para el Importe
+            const txtImporte = document.getElementById('importe');
+            txtImporte.addEventListener('input', (e) => {
+                let valor = e.target.value.replace(/\D/g, "");
+                if(valor === "") { e.target.value = ""; return; }
+                let numero = (parseFloat(valor) / 100).toFixed(2);
+                e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(numero);
+            });
+
+            // Extractor IA Lógico Semántico del Campo Condición
+            const txtCondicion = document.getElementById('condicion_hallazgo');
+            const containerKeywords = document.getElementById('keywordsContainer');
+
+            txtCondicion.addEventListener('input', () => {
+                let texto = txtCondicion.value.toLowerCase();
+                // Diccionario extendido de verbos rectores y lógicas de auditoría jurídica
+                const diccionarioAI = [
+                    "autorizo", "autorizó", "no autorizo", "no autorizó", "hizo", "no hizo", 
+                    "comprobo", "comprobó", "no comprobo", "no comprobó", "omitio", "omitió", 
+                    "incumplio", "incumplió", "detecto", "detectó", "valido", "validó", 
+                    "carece", "excede", "presento", "presentó", "no presentó", "no presento",
+                    "pago", "pagó", "duplicado", "inexistente", "ejecuto", "ejecutó"
+                ];
+
+                palabrasClaveExtraidas = [];
+                diccionarioAI.forEach(palabra => {
+                    if (texto.includes(palabra)) {
+                        palabrasClaveExtraidas.push(palabra);
+                    }
+                });
+
+                if (palabrasClaveExtraidas.length > 0) {
+                    containerKeywords.innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('');
+                } else {
+                    containerKeywords.innerHTML = "<span style='color: #999;'>Analizando... (No se detectan verbos rectores aún)</span>";
+                }
+            });
         });
 
-        // Evento de guardado del Formulario (PATCH mediante filtro por folio_user)
+        // Evento Submit y Envío estructurado a Supabase
         const form = document.getElementById('hallazgoForm');
         if (form) {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 if (!folioTicketActivo) {
-                    alert("❌ Error de interrelación: No se detecta un número de Ticket activo para enlazar esta cédula.");
+                    alert("❌ Error de interrelación: No se detecta un número de Ticket activo.");
                     return;
                 }
 
-                // Extracción directa utilizando los ID correctos del HTML
+                // Limpiar el formato de moneda para convertirlo en Float Puro para la Base de Datos
+                const rawImporte = document.getElementById('importe').value.replace(/[^0-9.-]+/g, "");
+
                 const registroHallazgo = {
                     fecha_recepcion: document.getElementById('fecha_recepcion').value,
                     sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
                     tipo_auditoria: document.getElementById('tipo_auditoria').value,
-                    rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
+                    rubro_hallazgo: document.getElementById('rubro_hallazgo').value, // Aunque esté inhabilitado visualmente se extrae el string correcto
                     tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
                     num_concepto: document.getElementById('num_concepto').value,
+                    titulo_observacion: document.getElementById('titulo_observacion').value,
+                    rubro_especifico: document.getElementById('rubro_combobox').value,
+                    importe: parseFloat(rawImporte) || 0,
                     link_soporte: document.getElementById('link_soporte').value || null,
-                    importe: parseFloat(document.getElementById('importe').value) || 0,
+                    condicion: document.getElementById('condicion_hallazgo').value,
+                    palabras_clave_ia: palabrasClaveExtraidas.join(', '), // Almacenado como cadena separada por comas
                     comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
                 };
 
                 try {
-                    // Si tu columna de vinculación en la tabla de Supabase se llama "folio_ticket" en lugar de "folio_user", cámbiala aquí:
                     const urlConFiltro = `${URL_HALLAZGOS}?folio_user=eq.${encodeURIComponent(folioTicketActivo)}`;
 
                     const response = await fetch(urlConFiltro, {
