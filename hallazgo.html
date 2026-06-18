@@ -6,394 +6,393 @@
     <title>JURIX-DGAJ - Registro de Hallazgos</title>
     <style>
         :root {
-            --naranja-nitido: #FF6600;
-            --gris-oscuro: #333333;
-            --gris-claro: #f4f4f9;
+           --naranja-nitido: #FF6600;
+           --gris-oscuro: #333333;
+           --gris-claro: #f4f4f9;
             --blanco: #ffffff;
-            --azul-info: #0066cc;
-            --verde-exito: #2ecc71;
+           --azul-info: #0066cc;
+           --verde-exito: #2ecc71;
         }
-
+ 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gris-claro);
-            margin: 0;
-            padding: 0;
-            color: var(--gris-oscuro);
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           background-color: var(--gris-claro);
+           margin: 0;
+           padding: 0;
+           color: var(--gris-oscuro);
         }
-
+ 
         header {
-            background-color: var(--blanco);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid var(--naranja-nitido);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+           background-color: var(--blanco);
+           padding: 20px;
+           text-align: center;
+           border-bottom: 3px solid var(--naranja-nitido);
+           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
+ 
         h1 {
             color: var(--naranja-nitido);
             margin: 0;
             font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 1px;
+           font-weight: bold;
+           letter-spacing: 1px;
         }
-
+ 
         nav {
-            background-color: var(--gris-oscuro);
-            padding: 10px;
-            text-align: center;
+           background-color: var(--gris-oscuro);
+           padding: 10px;
+           text-align: center;
         }
-
+ 
         nav a {
             color: var(--blanco);
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: 500;
-            transition: color 0.3s;
+           text-decoration: none;
+           margin: 0 15px;
+           font-weight: 500;
+           transition: color 0.3s;
         }
-
+ 
         nav a:hover {
             color: var(--naranja-nitido);
         }
-
+ 
         .container {
             max-width: 750px;
             margin: 30px auto;
-            background: var(--blanco);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+           background: var(--blanco);
+           padding: 30px;
+           border-radius: 8px;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-
+ 
         h2 {
-            text-align: center;
+           text-align: center;
             color: var(--gris-oscuro);
-            margin-bottom: 5px;
+           margin-bottom: 5px;
             font-size: 1.6rem;
         }
-
-        .subtitle-folio {
-            text-align: center;
+ 
+       .subtitle-folio {
+           text-align: center;
             color: var(--azul-info);
             font-size: 1.2rem;
-            font-weight: bold;
-            background-color: #eef7ff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 30px;
+           font-weight: bold;
+           background-color: #eef7ff;
+           padding: 10px;
+           border-radius: 5px;
+           margin-bottom: 30px;
             border: 1px dashed var(--azul-info);
         }
-
+ 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+           grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
+ 
         .form-group {
-            margin-bottom: 15px;
+           margin-bottom: 15px;
         }
-
-        .form-group.full-width {
-            grid-column: span 2;
+ 
+       .form-group.full-width {
+           grid-column: span 2;
         }
-
+ 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+           margin-bottom: 8px;
+           font-weight: 600;
             font-size: 0.9rem;
         }
-
-        input[type="text"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
+ 
+       input[type="text"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
             width: 100%;
-            padding: 11px;
+           padding: 11px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box;
+           box-sizing: border-box;
             font-size: 0.95rem;
-            font-family: inherit;
+           font-family: inherit;
         }
-
+ 
         input:focus, select:focus, textarea:focus {
-            border-color: var(--naranja-nitido);
+           border-color: var(--naranja-nitido);
             outline: none;
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
         }
-
-        input[readonly] {
-            background-color: #eaeded;
+ 
+       input[readonly] {
+           background-color: #eaeded;
             color: #7f8c8d;
             cursor: not-allowed;
         }
-
-        .ai-keywords-box {
-            margin-top: 8px;
-            background-color: #f0fdf4;
+ 
+       .ai-keywords-box {
+           margin-top: 8px;
+           background-color: #f0fdf4;
             border: 1px solid #bbf7d0;
-            padding: 10px;
-            border-radius: 4px;
+           padding: 10px;
+           border-radius: 4px;
             font-size: 0.85rem;
         }
-
+ 
         .keyword-tag {
             display: inline-block;
-            background: #dcfce7;
+           background: #dcfce7;
             color: #166534;
-            padding: 2px 8px;
-            border-radius: 12px;
+           padding: 2px 8px;
+           border-radius: 12px;
             margin: 2px;
-            font-weight: bold;
+           font-weight: bold;
         }
-
+ 
         /* --- FILA VIRTUAL AVANZADA Y DINÁMICA --- */
         .queue-section {
-            margin-top: 35px;
-            background: #fff;
+           margin-top: 35px;
+           background: #fff;
             border: 1px solid #e1e1e1;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+           border-radius: 8px;
+           padding: 20px;
+           box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
-
+ 
         .queue-title {
             font-size: 1.15rem;
             color: var(--gris-oscuro);
-            border-bottom: 2px solid var(--gris-claro);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
+           border-bottom: 2px solid var(--gris-claro);
+           padding-bottom: 8px;
+           margin-bottom: 15px;
+           font-weight: bold;
+           display: flex;
+           align-items: center;
             gap: 10px;
         }
-
+ 
         .queue-card {
-            border-left: 6px solid #666;
-            padding: 20px;
-            border-radius: 6px;
+           border-left: 6px solid #666;
+           padding: 20px;
+           border-radius: 6px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            transition: all 0.4s ease;
-            background: #fdf4f5;
-            border-left-color: #9b59b6;
+           align-items: flex-start;
+           transition: all 0.4s ease;
+           background: #fdf4f5;
+           border-left-color: #9b59b6;
         }
-
+ 
         .card-RCPF { background: #fffcf4; border-left-color: #f39c12; }
-        .card-RCPI { background: #f4fbf7; border-left-color: #2ecc71; }
-
+       .card-RCPI { background: #f4fbf7; border-left-color: #2ecc71; }
+ 
         .queue-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+           grid-template-columns: 1fr 1fr;
             gap: 15px;
             width: 80%;
         }
-
+ 
         .queue-info p {
             margin: 5px 0;
             font-size: 0.95rem;
             color: #555;
         }
-
+ 
         .queue-info strong {
             color: var(--gris-oscuro);
         }
-
-        .status-container {
-            text-align: right;
+ 
+       .status-container {
+           text-align: right;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+           flex-direction: column;
+           align-items: flex-end;
             gap: 10px;
         }
-
+ 
         .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
+           padding: 6px 14px;
+           border-radius: 20px;
             font-size: 0.85rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background-color: #f4ecf7; 
+           font-weight: bold;
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+           background-color: #f4ecf7; 
             color: #6c3483;
         }
         
         .badge-RCPF { background-color: #fdebd0; color: #b9770e; }
         .badge-RCPI { background-color: #d5f5e3; color: #1e8449; }
-
+ 
         .time-display {
             font-size: 0.9rem;
-            font-weight: bold;
+           font-weight: bold;
             color: #444;
-            background: rgba(255,255,255,0.7);
-            padding: 4px 10px;
-            border-radius: 4px;
+           background: rgba(255,255,255,0.7);
+           padding: 4px 10px;
+           border-radius: 4px;
             border: 1px dashed #ccc;
         }
-
+ 
         /* --- BOTONERA --- */
         .btn-container {
             display: flex;
-            justify-content: space-between;
-            margin-top: 35px;
+           justify-content: space-between;
+           margin-top: 35px;
         }
-
+ 
         button, .btn-cancelar {
-            padding: 12px 30px;
+           padding: 12px 30px;
             font-size: 1rem;
             border: none;
-            border-radius: 4px;
+           border-radius: 4px;
             cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s;
+           font-weight: bold;
+           text-decoration: none;
+           text-align: center;
+           transition: all 0.3s;
         }
-
+ 
         .btn-enviar {
-            background-color: var(--naranja-nitido);
+           background-color: var(--naranja-nitido);
             color: var(--blanco);
-            box-shadow: 0 3px 6px rgba(255,102,0,0.2);
+           box-shadow: 0 3px 6px rgba(255,102,0,0.2);
         }
-
+ 
         .btn-enviar:hover {
-            background-color: #e05500;
+           background-color: #e05500;
             transform: translateY(-1px);
         }
-
+ 
         .btn-cancelar {
-            background-color: #999999;
+           background-color: #999999;
             color: var(--blanco);
         }
-
-        .btn-cancelar:hover {
-            background-color: #777777;
+ 
+       .btn-cancelar:hover {
+           background-color: #777777;
         }
     </style>
 </head>
 <body>
-
+ 
     <header>
-        <h1>JURIX-DGAJ</h1>
+       <h1>JURIX-DGAJ</h1>
     </header>
-
+ 
     <nav>
         <a href="solicitud.html">Nueva Solicitud</a>
         <a href="index.html">Salir</a>
     </nav>
-
+ 
     <div class="container">
-        <h2>Cédula de Análisis de Hallazgos</h2>
+       <h2>Cédula de Análisis de Hallazgos</h2>
         <div id="folioTicketSub" class="subtitle-folio">Cargando Folio del Ticket...</div>
         
         <form id="hallazgoForm">
             <div class="form-grid">
-                
-                <div class="form-group">
-                    <label for="fecha_recepcion">Fecha de Recepción:</label>
-                    <input type="date" id="fecha_recepcion" readonly required>
-                </div>
-
-                <div class="form-group">
-                    <label for="sujeto_fiscalizado">Sujeto Fiscalizado:</label>
-                    <select id="sujeto_fiscalizado" required>
-                        <option value="" disabled selected>-- Seleccione Sujeto --</option>
-                        <option value="AIAI">AIAI- Instituto de Acceso a la Información Pública para el Estado de Guanajuato</option>
-                        <option value="FGEG">FGEG- Fiscalía General del Estado de Guanajuato</option>
-                        <option value="MABA">MABA_Abasolo</option>
-                        <option value="MACA">MACA_Acámbaro</option>
-                        <option value="MAPA">MAPA_Apaseo El Alto</option>
-                        <option value="MAPG">MAPG_Apaseo El Grande</option>
-                        <option value="MATA">MATA_Atarjea</option>
-                        <option value="MCOM">MCOM_Comonfort</option>
-                        <option value="MCOR">MCOR_Coroneo</option>
-                        <option value="MCTZ">MCTZ_Cortazar</option>
-                        <option value="MCUE">MCUE_Cuerámaro</option>
-                        <option value="MCYA">MCYA_Celaya</option>
-                        <option value="MDHI">MDHI_Dolores Hidalgo Cuna De La Independencia Nacional</option>
-                        <option value="MDRM">MDRM_Doctor Mora</option>
-                        <option value="MGTO">MGTO_Guanajuato</option>
-                        <option value="MHUA">MHUA_Huanímaro</option>
-                        <option value="MIRA">MIRA_Irapuato</option>
-                        <option value="MJER">MJER_Jerécuaro</option>
-                        <option value="MJPR">MJPR_Jaral Del Progreso</option>
-                        <option value="MLEO">MLEO_León</option>
-                        <option value="MMDB">MMDB_Manuel Doblado</option>
-                        <option value="MMOR">MMOR_Moroleón</option>
-                        <option value="MOCA">MOCA_Ocampo</option>
-                        <option value="MPJM">MPJM_Pénjamo</option>
-                        <option value="MPNV">MPNV_Pueblo Nuevo</option>
-                        <option value="MPRR">MPRR_Purísima Del Rincón</option>
-                        <option value="MROM">MROM_Romita</option>
-                        <option value="MSAL">MSAL_Salamanca</option>
-                        <option value="MSCT">MSCT_Santa Catarina</option>
-                        <option value="MSDU">MSDU_San Diego De La Unión</option>
-                        <option value="MSFP">MSFP_San Felipe</option>
-                        <option value="MSFR">MSFR_San Francisco Del Rincón</option>
-                        <option value="MSIL">MSIL_Silao De La Victoria</option>
-                        <option value="MSJI">MSJI_San José De Iturbide</option>
-                        <option value="MSJR">MSJR_Santa Cruz De Juventino Rosas</option>
-                        <option value="MSLP">MSLP_San Luis De La Paz</option>
-                        <option value="MSMA">MSMA_San Miguel De Allende</option>
-                        <option value="MSMV">MSMV_Santiago Maravatío</option>
-                        <option value="MSVT">MSVT_Salvatierra</option>
-                        <option value="MTAR">MTAR_Tarandacuao</option>
-                        <option value="MTBL">MTBL_Tierra Blanca</option>
-                        <option value="MTMO">MTMO_Tarimoro</option>
-                        <option value="MURI">MURI_Uriangato</option>
-                        <option value="MVIC">MVIC_Victoria</option>
-                        <option value="MVIL">MVIL_Villagrán</option>
-                        <option value="MVST">MVST_Valle De Santiago</option>
-                        <option value="MXIC">MXIC_Xichú</option>
-                        <option value="MYUR">MYUR_Yuriria</option>
-                        <option value="PEEG">PEEG-Poder Ejecutivo del Estado de Guanajuato</option>
-                        <option value="PJEG">PJEG-Poder Judicial del Estado de Guanajuato</option>
-                        <option value="PLGT">PLGT- Poder Legislativo del Estado de Guanajuato</option>
-                        <option value="PRODHEG">PRODHEG- Procuraduría de los Derechos Humanos del Estado de Guanajuato</option>
-                        <option value="TJA">TJA- Tribunal de Justicia Administrativa</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="tipo_auditoria">Tipo de Auditoría:</label>
+               
+               <div class="form-group">
+                   <label for="fecha_recepcion">Fecha de Recepción:</label>
+                   <input type="date" id="fecha_recepcion" readonly required>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="sujeto_fiscalizado">Sujeto Fiscalizado:</label>
+                   <select id="sujeto_fiscalizado" required>
+                       <option value="" disabled selected>-- Seleccione Sujeto --</option>
+                       <option value="AIAI">AIAI- Instituto de Acceso a la Información Pública para el Estado de Guanajuato</option>
+                       <option value="FGEG">FGEG- Fiscalía General del Estado de Guanajuato</option>
+                       <option value="MABA">MABA_Abasolo</option>
+                       <option value="MACA">MACA_Acámbaro</option>
+                       <option value="MAPA">MAPA_Apaseo El Alto</option>
+                       <option value="MAPG">MAPG_Apaseo El Grande</option>
+                       <option value="MATA">MATA_Atarjea</option>
+                       <option value="MCOM">MCOM_Comonfort</option>
+                       <option value="MCOR">MCOR_Coroneo</option>
+                       <option value="MCTZ">MCTZ_Cortazar</option>
+                       <option value="MCUE">MCUE_Cuerámaro</option>
+                       <option value="MCYA">MCYA_Celaya</option>
+                       <option value="MDHI">MDHI_Dolores Hidalgo Cuna De La Independencia Nacional</option>
+                       <option value="MDRM">MDRM_Doctor Mora</option>
+                       <option value="MGTO">MGTO_Guanajuato</option>
+                       <option value="MHUA">MHUA_Huanímaro</option>
+                       <option value="MIRA">MIRA_Irapuato</option>
+                       <option value="MJER">MJER_Jerécuaro</option>
+                       <option value="MJPR">MJPR_Jaral Del Progreso</option>
+                       <option value="MLEO">MLEO_León</option>
+                       <option value="MMDB">MMDB_Manuel Doblado</option>
+                       <option value="MMOR">MMOR_Moroleón</option>
+                       <option value="MOCA">MOCA_Ocampo</option>
+                       <option value="MPJM">MPJM_Pénjamo</option>
+                       <option value="MPNV">MPNV_Pueblo Nuevo</option>
+                       <option value="MPRR">MPRR_Purísima Del Rincón</option>
+                       <option value="MROM">MROM_Romita</option>
+                       <option value="MSAL">MSAL_Salamanca</option>
+                       <option value="MSCT">MSCT_Santa Catarina</option>
+                       <option value="MSDU">MSDU_San Diego De La Unión</option>
+                       <option value="MSFP">MSFP_San Felipe</option>
+                       <option value="MSFR">MSFR_San Francisco Del Rincón</option>
+                       <option value="MSIL">MSIL_Silao De La Victoria</option>
+                       <option value="MSJI">MSJI_San José De Iturbide</option>
+                       <option value="MSJR">MSJR_Santa Cruz De Juventino Rosas</option>
+                       <option value="MSLP">MSLP_San Luis De La Paz</option>
+                       <option value="MSMA">MSMA_San Miguel De Allende</option>
+                       <option value="MSMV">MSMV_Santiago Maravatío</option>
+                       <option value="MSVT">MSVT_Salvatierra</option>
+                       <option value="MTAR">MTAR_Tarandacuao</option>
+                       <option value="MTBL">MTBL_Tierra Blanca</option>
+                       <option value="MTMO">MTMO_Tarimoro</option>
+                       <option value="MURI">MURI_Uriangato</option>
+                       <option value="MVIC">MVIC_Victoria</option>
+                       <option value="MVIL">MVIL_Villagrán</option>
+                       <option value="MVST">MVST_Valle De Santiago</option>
+                       <option value="MXIC">MXIC_Xichú</option>
+                       <option value="MYUR">MYUR_Yuriria</option>
+                       <option value="PEEG">PEEG-Poder Ejecutivo del Estado de Guanajuato</option>
+                       <option value="PJEG">PJEG-Poder Judicial del Estado de Guanajuato</option>
+                       <option value="PLGT">PLGT- Poder Legislativo del Estado de Guanajuato</option>
+                       <option value="PRODHEG">PRODHEG- Procuraduría de los Derechos Humanos del Estado de Guanajuato</option>
+                       <option value="TJA">TJA- Tribunal de Justicia Administrativa</option>
+                   </select>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="tipo_auditoria">Tipo de Auditoría:</label>
                     <select id="tipo_auditoria" required>
-                        <option value="" disabled selected>-- Seleccione Tipo --</option>
-                        <option value="RCPF">💰 1.1 RCPF- Revisión Cuenta Pública-Financiero</option>
-                        <option value="RCPI">👷🏼 1.2 RCPI- Revisión Cuenta Pública-Infraestructura</option>
-                        <option value="Por definir">2.Por definir</option>
-                    </select>
-                </div>
-
+                       <option value="" disabled selected>-- Seleccione Tipo --</option>
+                       <option value="RCPF">💰 1.1 RCPF- Revisión Cuenta Pública-Financiero</option>
+                       <option value="RCPI">👷🏼 1.2 RCPI- Revisión Cuenta Pública-Infraestructura</option>
+                       <option value="Por definir">2.Por definir</option>
+                   </select>
+               </div>
+ 
                 <div class="form-group">
-                    <label for="rubro_hallazgo">Rubro de Hallazgo:</label>
-                    <select id="rubro_hallazgo" required disabled>
-                        <option value="" disabled selected>-- Seleccione Rubro --</option>
-                        <option value="Financiero">Financiero</option>
-                        <option value="Infraestructura">Infraestructura</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="tipo_hallazgo">Tipo de Hallazgo:</label>
-                    <select id="tipo_hallazgo" required>
-                        <option value="" disabled selected>-- Seleccione Tipo --</option>
-                        <option value="Observación">🔎 Observación</option>
-                        <option value="Recomendación">⚠️ Recomendación</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="num_concepto">🔢 Núm / Concepto en Cédula:</label>
-                    <input type="text" id="num_concepto" required placeholder="Ej. 001">
-                </div>
-
-                <div class="form-group">
-                    <label for="titulo_observacion">📋 Título de la Observación:</label>
-                    <input type="text" id="titulo_observacion" placeholder="Escriba el título del hallazgo..." required>
-                </div>
-
-             <div class="form-group">
+                   <label for="rubro_hallazgo">Rubro de Hallazgo:</label>
+                   <select id="rubro_hallazgo" required disabled>
+                       <option value="" disabled selected>-- Seleccione Rubro --</option>
+                       <option value="Financiero">Financiero</option>
+                       <option value="Infraestructura">Infraestructura</option>
+                   </select>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="tipo_hallazgo">Tipo de Hallazgo:</label>
+                   <select id="tipo_hallazgo" required>
+                       <option value="" disabled selected>-- Seleccione Tipo --</option>
+                       <option value="Observación">🔎 Observación</option>
+                       <option value="Recomendación">⚠️ Recomendación</option>
+                   </select>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="num_concepto">🔢 Núm / Concepto en Cédula:</label>
+                   <input type="text" id="num_concepto" required placeholder="Ej. 001">
+               </div>
+ 
+               <div class="form-group">
+                   <label for="titulo_observacion">📋 Título de la Observación:</label>
+                   <input type="text" id="titulo_observacion" placeholder="Escriba el título del hallazgo..." required>
+               </div>
+ <div class="form-group">
     <label for="rubro_combobox">🗂️ Rubro Específico:</label>
     <select id="rubro_combobox" required>
         <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
@@ -650,70 +649,70 @@
         </optgroup>
     </select>
 </div>
-
-                <div class="form-group">
-                    <label for="importe">💲 Importe ($):</label>
-                    <input type="text" id="importe" placeholder="$0.00" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="link_soporte">🌐 Link de Soporte Documental:</label>
-                    <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="condicion_hallazgo">⚖️ Condición:</label>
-                    <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
-                    <div class="ai-keywords-box">
-                        <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
-                        <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="comentarios_revision">💬 Comentarios de Revisión:</label>
-                    <textarea id="comentarios_revision" rows="3" placeholder="Escriba el desglose del hallazgo detectado..."></textarea>
-                </div>
-            </div>
-
+ 
+               <div class="form-group">
+                   <label for="importe">💲 Importe ($):</label>
+                   <input type="text" id="importe" placeholder="$0.00" required>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="link_soporte">🌐 Link de Soporte Documental:</label>
+                   <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
+               </div>
+ 
+               <div class="form-group full-width">
+                   <label for="condicion_hallazgo">⚖️ Condición:</label>
+                   <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
+                   <div class="ai-keywords-box">
+                       <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
+                       <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
+                   </div>
+               </div>
+ 
+               <div class="form-group full-width">
+                   <label for="comentarios_revision">💬 Comentarios de Revisión:</label>
+                   <textarea id="comentarios_revision" rows="3" placeholder="Escriba el desglose del hallazgo detectado..."></textarea>
+               </div>
+           </div>
+ 
             <div class="queue-section">
-                <div class="queue-title">
-                    <span>⏳ Control Virtual de Turno e Información de Fila</span>
-                </div>
-                <div id="queueCardElement" class="queue-card">
-                    <div class="queue-grid">
-                        <div class="queue-info">
-                            <p><strong>Ticket ID:</strong> <span id="lblTicketQueue">-</span></p>
-                            <p><strong>Solicitud:</strong> <span id="lblTipoSolicitudQueue">-</span></p>
-                            <p><strong>Usuario:</strong> <span id="lblUsuarioQueue">Auditor Interno DGAJ</span></p>
-                        </div>
-                        <div class="queue-info">
-                            <p><strong>Puesto:</strong> <span id="lblPuestoQueue">Dictaminador</span></p>
-                            <p><strong>Área:</strong> <span id="lblAreaQueue">Legal e Infraestructura</span></p>
-                            <p><strong>Posición Fila:</strong> Turno Virtual Activo</p>
-                        </div>
-                    </div>
-                    <div class="status-container">
-                        <span id="badgeEstatus" class="status-badge">Procesando</span>
-                        <div id="timeEstimate" class="time-display">Calculando tiempo...</div>
-                    </div>
-                </div>
-            </div>
-
+               <div class="queue-title">
+                   <span>⏳ Control Virtual de Turno e Información de Fila</span>
+               </div>
+               <div id="queueCardElement" class="queue-card">
+                   <div class="queue-grid">
+                       <div class="queue-info">
+                           <p><strong>Ticket ID:</strong> <span id="lblTicketQueue">-</span></p>
+                           <p><strong>Solicitud:</strong> <span id="lblTipoSolicitudQueue">-</span></p>
+                           <p><strong>Usuario:</strong> <span id="lblUsuarioQueue">Auditor Interno DGAJ</span></p>
+                       </div>
+                       <div class="queue-info">
+                           <p><strong>Puesto:</strong> <span id="lblPuestoQueue">Dictaminador</span></p>
+                           <p><strong>Área:</strong> <span id="lblAreaQueue">Legal e Infraestructura</span></p>
+                           <p><strong>Posición Fila:</strong> Turno Virtual Activo</p>
+                       </div>
+                   </div>
+                   <div class="status-container">
+                       <span id="badgeEstatus" class="status-badge">Procesando</span>
+                       <div id="timeEstimate" class="time-display">Calculando tiempo...</div>
+                   </div>
+               </div>
+           </div>
+ 
             <div class="btn-container">
                 <a href="solicitud.html" class="btn-cancelar">Regresar</a>
                 <button type="submit" class="btn-enviar">Subir Ticket e Información</button>
-            </div>
+           </div>
         </form>
     </div>
-
+ 
     <script>
         const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4"; 
-
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4";
+ 
         let folioTicketActivo = "";
         let palabrasClaveExtraidas = [];
-
+ 
         window.addEventListener('DOMContentLoaded', () => {
             // Asignar fecha del sistema automáticamente
             const txtFecha = document.getElementById('fecha_recepcion');
@@ -722,28 +721,28 @@
             const mm = String(hoy.getMonth() + 1).padStart(2, '0');
             const dd = String(hoy.getDate()).padStart(2, '0');
             txtFecha.value = `${yyyy}-${mm}-${dd}`;
-
+ 
             // Recuperación de Folio
             const urlParams = new URLSearchParams(window.location.search);
             folioTicketActivo = urlParams.get('folio');
-
+ 
             if (!folioTicketActivo) {
                 folioTicketActivo = localStorage.getItem('last_generated_folio') || 
-                                    localStorage.getItem('jurix_folio_activo') || 
-                                    localStorage.getItem('folio_ticket') ||
-                                    localStorage.getItem('folio_user');
+                                   localStorage.getItem('jurix_folio_activo') || 
+                                   localStorage.getItem('folio_ticket') ||
+                                   localStorage.getItem('folio_user');
             }
-
+ 
             const subtitleFolio = document.getElementById('folioTicketSub');
             const lblTicketQueue = document.getElementById('lblTicketQueue');
-
+ 
             if (folioTicketActivo) {
                 if (subtitleFolio) subtitleFolio.innerText = "Folio del Ticket Vinculado: " + folioTicketActivo;
                 if (lblTicketQueue) lblTicketQueue.innerText = folioTicketActivo;
             } else {
                 if (subtitleFolio) subtitleFolio.innerText = "⚠️ Advertencia: Sin Folio de Ticket Activo";
             }
-
+ 
             // Cambios de Tipo de Auditoría y Rubro Automático
             const cmbAuditoria = document.getElementById('tipo_auditoria');
             const cmbRubro = document.getElementById('rubro_hallazgo');
@@ -751,13 +750,13 @@
             const badgeEstatus = document.getElementById('badgeEstatus');
             const lblTipoSolicitudQueue = document.getElementById('lblTipoSolicitudQueue');
             const timeEstimate = document.getElementById('timeEstimate');
-
+ 
             if (cmbAuditoria) {
                 cmbAuditoria.addEventListener('change', () => {
                     const valor = cmbAuditoria.value;
                     queueCard.className = "queue-card";
                     badgeEstatus.className = "status-badge";
-                    
+                     
                     if (valor === "RCPF") {
                         cmbRubro.value = "Financiero";
                         queueCard.classList.add('card-RCPF');
@@ -779,7 +778,7 @@
                     }
                 });
             }
-
+ 
             // Formatear el concepto numérico a 3 dígitos obligatorios ("000")
             const txtConcepto = document.getElementById('num_concepto');
             txtConcepto.addEventListener('blur', () => {
@@ -788,7 +787,7 @@
                     txtConcepto.value = valor.padStart(3, '0');
                 }
             });
-
+ 
             // Máscara y formato de Pesos en tiempo real para el Importe
             const txtImporte = document.getElementById('importe');
             txtImporte.addEventListener('input', (e) => {
@@ -797,29 +796,35 @@
                 let numero = (parseFloat(valor) / 100).toFixed(2);
                 e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(numero);
             });
-
+ 
             // Extractor IA Lógico Semántico del Campo Condición
             const txtCondicion = document.getElementById('condicion_hallazgo');
             const containerKeywords = document.getElementById('keywordsContainer');
-
+ 
             txtCondicion.addEventListener('input', () => {
                 let texto = txtCondicion.value.toLowerCase();
-                // Diccionario extendido de verbos rectores y lógicas de auditoría jurídica
-                const diccionarioAI = [
-                    "autorizo", "autorizó", "no autorizo", "no autorizó", "hizo", "no hizo", 
-                    "comprobo", "comprobó", "no comprobo", "no comprobó", "omitio", "omitió", 
-                    "incumplio", "incumplió", "detecto", "detectó", "valido", "validó", 
-                    "carece", "excede", "presento", "presentó", "no presentó", "no presento",
-                    "pago", "pagó", "duplicado", "inexistente", "ejecuto", "ejecutó"
+                
+                // Diccionario extendido de patrones de auditoría jurídica (RegEx)
+                const patronesAI = [
+                    /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, // Adverbio + Verbo
+                    /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, // Al + Infinitivo
+                    /(?:aplicación|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, // Sustantivaciones
+                    /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi // Verbos individuales
                 ];
-
+ 
                 palabrasClaveExtraidas = [];
-                diccionarioAI.forEach(palabra => {
-                    if (texto.includes(palabra)) {
-                        palabrasClaveExtraidas.push(palabra);
+                
+                // Ejecución dinámica de la búsqueda de patrones sobre la Condición
+                patronesAI.forEach(regex => {
+                    let coincidencias = texto.match(regex);
+                    if (coincidencias) {
+                        palabrasClaveExtraidas = palabrasClaveExtraidas.concat(coincidencias);
                     }
                 });
-
+ 
+                // Eliminar duplicados en caso de que se encimen las reglas de captura
+                palabrasClaveExtraidas = [...new Set(palabrasClaveExtraidas)];
+ 
                 if (palabrasClaveExtraidas.length > 0) {
                     containerKeywords.innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('');
                 } else {
@@ -827,21 +832,21 @@
                 }
             });
         });
-
+ 
         // Evento Submit y Envío estructurado a Supabase
         const form = document.getElementById('hallazgoForm');
         if (form) {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
+ 
                 if (!folioTicketActivo) {
                     alert("❌ Error de interrelación: No se detecta un número de Ticket activo.");
                     return;
                 }
-
+ 
                 // Limpiar el formato de moneda para convertirlo en Float Puro para la Base de Datos
                 const rawImporte = document.getElementById('importe').value.replace(/[^0-9.-]+/g, "");
-
+ 
                 const registroHallazgo = {
                     fecha_recepcion: document.getElementById('fecha_recepcion').value,
                     sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
@@ -857,10 +862,10 @@
                     palabras_clave_ia: palabrasClaveExtraidas.join(', '), // Almacenado como cadena separada por comas
                     comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
                 };
-
+ 
                 try {
                     const urlConFiltro = `${URL_HALLAZGOS}?folio_user=eq.${encodeURIComponent(folioTicketActivo)}`;
-
+ 
                     const response = await fetch(urlConFiltro, {
                         method: 'PATCH', 
                         headers: {
@@ -871,7 +876,7 @@
                         },
                         body: JSON.stringify(registroHallazgo)
                     });
-
+ 
                     if (response.ok) {
                         alert(`✅ Cédula de Hallazgo completada con éxito para el Folio: ${folioTicketActivo}`);
                         form.reset();
@@ -880,7 +885,8 @@
                         const errData = await response.json().catch(() => ({}));
                         alert("❌ Error en Supabase al actualizar: " + (errData.message || response.statusText || response.status));
                     }
-                } catch (error) {
+                }
+                catch (error) {
                     console.error("Error en la petición HTTP:", error);
                     alert("❌ Fallo de red al intentar registrar la cédula.");
                 }
