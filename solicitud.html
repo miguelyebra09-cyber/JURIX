@@ -372,7 +372,6 @@
                     <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
                 </div>
 
-                <!-- SUBMENÚ 1: GENERADOR DE CONCEPTO CENTRAL BASADO EN ASUNTO -->
                 <div class="form-group full-width">
                     <div class="ia-box-sugerencias">
                         <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
@@ -382,13 +381,11 @@
                     </div>
                 </div>
 
-                <!-- TEXTAREA DEL CONCEPTO CENTRAL CON ESPACIO AMPLIADO -->
                 <div class="form-group full-width">
-                    <label for="concepto_central">Concepto Central (Máx 14 palabras):</label>
+                    <label for="concepto_central">Concepto Central:</label>
                     <textarea id="concepto_central" rows="3" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required></textarea>
                 </div>
 
-                <!-- SUBMENÚ 2: SUBMENÚ DE SUSTANCIA DE LA IA EN 4 PALABRAS -->
                 <div class="form-group full-width">
                     <div class="ia-box-sustancia">
                         <strong>🧬 Sustancia del Concepto (Análisis de IA - Haz clic para elegir):</strong>
@@ -398,7 +395,6 @@
                     </div>
                 </div>
 
-                <!-- CAMPO FINAL DE SUSTANCIA -->
                 <div class="form-group full-width">
                     <label for="sustancia_tramite">Sustancia del Hallazgo / Asunto (Máx 6 palabras):</label>
                     <input type="text" id="sustancia_tramite" placeholder="Selecciona una opción resumida de arriba..." required>
@@ -541,23 +537,29 @@
                 divOpcion.innerHTML = `💡 <strong>Clasificar como:</strong> ${opcion}`;
                 
                 divOpcion.onclick = function() {
-                    let txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
-                    txtCompleto = recortarPorPalabras(txtCompleto, 14);
+                    const txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
+                    // MODIFICACIÓN: Concepto Central libre, ya no se recorta al hacer clic
                     document.getElementById('concepto_central').value = txtCompleto;
                     generarSustanciaIA(txtCompleto);
                 };
                 contenedor.appendChild(divOpcion);
             });
 
+            // AGREGAR OPCIÓN PERSONALIZADA DE ASUNTO A CONCEPTO CENTRAL (MÁXIMO 5 PALABRAS EN LA OPCIÓN)
             const btnPersonalizadoCC = document.createElement('button');
             btnPersonalizadoCC.type = 'button';
             btnPersonalizadoCC.className = 'ia-btn-personalizado';
-            btnPersonalizadoCC.innerHTML = '➕ Agregar opción personalizada (Máx. 14 palabras)...';
+            btnPersonalizadoCC.innerHTML = '➕ Agregar opción personalizada (Máx. 5 palabras)...';
             btnPersonalizadoCC.onclick = function() {
-                let opcUsuario = prompt("Escribe tu opción de clasificación para el Concepto Central (Máximo 14 palabras totales):");
+                let opcUsuario = prompt("Escribe tu opción de clasificación para el Asunto (Máximo 5 palabras):");
                 if (opcUsuario) {
-                    let txtCompleto = `${globalIdeaCentral} lo cual deriva en un ${opcUsuario}.`;
-                    txtCompleto = recortarPorPalabras(txtCompleto, 14);
+                    // Validar límite estricto de palabras en la OPCIÓN ingresada
+                    let palabrasOpc = opcUsuario.trim().split(/\s+/);
+                    if (palabrasOpc.length > 5) {
+                        alert("La opción personalizada ha excedido el límite de 5 palabras. El sistema recortará el texto automáticamente.");
+                        opcUsuario = palabrasOpc.slice(0, 5).join(" ");
+                    }
+                    const txtCompleto = `${globalIdeaCentral} lo cual deriva en un ${opcUsuario}.`;
                     document.getElementById('concepto_central').value = txtCompleto;
                     generarSustanciaIA(txtCompleto);
                 }
@@ -565,13 +567,10 @@
             contenedor.appendChild(btnPersonalizadoCC);
         });
 
-        // CONTROL DIRECTO DE ESCRITURA EN CONCEPTO CENTRAL (MÁXIMO 14 PALABRAS)
+        // CONTROL DIRECTO DE ESCRITURA EN CONCEPTO CENTRAL - AHORA LIBRE, YA NO SE RECORTA AUTOMÁTICAMENTE
         document.getElementById('concepto_central').addEventListener('input', function() {
-            let textoAjustado = recortarPorPalabras(this.value, 14);
-            if (this.value !== textoAjustado) {
-                this.value = textoAjustado;
-            }
-            generarSustanciaIA(textoAjustado);
+            // Se elimina la lógica de recortarPorPalabras para dejarlo libre no limitativo
+            generarSustanciaIA(this.value.trim());
         });
 
         // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA
@@ -692,8 +691,8 @@
                 servicio: servicio,
                 prioridad: document.getElementById('prioridad_tramite').value,
                 asunto: document.getElementById('asunto_solicitud').value.trim(),
-                concepto_central: document.getElementById('concepto_central').value.trim(), // Sincronizado a Supabase
-                sustancia: document.getElementById('sustancia_tramite').value.trim(),         // Sincronizado a Supabase
+                concepto_central: document.getElementById('concepto_central').value.trim(), 
+                sustancia: document.getElementById('sustancia_tramite').value.trim(),         
                 documento_respaldo: archivoNombreSoporte,
                 fecha_creacion: new Date().toISOString()
             };
