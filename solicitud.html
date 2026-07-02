@@ -277,7 +277,6 @@
             border-style: solid;
         }
 
-        /* Estilo para los botones de agregar opción personalizada */
         .ia-btn-personalizado {
             background-color: #f8f9fa;
             border: 1px solid #ced4da;
@@ -373,6 +372,7 @@
                     <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
                 </div>
 
+                <!-- SUBMENÚ 1: GENERADOR DE CONCEPTO CENTRAL BASADO EN ASUNTO -->
                 <div class="form-group full-width">
                     <div class="ia-box-sugerencias">
                         <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
@@ -382,22 +382,25 @@
                     </div>
                 </div>
 
+                <!-- TEXTAREA DEL CONCEPTO CENTRAL CON ESPACIO AMPLIADO -->
                 <div class="form-group full-width">
-                    <label for="concepto_central">Concepto Central:</label>
+                    <label for="concepto_central">Concepto Central (Máx 14 palabras):</label>
                     <textarea id="concepto_central" rows="3" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required></textarea>
                 </div>
 
+                <!-- SUBMENÚ 2: SUBMENÚ DE SUSTANCIA DE LA IA EN 4 PALABRAS -->
                 <div class="form-group full-width">
                     <div class="ia-box-sustancia">
-                        <strong>🧬 Sustancia del Concepto (Análisis de IA en 4 palabras - Haz clic para elegir):</strong>
+                        <strong>🧬 Sustancia del Concepto (Análisis de IA - Haz clic para elegir):</strong>
                         <div id="ia_sustancia_flotantes" class="ia-opciones-contenedor">
                             <span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- CAMPO FINAL DE SUSTANCIA -->
                 <div class="form-group full-width">
-                    <label for="sustancia_tramite">Sustancia del Hallazgo / Asunto:</label>
+                    <label for="sustancia_tramite">Sustancia del Hallazgo / Asunto (Máx 6 palabras):</label>
                     <input type="text" id="sustancia_tramite" placeholder="Selecciona una opción resumida de arriba..." required>
                 </div>
 
@@ -424,8 +427,16 @@
         const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
-        // Variable global para mantener en memoria la idea principal extraída del asunto
         let globalIdeaCentral = "";
+
+        // Función reutilizable para recortar el texto basado en un conteo estricto de palabras
+        function recortarPorPalabras(texto, maxPalabras) {
+            let palabras = texto.trim().split(/\s+/).filter(p => p.length > 0);
+            if (palabras.length > maxPalabras) {
+                return palabras.slice(0, maxPalabras).join(" ");
+            }
+            return texto;
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
@@ -458,7 +469,7 @@
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
-        // 1. RE-CONEXIÓN COMPLETAMENTE FUNCIONAL DEL CAMPO ASUNTO HACIA EL CONCEPTO CENTRAL
+        // 1. GESTIÓN DEL CAMPO ASUNTO HACIA CONCEPTO CENTRAL
         document.getElementById('asunto_solicitud').addEventListener('input', function() {
             const textoOriginal = this.value.trim();
             const textoMinusculas = textoOriginal.toLowerCase();
@@ -469,7 +480,6 @@
                 return;
             }
 
-            // Extracción 100% dinámica de la idea principal
             let ideaCentral = textoOriginal;
             const marcadoresInicio = ["se observa que", "se advierte que", "se detectó que", "se identificó que", "se determinó que"];
 
@@ -498,7 +508,6 @@
                 ideaCentral = ideaCentral.charAt(0).toUpperCase() + ideaCentral.slice(1);
             }
 
-            // Guardamos la idea central extraída en la variable global para el uso de la opción personalizada
             globalIdeaCentral = ideaCentral;
 
             let sugerencias = [];
@@ -532,27 +541,23 @@
                 divOpcion.innerHTML = `💡 <strong>Clasificar como:</strong> ${opcion}`;
                 
                 divOpcion.onclick = function() {
-                    const txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
+                    let txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
+                    txtCompleto = recortarPorPalabras(txtCompleto, 14);
                     document.getElementById('concepto_central').value = txtCompleto;
                     generarSustanciaIA(txtCompleto);
                 };
                 contenedor.appendChild(divOpcion);
             });
 
-            // MODIFICACIÓN: AGREGAR OPCIÓN PERSONALIZADA DE CONCEPTO CENTRAL (MÁX 7-8 PALABRAS)
             const btnPersonalizadoCC = document.createElement('button');
             btnPersonalizadoCC.type = 'button';
             btnPersonalizadoCC.className = 'ia-btn-personalizado';
-            btnPersonalizadoCC.innerHTML = '➕ Agregar opción personalizada (Máx. 8 palabras)...';
+            btnPersonalizadoCC.innerHTML = '➕ Agregar opción personalizada (Máx. 14 palabras)...';
             btnPersonalizadoCC.onclick = function() {
-                let opcUsuario = prompt("Escribe tu opción de clasificación para el Concepto Central (Máximo 8 palabras):");
+                let opcUsuario = prompt("Escribe tu opción de clasificación para el Concepto Central (Máximo 14 palabras totales):");
                 if (opcUsuario) {
-                    let palabras = opcUsuario.trim().split(/\s+/);
-                    if (palabras.length > 8) {
-                        alert("Has excedido el límite de 8 palabras. El sistema ajustará automáticamente el texto.");
-                        opcUsuario = palabras.slice(0, 8).join(" ");
-                    }
-                    const txtCompleto = `${globalIdeaCentral} lo cual deriva en un ${opcUsuario}.`;
+                    let txtCompleto = `${globalIdeaCentral} lo cual deriva en un ${opcUsuario}.`;
+                    txtCompleto = recortarPorPalabras(txtCompleto, 14);
                     document.getElementById('concepto_central').value = txtCompleto;
                     generarSustanciaIA(txtCompleto);
                 }
@@ -560,7 +565,16 @@
             contenedor.appendChild(btnPersonalizadoCC);
         });
 
-        // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA EN 4 PALABRAS MAXIMO
+        // CONTROL DIRECTO DE ESCRITURA EN CONCEPTO CENTRAL (MÁXIMO 14 PALABRAS)
+        document.getElementById('concepto_central').addEventListener('input', function() {
+            let textoAjustado = recortarPorPalabras(this.value, 14);
+            if (this.value !== textoAjustado) {
+                this.value = textoAjustado;
+            }
+            generarSustanciaIA(textoAjustado);
+        });
+
+        // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA
         function generarSustanciaIA(textoConcepto) {
             const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
             const txtMin = textoConcepto.toLowerCase();
@@ -611,35 +625,34 @@
                 divSust.innerHTML = `🧬 <strong>Sustancia sugerida:</strong> "${sust}"`;
                 
                 divSust.onclick = function() {
-                    document.getElementById('sustancia_tramite').value = sust;
+                    let ajustado = recortarPorPalabras(sust, 6);
+                    document.getElementById('sustancia_tramite').value = ajustado;
                 };
                 contenedorSustancia.appendChild(divSust);
             });
 
-            // MODIFICACIÓN: AGREGAR OPCIÓN PERSONALIZADA DE SUSTANCIA (MÁX 4-5 PALABRAS)
             const btnPersonalizadoSust = document.createElement('button');
             btnPersonalizadoSust.type = 'button';
             btnPersonalizadoSust.className = 'ia-btn-personalizado';
-            btnPersonalizadoSust.innerHTML = '➕ Agregar sustancia personalizada (Máx. 5 palabras)...';
+            btnPersonalizadoSust.innerHTML = '➕ Agregar sustancia personalizada (Máx. 6 palabras)...';
             btnPersonalizadoSust.style.borderColor = '#3c763d';
             btnPersonalizadoSust.style.color = '#3c763d';
             btnPersonalizadoSust.onclick = function() {
-                let sustUsuario = prompt("Escribe la sustancia resumida (Máximo 5 palabras):");
+                let sustUsuario = prompt("Escribe la sustancia resumida (Máximo 6 palabras):");
                 if (sustUsuario) {
-                    let palabrasSust = sustUsuario.trim().split(/\s+/);
-                    if (palabrasSust.length > 5) {
-                        alert("Has excedido el límite de 5 palabras. El sistema ajustará automáticamente el texto.");
-                        sustUsuario = palabrasSust.slice(0, 5).join(" ");
-                    }
+                    sustUsuario = recortarPorPalabras(sustUsuario, 6);
                     document.getElementById('sustancia_tramite').value = sustUsuario;
                 }
             };
             contenedorSustancia.appendChild(btnPersonalizadoSust);
         }
 
-        // Permitir recálculo manual si editan directamente el Concepto Central
-        document.getElementById('concepto_central').addEventListener('input', function() {
-            generarSustanciaIA(this.value.trim());
+        // CONTROL DIRECTO DE ESCRITURA EN SUSTANCIA (MÁXIMO 6 PALABRAS)
+        document.getElementById('sustancia_tramite').addEventListener('input', function() {
+            let textoAjustado = recortarPorPalabras(this.value, 6);
+            if (this.value !== textoAjustado) {
+                this.value = textoAjustado;
+            }
         });
 
         document.getElementById('documento_adjunto').addEventListener('change', function(e) {
@@ -657,6 +670,7 @@
             }
         });
 
+        // ENVÍO DE DATOS SEGURO A SUPABASE (INCLUYENDO CONCEPTO CENTRAL Y SUSTANCIA)
         document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -669,6 +683,7 @@
             const inputArchivo = document.getElementById('documento_adjunto');
             const archivoNombreSoporte = inputArchivo.files.length > 0 ? inputArchivo.files[0].name : "Sin archivo adjunto";
 
+            // MAPEADO Y CONEXIÓN COMPLETA A LAS COLUMNAS DE SUPABASE
             const dataSolicitud = {
                 folio_ticket: folioGenerado,
                 nombre_solicitante: document.getElementById('user_nombre').value,
@@ -677,8 +692,8 @@
                 servicio: servicio,
                 prioridad: document.getElementById('prioridad_tramite').value,
                 asunto: document.getElementById('asunto_solicitud').value.trim(),
-                concepto_central: document.getElementById('concepto_central').value.trim(),
-                sustancia: document.getElementById('sustancia_tramite').value.trim(), 
+                concepto_central: document.getElementById('concepto_central').value.trim(), // Sincronizado a Supabase
+                sustancia: document.getElementById('sustancia_tramite').value.trim(),         // Sincronizado a Supabase
                 documento_respaldo: archivoNombreSoporte,
                 fecha_creacion: new Date().toISOString()
             };
