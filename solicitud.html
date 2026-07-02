@@ -276,6 +276,27 @@
             transform: translateX(3px);
             border-style: solid;
         }
+
+        /* Estilo para los botones de agregar opción personalizada */
+        .ia-btn-personalizado {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            color: #495057;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s;
+            margin-top: 5px;
+        }
+
+        .ia-btn-personalizado:hover {
+            background-color: #e2e6ea;
+            color: #212529;
+            border-color: #adb5bd;
+        }
     </style>
 </head>
 <body>
@@ -403,6 +424,9 @@
         const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
 
+        // Variable global para mantener en memoria la idea principal extraída del asunto
+        let globalIdeaCentral = "";
+
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
                 alert("Acceso denegado. Por favor, inicie sesión primero en el index.");
@@ -474,6 +498,9 @@
                 ideaCentral = ideaCentral.charAt(0).toUpperCase() + ideaCentral.slice(1);
             }
 
+            // Guardamos la idea central extraída en la variable global para el uso de la opción personalizada
+            globalIdeaCentral = ideaCentral;
+
             let sugerencias = [];
             if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('concepto')) {
                 sugerencias = [
@@ -505,15 +532,32 @@
                 divOpcion.innerHTML = `💡 <strong>Clasificar como:</strong> ${opcion}`;
                 
                 divOpcion.onclick = function() {
-                    // Crea y concatena la oración estructurada de forma automática
                     const txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
                     document.getElementById('concepto_central').value = txtCompleto;
-                    
-                    // Llama de inmediato a la actualización del submenú 2 (Sustancia)
                     generarSustanciaIA(txtCompleto);
                 };
                 contenedor.appendChild(divOpcion);
             });
+
+            // MODIFICACIÓN: AGREGAR OPCIÓN PERSONALIZADA DE CONCEPTO CENTRAL (MÁX 7-8 PALABRAS)
+            const btnPersonalizadoCC = document.createElement('button');
+            btnPersonalizadoCC.type = 'button';
+            btnPersonalizadoCC.className = 'ia-btn-personalizado';
+            btnPersonalizadoCC.innerHTML = '➕ Agregar opción personalizada (Máx. 8 palabras)...';
+            btnPersonalizadoCC.onclick = function() {
+                let opcUsuario = prompt("Escribe tu opción de clasificación para el Concepto Central (Máximo 8 palabras):");
+                if (opcUsuario) {
+                    let palabras = opcUsuario.trim().split(/\s+/);
+                    if (palabras.length > 8) {
+                        alert("Has excedido el límite de 8 palabras. El sistema ajustará automáticamente el texto.");
+                        opcUsuario = palabras.slice(0, 8).join(" ");
+                    }
+                    const txtCompleto = `${globalIdeaCentral} lo cual deriva en un ${opcUsuario}.`;
+                    document.getElementById('concepto_central').value = txtCompleto;
+                    generarSustanciaIA(txtCompleto);
+                }
+            };
+            contenedor.appendChild(btnPersonalizadoCC);
         });
 
         // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA EN 4 PALABRAS MAXIMO
@@ -571,9 +615,29 @@
                 };
                 contenedorSustancia.appendChild(divSust);
             });
+
+            // MODIFICACIÓN: AGREGAR OPCIÓN PERSONALIZADA DE SUSTANCIA (MÁX 4-5 PALABRAS)
+            const btnPersonalizadoSust = document.createElement('button');
+            btnPersonalizadoSust.type = 'button';
+            btnPersonalizadoSust.className = 'ia-btn-personalizado';
+            btnPersonalizadoSust.innerHTML = '➕ Agregar sustancia personalizada (Máx. 5 palabras)...';
+            btnPersonalizadoSust.style.borderColor = '#3c763d';
+            btnPersonalizadoSust.style.color = '#3c763d';
+            btnPersonalizadoSust.onclick = function() {
+                let sustUsuario = prompt("Escribe la sustancia resumida (Máximo 5 palabras):");
+                if (sustUsuario) {
+                    let palabrasSust = sustUsuario.trim().split(/\s+/);
+                    if (palabrasSust.length > 5) {
+                        alert("Has excedido el límite de 5 palabras. El sistema ajustará automáticamente el texto.");
+                        sustUsuario = palabrasSust.slice(0, 5).join(" ");
+                    }
+                    document.getElementById('sustancia_tramite').value = sustUsuario;
+                }
+            };
+            contenedorSustancia.appendChild(btnPersonalizadoSust);
         }
 
-        // Si el usuario edita manualmente el Concepto Central, la Sustancia también se recalcula dinámicamente
+        // Permitir recálculo manual si editan directamente el Concepto Central
         document.getElementById('concepto_central').addEventListener('input', function() {
             generarSustanciaIA(this.value.trim());
         });
