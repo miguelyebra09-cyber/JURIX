@@ -227,6 +227,16 @@
             font-size: 0.9rem;
         }
 
+        /* Variante verde claro para diferenciar el segundo submenú de Sustancia */
+        .ia-box-sustancia {
+            border: 1px solid #d6e9c6;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f2f9ed;
+            color: #3c763d;
+            font-size: 0.9rem;
+        }
+
         .ia-opciones-contenedor {
             margin-top: 10px;
             display: flex;
@@ -247,6 +257,23 @@
 
         .ia-badge-opcion:hover {
             background-color: #d9edf7;
+            transform: translateX(3px);
+            border-style: solid;
+        }
+
+        .ia-badge-sustancia {
+            background-color: var(--blanco);
+            border: 1px dashed #3c763d;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris-oscuro);
+            transition: all 0.2s ease;
+        }
+
+        .ia-badge-sustancia:hover {
+            background-color: #dff0d8;
             transform: translateX(3px);
             border-style: solid;
         }
@@ -337,7 +364,21 @@
 
                 <div class="form-group full-width">
                     <label for="concepto_central">Concepto Central:</label>
-                    <input type="text" id="concepto_central" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required>
+                    <textarea id="concepto_central" rows="3" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <div class="ia-box-sustancia">
+                        <strong>🧬 Sustancia del Concepto (Análisis de IA en 4 palabras - Haz clic para elegir):</strong>
+                        <div id="ia_sustancia_flotantes" class="ia-opciones-contenedor">
+                            <span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="sustancia_tramite">Sustancia del Hallazgo / Asunto:</label>
+                    <input type="text" id="sustancia_tramite" placeholder="Selecciona una opción resumida de arriba..." required>
                 </div>
 
                 <div class="section-divider">📂 Expediente Digital / Documento Adjunto</div>
@@ -394,7 +435,7 @@
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
-        // LÓGICA DE EXTRACCIÓN DINÁMICA MEJORADA (ORACIÓN ESTRUCTURADA SIN SÍMBOLOS)
+        // 1. LÓGICA DE EXTRACCIÓN DINÁMICA DEL ASUNTO -> CONCEPTO CENTRAL
         document.getElementById('asunto_solicitud').addEventListener('input', function() {
             const textoOriginal = this.value.trim();
             const textoMinusculas = textoOriginal.toLowerCase();
@@ -405,17 +446,8 @@
                 return;
             }
 
-            // 1. EXTRACCIÓN TOTALMENTE DINÁMICA DE LA IDEA CENTRAL
             let ideaCentral = textoOriginal;
-            
-            // Delimitadores de entrada (Preámbulos formalistas)
-            const marcadoresInicio = [
-                "se observa que",
-                "se advierte que",
-                "se detectó que",
-                "se identificó que",
-                "se determinó que"
-            ];
+            const marcadoresInicio = ["se observa que", "se advierte que", "se detectó que", "se identificó que", "se determinó que"];
 
             for (let marcador of marcadoresInicio) {
                 const idx = textoMinusculas.indexOf(marcador);
@@ -425,13 +457,7 @@
                 }
             }
 
-            // Delimitadores de salida (Corte justo antes de detallar el nombre de la obra en comillas)
-            const marcadoresFin = [
-                "referente a la obra",
-                "en la obra",
-                "relativo a la obra"
-            ];
-
+            const marcadoresFin = ["referente a la obra", "en la obra", "relativo a la obra"];
             for (let marcador of marcadoresFin) {
                 const idxFin = ideaCentral.toLowerCase().indexOf(marcador);
                 if (idxFin !== -1) {
@@ -440,19 +466,15 @@
                 }
             }
 
-            // Normalización final: agregar dos puntos si termina limpiamente en "obra"
             if (ideaCentral.toLowerCase().endsWith("obra")) {
                 ideaCentral += ":";
             }
 
-            // Capitalizar primer caracter
             if (ideaCentral.length > 0) {
                 ideaCentral = ideaCentral.charAt(0).toUpperCase() + ideaCentral.slice(1);
             }
 
-            // 2. SELECCIÓN DE CATEGORÍAS IA SEGÚN EL TEXTO
             let sugerencias = [];
-            
             if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('concepto')) {
                 sugerencias = [
                     "Incumplimiento en Ejecución de Obra Pública",
@@ -467,13 +489,6 @@
                     "Duplicidad en Registro de Operaciones Financieras",
                     "Pagos Improcedentes o Excesivos a Proveedores"
                 ];
-            } else if (textoMinusculas.includes('nomina') || textoMinusculas.includes('personal') || textoMinusculas.includes('servidor')) {
-                sugerencias = [
-                    "Anomalía en Asignación de Remuneraciones y Nóminas",
-                    "Incumplimiento de Perfil de Puesto Legal",
-                    "Pagos a Personal No Localizado (Nómina Extraordinaria)",
-                    "Conflicto de Intereses o Ejercicio Indebido de Funciones"
-                ];
             } else {
                 sugerencias = [
                     "Inconsistencia en Control Interno de la Entidad",
@@ -483,7 +498,6 @@
                 ];
             }
 
-            // 3. RENDERIZACIÓN Y CREACIÓN DE LA ORACIÓN FLUIDA ESTRUCTURADA
             contenedor.innerHTML = '';
             sugerencias.forEach((opcion) => {
                 const divOpcion = document.createElement('div');
@@ -491,11 +505,77 @@
                 divOpcion.innerHTML = `💡 <strong>Clasificar como:</strong> ${opcion}`;
                 
                 divOpcion.onclick = function() {
-                    // Crea una oración integrada limpia en lugar de usar símbolos burdos como el "+"
-                    document.getElementById('concepto_central').value = `${ideaCentral} lo cual deriva en un ${opcion}.`;
+                    const txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
+                    document.getElementById('concepto_central').value = txtCompleto;
+                    // Forzar el disparo del análisis de sustancia al cambiar el valor
+                    generarSustanciaIA(txtCompleto);
                 };
                 contenedor.appendChild(divOpcion);
             });
+        });
+
+        // 2. NUEVA LÓGICA DE IA: DETECTA EL TEXTO DE CONCEPTO CENTRAL Y CREA 3 OPCIONES EN 4 PALABRAS
+        function generarSustanciaIA(textoConcepto) {
+            const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
+            const txtMin = textoConcepto.toLowerCase();
+
+            if (!textoConcepto || textoConcepto.length < 15) {
+                contenedorSustancia.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>`;
+                return;
+            }
+
+            let opcionesSustancia = [];
+
+            // Árbol lógico de síntesis de sustancia estricto a 4 palabras máximo por opción
+            if (txtMin.includes('precio') || txtMin.includes('catálogo') || txtMin.includes('fuera')) {
+                opcionesSustancia = [
+                    "Precios fuera de catálogo",
+                    "Pagos indebidos en catálogo",
+                    "Alteración de precios unitarios"
+                ];
+            } else if (txtMin.includes('acreditar') || txtMin.includes('especificación') || txtMin.includes('cumplimiento')) {
+                opcionesSustancia = [
+                    "Incumplimiento de especificaciones técnicas",
+                    "Conceptos ejecutados sin acreditar",
+                    "Falta de calidad técnica"
+                ];
+            } else if (txtMin.includes('estimación') || txtMin.includes('finiquito')) {
+                opcionesSustancia = [
+                    "Irregularidad en volumen estimado",
+                    "Sobreestimación de obra ejecutada",
+                    "Pagos en exceso finiquitados"
+                ];
+            } else if (txtMin.includes('recurso') || txtMin.includes('pago')) {
+                opcionesSustancia = [
+                    "Desvío de fondos públicos",
+                    "Egresos sin soporte documental",
+                    "Pagos improcedentes a contratistas"
+                ];
+            } else {
+                opcionesSustancia = [
+                    "Deficiencia en control interno",
+                    "Incumplimiento de normativa legal",
+                    "Omisión en expediente técnico"
+                ];
+            }
+
+            // Renderizar las opciones resumidas de sustancia
+            contenedorSustancia.innerHTML = '';
+            opcionesSustancia.forEach((sust) => {
+                const divSust = document.createElement('div');
+                divSust.className = 'ia-badge-sustancia';
+                divSust.innerHTML = `🧬 <strong>Sustancia sugerida:</strong> "${sust}"`;
+                
+                divSust.onclick = function() {
+                    document.getElementById('sustancia_tramite').value = sust;
+                };
+                contenedorSustancia.appendChild(divSust);
+            });
+        }
+
+        // Permitir que si el usuario escribe directamente en Concepto Central también se recalculen sus opciones de sustancia
+        document.getElementById('concepto_central').addEventListener('input', function() {
+            generarSustanciaIA(this.value.trim());
         });
 
         document.getElementById('documento_adjunto').addEventListener('change', function(e) {
@@ -534,6 +614,7 @@
                 prioridad: document.getElementById('prioridad_tramite').value,
                 asunto: document.getElementById('asunto_solicitud').value.trim(),
                 concepto_central: document.getElementById('concepto_central').value.trim(),
+                sustancia: document.getElementById('sustancia_tramite').value.trim(), // Se incluye en el envío de datos
                 documento_respaldo: archivoNombreSoporte,
                 fecha_creacion: new Date().toISOString()
             };
