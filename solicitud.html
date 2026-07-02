@@ -236,10 +236,10 @@
     <div class="container">
         <h2>Formulario de Nueva Solicitud de Trámite</h2>
         <div id="folioTicketPrevisualizacion" class="subtitle-folio">Seleccione un Servicio para Generar Folio...</div>
-         
+        
         <form id="solicitudForm">
             <div class="form-grid">
-                 
+                
                 <div class="section-divider">👤 Datos del Servidor Público (Sesión Activa)</div>
 
                 <div class="form-group full-width">
@@ -298,16 +298,16 @@
                 <div class="form-group full-width">
                     <label for="concepto_central">Concepto Central:</label>
                     <select id="concepto_central" required>
-                        <option value="" disabled selected>-- Seleccione la esencia identificada por la IA --</option>
-                        <option value="Esencia Opcion 1">Opción de Esencia 1 (Sugerida por IA)</option>
-                        <option value="Esencia Opcion 2">Opción de Esencia 2 (Sugerida por IA)</option>
-                        <option value="Esencia Opcion 3">Opción de Esencia 3 (Sugerida por IA)</option>
-                        <option value="Esencia Opcion 4">Opción de Esencia 4 (Sugerida por IA)</option>
+                        <option value="" disabled selected>-- Seleccione la opción de esencia o concepto central detectada por la IA --</option>
+                        <option value="Opcion_1">Opción sugerida de Esencia 1</option>
+                        <option value="Opcion_2">Opción sugerida de Esencia 2</option>
+                        <option value="Opcion_3">Opción sugerida de Esencia 3</option>
+                        <option value="Opcion_4">Opción sugerida de Esencia 4</option>
                     </select>
                 </div>
 
                 <div class="section-divider">📂 Expediente Digital / Documento Adjunto</div>
-                 
+                
                 <div class="form-group full-width">
                     <div class="file-upload-box">
                         <label for="documento_adjunto" class="upload-label-btn">📎 Seleccionar Documento de Soporte</label>
@@ -361,18 +361,20 @@
             const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
 
             document.getElementById('folio_calculado').value = ticketFinal;
+            // Corregido a Template Literals seguros para evitar SyntaxError por comillas cruzadas
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
         // 5. EVENTO AL ADJUNTAR UN DOCUMENTO Y MENSAJE DINÁMICO
         document.getElementById('documento_adjunto').addEventListener('change', function(e) {
             const statusMessage = document.getElementById('file-status-message');
-             
+            
             if (this.files && this.files.length > 0) {
                 const nombreArchivo = this.files[0].name;
                 const tamanoMegaBytes = (this.files[0].size / (1024 * 1024)).toFixed(2);
-                 
+                
                 statusMessage.style.color = "var(--verde-exito)";
+                // Corregido con backticks seguros
                 statusMessage.innerHTML = `<strong>✅ Archivo listo para cargarse:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
             } else {
                 statusMessage.style.color = "#666";
@@ -401,7 +403,6 @@
                 servicio: servicio,
                 prioridad: document.getElementById('prioridad_tramite').value,
                 asunto: document.getElementById('asunto_solicitud').value.trim(),
-                concepto_central: document.getElementById('concepto_central').value, // Se añade al envío de datos
                 documento_respaldo: archivoNombreSoporte,
                 fecha_creacion: new Date().toISOString()
             };
@@ -486,17 +487,18 @@
                         }
                     }
 
+                    // Blidanje absoluto de variables de sesión para hallazgo.html
                     localStorage.setItem('last_generated_folio', folioGenerado);
                     localStorage.setItem('jurix_folio_activo', folioGenerado);
                     localStorage.setItem('folio_ticket', folioGenerado);
                     localStorage.setItem('folio_user', folioGenerado);
-                     
+                    
                     localStorage.setItem('usuario_nombre', document.getElementById('user_nombre').value);
                     localStorage.setItem('puesto_usuario', document.getElementById('user_puesto').value);
                     localStorage.setItem('area_usuario', document.getElementById('user_area').value);
 
                     alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
-                     
+                    
                     if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
                         window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
                     } else {
