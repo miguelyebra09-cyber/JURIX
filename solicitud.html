@@ -394,20 +394,54 @@
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
-        // LÓGICA DE EXTRACCIÓN AVANZADA DE IA MEJORADA (CONCATENACIÓN EXACTA)
+        // LÓGICA DE EXTRACCIÓN AVANZADA DE IA ULTRA-EXACTA (LIMPIEZA DE PREÁMBULOS + CONCATENACIÓN)
         document.getElementById('asunto_solicitud').addEventListener('input', function() {
             const textoOriginal = this.value.trim();
             const textoMinusculas = textoOriginal.toLowerCase();
             const contenedor = document.getElementById('ia_opciones_flotantes');
             
-            if(textoOriginal.length < 5) {
+            if(textoOriginal.length < 10) {
                 contenedor.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>`;
                 return;
             }
 
+            // 1. EXTRACCIÓN INTELIGENTE DE LA IDEA CENTRAL (Resaltado en Azul de tu imagen)
+            // Remueve preámbulos comunes como "Con base en los elementos...", "se observa que", etc.
+            let ideaCentral = textoOriginal;
+            
+            const patronesPreambulo = [
+                /^.*?\bse observa que\b/i,
+                /^.*?\bse advierte que\b/i,
+                /^.*?\bse detectó que\b/i,
+                /^.*?\bse identificó que\b/i,
+                /^con base en.*?,/i
+            ];
+
+            patronesPreambulo.forEach(patron => {
+                if(patron.test(ideaCentral)) {
+                    ideaCentral = ideaCentral.replace(patron, '').trim();
+                }
+            });
+
+            // Capitalizar la primera letra de la idea central limpia
+            if (ideaCentral.length > 0) {
+                ideaCentral = ideaCentral.charAt(0).toUpperCase() + ideaCentral.slice(1);
+            }
+
+            // Cortar texto sobrante de comillas de anexos si es muy largo para dejar la pura esencia de la obra
+            const posicionComilla = ideaCentral.indexOf('«');
+            if(posicionComilla !== -1){
+                // Mantiene el texto hasta la parte de ": «Nombre de Obra... " de forma limpia
+                const hastaObra = ideaCentral.toLowerCase().indexOf('obra:');
+                if(hastaObra !== -1) {
+                    ideaCentral = ideaCentral.substring(0, hastaObra + 5);
+                }
+            }
+
+            // 2. SELECCIÓN DE CLASIFICACIONES DE IA
             let sugerencias = [];
             
-            if (textoMinusculas.includes('obra') || textoMinusculas.includes('contrato') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('precio')) {
+            if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion')) {
                 sugerencias = [
                     "Incumplimiento en Ejecución de Obra Pública",
                     "Irregularidad en Estimaciones y Pagos Finiquitos",
@@ -437,16 +471,16 @@
                 ];
             }
 
+            // 3. RENDERIZADO Y CONCATENACIÓN DINÁMICA DE LA IDEA EXTRAÍDA + PROPUESTA IA
             contenedor.innerHTML = '';
             sugerencias.forEach((opcion) => {
                 const divOpcion = document.createElement('div');
                 divOpcion.className = 'ia-badge-opcion';
-                divOpcion.innerHTML = `💡 ${opcion}`;
+                divOpcion.innerHTML = `💡 <strong>Asociar a:</strong> ${opcion}`;
                 
-                // MEJORA SOLICITADA: Mantiene la idea principal del usuario y le suma la clasificación de la IA
+                // Al hacer clic, se inyecta la Estructura Exacta solicitada: Idea Principal Limpia + Clasificación IA
                 divOpcion.onclick = function() {
-                    const textoBase = document.getElementById('asunto_solicitud').value.trim();
-                    document.getElementById('concepto_central').value = `${textoBase} + 💡 ${opcion}`;
+                    document.getElementById('concepto_central').value = `${ideaCentral} + 💡 ${opcion}`;
                 };
                 contenedor.appendChild(divOpcion);
             });
@@ -460,7 +494,7 @@
                 const tamanoMegaBytes = (this.files[0].size / (1024 * 1024)).toFixed(2);
                     
                 statusMessage.style.color = "var(--verde-exito)";
-                statusMessage.innerHTML = `<strong>✅ Archivo listo para cargarse ✅:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
+                statusMessage.innerHTML = `<strong>✅ Archivo listo para cargarse:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
             } else {
                 statusMessage.style.color = "#666";
                 statusMessage.textContent = "Ningún archivo seleccionado (Máx. 15MB)";
