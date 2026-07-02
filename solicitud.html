@@ -227,7 +227,6 @@
             font-size: 0.9rem;
         }
 
-        /* Variante verde claro para diferenciar el segundo submenú de Sustancia */
         .ia-box-sustancia {
             border: 1px solid #d6e9c6;
             padding: 15px;
@@ -435,7 +434,7 @@
             document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
         });
 
-        // 1. LÓGICA DE EXTRACCIÓN DINÁMICA DEL ASUNTO -> CONCEPTO CENTRAL
+        // 1. RE-CONEXIÓN COMPLETAMENTE FUNCIONAL DEL CAMPO ASUNTO HACIA EL CONCEPTO CENTRAL
         document.getElementById('asunto_solicitud').addEventListener('input', function() {
             const textoOriginal = this.value.trim();
             const textoMinusculas = textoOriginal.toLowerCase();
@@ -446,6 +445,7 @@
                 return;
             }
 
+            // Extracción 100% dinámica de la idea principal
             let ideaCentral = textoOriginal;
             const marcadoresInicio = ["se observa que", "se advierte que", "se detectó que", "se identificó que", "se determinó que"];
 
@@ -505,16 +505,18 @@
                 divOpcion.innerHTML = `💡 <strong>Clasificar como:</strong> ${opcion}`;
                 
                 divOpcion.onclick = function() {
+                    // Crea y concatena la oración estructurada de forma automática
                     const txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
                     document.getElementById('concepto_central').value = txtCompleto;
-                    // Forzar el disparo del análisis de sustancia al cambiar el valor
+                    
+                    // Llama de inmediato a la actualización del submenú 2 (Sustancia)
                     generarSustanciaIA(txtCompleto);
                 };
                 contenedor.appendChild(divOpcion);
             });
         });
 
-        // 2. NUEVA LÓGICA DE IA: DETECTA EL TEXTO DE CONCEPTO CENTRAL Y CREA 3 OPCIONES EN 4 PALABRAS
+        // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA EN 4 PALABRAS MAXIMO
         function generarSustanciaIA(textoConcepto) {
             const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
             const txtMin = textoConcepto.toLowerCase();
@@ -526,7 +528,6 @@
 
             let opcionesSustancia = [];
 
-            // Árbol lógico de síntesis de sustancia estricto a 4 palabras máximo por opción
             if (txtMin.includes('precio') || txtMin.includes('catálogo') || txtMin.includes('fuera')) {
                 opcionesSustancia = [
                     "Precios fuera de catálogo",
@@ -559,7 +560,6 @@
                 ];
             }
 
-            // Renderizar las opciones resumidas de sustancia
             contenedorSustancia.innerHTML = '';
             opcionesSustancia.forEach((sust) => {
                 const divSust = document.createElement('div');
@@ -573,7 +573,7 @@
             });
         }
 
-        // Permitir que si el usuario escribe directamente en Concepto Central también se recalculen sus opciones de sustancia
+        // Si el usuario edita manualmente el Concepto Central, la Sustancia también se recalcula dinámicamente
         document.getElementById('concepto_central').addEventListener('input', function() {
             generarSustanciaIA(this.value.trim());
         });
@@ -614,7 +614,7 @@
                 prioridad: document.getElementById('prioridad_tramite').value,
                 asunto: document.getElementById('asunto_solicitud').value.trim(),
                 concepto_central: document.getElementById('concepto_central').value.trim(),
-                sustancia: document.getElementById('sustancia_tramite').value.trim(), // Se incluye en el envío de datos
+                sustancia: document.getElementById('sustancia_tramite').value.trim(), 
                 documento_respaldo: archivoNombreSoporte,
                 fecha_creacion: new Date().toISOString()
             };
