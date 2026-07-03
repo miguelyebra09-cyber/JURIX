@@ -1,808 +1,733 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Nueva Solicitud</title>
-    <style>
-        :root {
-            --naranja-nitido: #FF6600;
-            --gris-oscuro: #333333;
-            --gris-claro: #f4f4f9;
-            --blanco: #ffffff;
-            --azul-info: #0066cc;
-            --verde-exito: #2ecc71;
-            --input-bloqueado: #eaeded;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gris-claro);
-            margin: 0;
-            padding: 0;
-            color: var(--gris-oscuro);
-        }
-
-        header {
-            background-color: var(--blanco);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid var(--naranja-nitido);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: var(--naranja-nitido);
-            margin: 0;
-            font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        nav {
-            background-color: var(--gris-oscuro);
-            padding: 10px;
-            text-align: center;
-        }
-
-        nav a {
-            color: var(--blanco);
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: var(--naranja-nitido);
-        }
-
-        .container {
-            max-width: 750px;
-            margin: 30px auto;
-            background: var(--blanco);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            text-align: center;
-            color: var(--gris-oscuro);
-            margin-bottom: 5px;
-            font-size: 1.6rem;
-        }
-
-        .subtitle-folio {
-            text-align: center;
-            color: var(--azul-info);
-            font-size: 1.2rem;
-            font-weight: bold;
-            background-color: #eef7ff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            border: 1px dashed var(--azul-info);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-group input[type="text"], .form-group input[type="number"], select, textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 0.95rem;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--naranja-nitido);
-            outline: none;
-            box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
-        }
-
-        input[readonly] {
-            background-color: var(--input-bloqueado);
-            color: #7f8c8d;
-            cursor: not-allowed;
-            font-weight: 500;
-        }
-
-        .section-divider {
-            grid-column: span 2;
-            border-top: 1px dashed #ccc;
-            margin: 15px 0;
-            padding-top: 15px;
-            color: var(--naranja-nitido);
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .file-upload-box {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            border-radius: 6px;
-            background-color: #fafafa;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .file-upload-box:hover {
-            border-color: var(--naranja-nitido);
-            background-color: #fff9f5;
-        }
-
-        .file-upload-box input[type="file"] {
-            display: none;
-        }
-
-        .upload-label-btn {
-            display: inline-block;
-            background-color: var(--gris-oscuro);
-            color: var(--blanco);
-            padding: 8px 18px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            transition: background 0.3s;
-        }
-
-        .upload-label-btn:hover {
-            background-color: #444;
-        }
-
-        #file-status-message {
-            margin-top: 8px;
-            font-size: 0.88rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .btn-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 35px;
-        }
-
-        button, .btn-cancelar {
-            padding: 12px 30px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .btn-enviar {
-            background-color: var(--naranja-nitido);
-            color: var(--blanco);
-            box-shadow: 0 3px 6px rgba(255,102,0,0.2);
-        }
-
-        .btn-enviar:hover {
-            background-color: #e05500;
-            transform: translateY(-1px);
-        }
-
-        .btn-cancelar {
-            background-color: #999999;
-            color: var(--blanco);
-        }
-
-        .btn-cancelar:hover {
-            background-color: #777777;
-        }
-
-        .ia-box-sugerencias {
-            border: 1px solid #bce8f1;
-            padding: 15px;
-            border-radius: 6px;
-            background-color: #eef7ff;
-            color: #31708f;
-            font-size: 0.9rem;
-        }
-
-        .ia-box-sustancia {
-            border: 1px solid #d6e9c6;
-            padding: 15px;
-            border-radius: 6px;
-            background-color: #f2f9ed;
-            color: #3c763d;
-            font-size: 0.9rem;
-        }
-
-        .ia-opciones-contenedor {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .ia-badge-opcion {
-            background-color: var(--blanco);
-            border: 1px dashed var(--azul-info);
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--gris-oscuro);
-            transition: all 0.2s ease;
-        }
-
-        .ia-badge-opcion:hover {
-            background-color: #d9edf7;
-            transform: translateX(3px);
-            border-style: solid;
-        }
-
-        .ia-badge-sustancia {
-            background-color: var(--blanco);
-            border: 1px dashed #3c763d;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--gris-oscuro);
-            transition: all 0.2s ease;
-        }
-
-        .ia-badge-sustancia:hover {
-            background-color: #dff0d8;
-            transform: translateX(3px);
-            border-style: solid;
-        }
-
-        .ia-btn-personalizado {
-            background-color: #f8f9fa;
-            border: 1px solid #ced4da;
-            color: #495057;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.85rem;
-            text-align: center;
-            transition: all 0.2s;
-            margin-top: 5px;
-        }
-
-        .ia-btn-personalizado:hover {
-            background-color: #e2e6ea;
-            color: #212529;
-            border-color: #adb5bd;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JURIX-DGAJ - Nueva Solicitud</title>
+<style>
+:root {
+--naranja-nitido: #FF6600;
+--gris-oscuro: #333333;
+--gris-claro: #f4f4f9;
+--blanco: #ffffff;
+--azul-info: #0066cc;
+--verde-exito: #2ecc71;
+--input-bloqueado: #eaeded;
+}
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-color: var(--gris-claro);
+margin: 0;
+padding: 0;
+color: var(--gris-oscuro);
+}
+header {
+background-color: var(--blanco);
+padding: 20px;
+text-align: center;
+border-bottom: 3px solid var(--naranja-nitido);
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+h1 {
+color: var(--naranja-nitido);
+margin: 0;
+font-size: 2.5rem;
+font-weight: bold;
+letter-spacing: 1px;
+}
+nav {
+background-color: var(--gris-oscuro);
+padding: 10px;
+text-align: center;
+}
+nav a {
+color: var(--blanco);
+text-decoration: none;
+margin: 0 15px;
+font-weight: 500;
+transition: color 0.3s;
+}
+nav a:hover {
+color: var(--naranja-nitido);
+}
+.container {
+max-width: 750px;
+margin: 30px auto;
+background: var(--blanco);
+padding: 30px;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+h2 {
+text-align: center;
+color: var(--gris-oscuro);
+margin-bottom: 5px;
+font-size: 1.6rem;
+}
+.subtitle-folio {
+text-align: center;
+color: var(--azul-info);
+font-size: 1.2rem;
+font-weight: bold;
+background-color: #eef7ff;
+padding: 10px;
+border-radius: 5px;
+margin-bottom: 25px;
+border: 1px dashed var(--azul-info);
+}
+.form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+}
+.form-group {
+margin-bottom: 15px;
+}
+.form-group.full-width {
+grid-column: span 2;
+}
+label {
+display: block;
+margin-bottom: 8px;
+font-weight: 600;
+font-size: 0.9rem;
+}
+.form-group input[type="text"], .form-group input[type="number"], select, textarea {
+width: 100%;
+padding: 11px;
+border: 1px solid #ccc;
+border-radius: 4px;
+box-sizing: border-box;
+font-size: 0.95rem;
+}
+input:focus, select:focus, textarea:focus {
+border-color: var(--naranja-nitido);
+outline: none;
+box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
+}
+input[readonly] {
+background-color: var(--input-bloqueado);
+color: #7f8c8d;
+cursor: not-allowed;
+font-weight: 500;
+}
+.section-divider {
+grid-column: span 2;
+border-top: 1px dashed #ccc;
+margin: 15px 0;
+padding-top: 15px;
+color: var(--naranja-nitido);
+font-weight: bold;
+font-size: 1rem;
+}
+.file-upload-box {
+border: 2px dashed #ccc;
+padding: 20px;
+border-radius: 6px;
+background-color: #fafafa;
+text-align: center;
+transition: all 0.3s;
+}
+.file-upload-box:hover {
+border-color: var(--naranja-nitido);
+background-color: #fff9f5;
+}
+.file-upload-box input[type="file"] {
+display: none;
+}
+.upload-label-btn {
+display: inline-block;
+background-color: var(--gris-oscuro);
+color: var(--blanco);
+padding: 8px 18px;
+border-radius: 4px;
+cursor: pointer;
+font-weight: 600;
+font-size: 0.9rem;
+margin-bottom: 8px;
+transition: background 0.3s;
+}
+.upload-label-btn:hover {
+background-color: #444;
+}
+#file-status-message {
+margin-top: 8px;
+font-size: 0.88rem;
+color: #666;
+font-weight: 500;
+}
+.btn-container {
+display: flex;
+justify-content: space-between;
+margin-top: 35px;
+}
+button, .btn-cancelar {
+padding: 12px 30px;
+font-size: 1rem;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-weight: bold;
+text-decoration: none;
+text-align: center;
+transition: all 0.3s;
+}
+.btn-enviar {
+background-color: var(--naranja-nitido);
+color: var(--blanco);
+box-shadow: 0 3px 6px rgba(255,102,0,0.2);
+}
+.btn-enviar:hover {
+background-color: #e05500;
+transform: translateY(-1px);
+}
+.btn-cancelar {
+background-color: #999999;
+color: var(--blanco);
+}
+.btn-cancelar:hover {
+background-color: #777777;
+}
+.ia-box-sugerencias {
+border: 1px solid #bce8f1;
+padding: 15px;
+border-radius: 6px;
+background-color: #eef7ff;
+color: #31708f;
+font-size: 0.9rem;
+}
+.ia-box-sustancia {
+border: 1px solid #d6e9c6;
+padding: 15px;
+border-radius: 6px;
+background-color: #f2f9ed;
+color: #3c763d;
+font-size: 0.9rem;
+}
+.ia-opciones-contenedor {
+margin-top: 10px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.ia-badge-opcion {
+background-color: var(--blanco);
+border: 1px dashed var(--azul-info);
+padding: 8px 12px;
+border-radius: 4px;
+cursor: pointer;
+font-weight: 500;
+color: var(--gris-oscuro);
+transition: all 0.2s ease;
+}
+.ia-badge-opcion:hover {
+background-color: #d9edf7;
+transform: translateX(3px);
+border-style: solid;
+}
+.ia-badge-sustancia {
+background-color: var(--blanco);
+border: 1px dashed #3c763d;
+padding: 8px 12px;
+border-radius: 4px;
+cursor: pointer;
+font-weight: 500;
+color: var(--gris-oscuro);
+transition: all 0.2s ease;
+}
+.ia-badge-sustancia:hover {
+background-color: #dff0d8;
+transform: translateX(3px);
+border-style: solid;
+}
+.ia-btn-personalizado {
+background-color: #f8f9fa;
+border: 1px solid #ced4da;
+color: #495057;
+padding: 6px 12px;
+border-radius: 4px;
+cursor: pointer;
+font-weight: bold;
+font-size: 0.85rem;
+text-align: center;
+transition: all 0.2s;
+margin-top: 5px;
+}
+.ia-btn-personalizado:hover {
+background-color: #e2e6ea;
+color: #212529;
+border-color: #adb5bd;
+}
+</style>
 </head>
 <body>
-
-    <header>
-        <h1>JURIX-DGAJ</h1>
-    </header>
-
-    <nav>
-        <a href="solicitud.html">Nueva Solicitud</a>
-        <a href="hallazgo.html">Cédula de Hallazgos</a>
-        <a href="index.html">Salir</a>
-    </nav>
-
-    <div class="container">
-        <h2>Formulario de Nueva Solicitud de Trámite</h2>
-        <div id="folioTicketPrevisualizacion" class="subtitle-folio">Seleccione un Servicio para Generar Folio...</div>
-        
-        <form id="solicitudForm">
-            <div class="form-grid">
-                
-                <div class="section-divider">👤 Datos del Servidor Público (Sesión Activa)</div>
-
-                <div class="form-group full-width">
-                    <label for="user_nombre">Nombre Completo:</label>
-                    <input type="text" id="user_nombre" readonly required>
-                </div>
-
-                <div class="form-group">
-                    <label for="user_puesto">Puesto:</label>
-                    <input type="text" id="user_puesto" readonly required>
-                </div>
-
-                <div class="form-group">
-                    <label for="user_area">Área Adscripción:</label>
-                    <input type="text" id="user_area" readonly required>
-                </div>
-
-                <div class="section-divider">📋 Detalles del Trámite o Ticket</div>
-
-                <div class="form-group">
-                    <label for="servicio_solicitado">Servicio / Tipo de Trámite:</label>
-                    <select id="servicio_solicitado" required>
-                        <option value="" disabled selected>-- Seleccione Servicio --</option>
-                        <option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
-                        <option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
-                        <option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
-                        <option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
-                        <option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
-                        <option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="folio_calculado">Número de Ticket Interno (Folio):</label>
-                    <input type="text" id="folio_calculado" readonly placeholder="Se generará automáticamente" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="prioridad_tramite">Prioridad del Trámite:</label>
-                    <select id="prioridad_tramite" required>
-                        <option value="Normal" selected>Normal</option>
-                        <option value="Urgente">⚠️ Urgente</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="fecha_registro">Fecha de Registro:</label>
-                    <input type="text" id="fecha_registro" readonly required>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="asunto_solicitud">Asunto / Condición:</label>
-                    <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
-                </div>
-
-                <div class="form-group full-width">
-                    <div class="ia-box-sugerencias">
-                        <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
-                        <div id="ia_opciones_flotantes" class="ia-opciones-contenedor">
-                            <span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="concepto_central">Concepto Central:</label>
-                    <textarea id="concepto_central" rows="3" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required></textarea>
-                </div>
-
-                <div class="form-group full-width">
-                    <div class="ia-box-sustancia">
-                        <strong>🧬 Sustancia del Concepto (Análisis de IA - Haz clic para elegir):</strong>
-                        <div id="ia_sustancia_flotantes" class="ia-opciones-contenedor">
-                            <span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="sustancia_tramite">Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
-                    <input type="text" id="sustancia_tramite" placeholder="Selecciona una opción resumida de arriba..." required>
-                </div>
-
-                <div class="section-divider">📂 Expediente Digital / Documento Adjunto</div>
-                
-                <div class="form-group full-width">
-                    <div class="file-upload-box">
-                        <label for="documento_adjunto" class="upload-label-btn">📎 Seleccionar Documento de Soporte</label>
-                        <input type="file" id="documento_adjunto" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg">
-                        <div id="file-status-message">Ningún archivo seleccionado (Máx. 15MB)</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="btn-container">
-                <a href="index.html" class="btn-cancelar">Cancelar</a>
-                <button type="submit" class="btn-enviar">Registrar Ticket e Ir a Cédula</button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
-        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-
-        let globalIdeaCentral = "";
-
-        // Función reutilizable para recortar el texto basado en un conteo estricto de palabras
-        function recortarPorPalabras(texto, maxPalabras) {
-            let palabras = texto.trim().split(/\s+/).filter(p => p.length > 0);
-            if (palabras.length > maxPalabras) {
-                return palabras.slice(0, maxPalabras).join(" ");
-            }
-            return texto;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
-                alert("Acceso denegado. Por favor, inicie sesión primero en el index.");
-                window.location.href = "index.html";
-                return;
-            }
-
-            document.getElementById('user_nombre').value = localStorage.getItem('last_user_name') || "No detectado";
-            document.getElementById('user_puesto').value = localStorage.getItem('last_user_puesto') || "No detectado";
-            document.getElementById('user_area').value = localStorage.getItem('last_user_area') || "No detectado";
-
-            const hoy = new Date();
-            const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            document.getElementById('fecha_registro').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
-        });
-
-        document.getElementById('servicio_solicitado').addEventListener('change', function() {
-            const servicio = this.value;
-            if (!servicio) return;
-
-            let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
-            let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
-
-            const numFormateado = String(numActual).padStart(4, '0');
-            const prefijoTicket = servicio.replace('_', '-'); 
-            const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
-
-            document.getElementById('folio_calculado').value = ticketFinal;
-            document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
-        });
-
-        // 1. GESTIÓN DEL CAMPO ASUNTO HACIA CONCEPTO CENTRAL
-        document.getElementById('asunto_solicitud').addEventListener('input', function() {
-            const textoOriginal = this.value.trim();
-            const textoMinusculas = textoOriginal.toLowerCase();
-            const contenedor = document.getElementById('ia_opciones_flotantes');
-            
-            if(textoOriginal.length < 10) {
-                contenedor.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>`;
-                return;
-            }
-
-            let ideaCentral = textoOriginal;
-            const marcadoresInicio = ["se observa que", "se advierte que", "se detectó que", "se identificó que", "se determinó que"];
-
-            for (let marcador of marcadoresInicio) {
-                const idx = textoMinusculas.indexOf(marcador);
-                if (idx !== -1) {
-                    ideaCentral = textoOriginal.substring(idx + marcador.length).trim();
-                    break;
-                }
-            }
-
-            const marcadoresFin = ["referente a la obra", "en la obra", "relativo a la obra"];
-            for (let marcador of marcadoresFin) {
-                const idxFin = ideaCentral.toLowerCase().indexOf(marcador);
-                if (idxFin !== -1) {
-                    ideaCentral = ideaCentral.substring(0, idxFin + marcador.length).trim();
-                    break;
-                }
-            }
-
-            if (ideaCentral.toLowerCase().endsWith("obra")) {
-                ideaCentral += ":";
-            }
-
-            if (ideaCentral.length > 0) {
-                ideaCentral = ideaCentral.charAt(0).toUpperCase() + ideaCentral.slice(1);
-            }
-
-            globalIdeaCentral = ideaCentral;
-
-            let sugerencias = [];
-            if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('concepto')) {
-                sugerencias = [
-                    "Incumplimiento en Ejecución de Obra Pública",
-                    "Irregularidad en Estimaciones y Pagos Finiquitos",
-                    "Deficiencia Documental en Expediente Técnico de Obra",
-                    "Falta de Amortización de Anticipos Otorgados"
-                ];
-            } else if (textoMinusculas.includes('cuenta') || textoMinusculas.includes('pago') || textoMinusculas.includes('recurso') || textoMinusculas.includes('financiero')) {
-                sugerencias = [
-                    "Desvío de Recursos o Aplicación Incorrecta del Gasto",
-                    "Falta de Soporte Documental de Egresos",
-                    "Duplicidad en Registro de Operaciones Financieras",
-                    "Pagos Improcedentes o Excesivos a Proveedores"
-                ];
-            } else {
-                sugerencias = [
-                    "Inconsistencia en Control Interno de la Entidad",
-                    "Incumplimiento Normativo de Disposiciones Legales",
-                    "Omisión de Actas de Entrega-Recepción Oficiales",
-                    "Falta de Resguardo y Custodia de Bienes Públicos"
-                ];
-            }
-
-            contenedor.innerHTML = '';
-            sugerencias.forEach((opcion) => {
-                const divOpcion = document.createElement('div');
-                divOpcion.className = 'ia-badge-opcion';
-                divOpcion.innerHTML = `💡 <strong>Clasificar como:</strong> ${opcion}`;
-                
-                divOpcion.onclick = function() {
-                    const txtCompleto = `${ideaCentral} lo cual deriva en un ${opcion}.`;
-                    // MODIFICACIÓN: Concepto Central libre, ya no se recorta al hacer clic
-                    document.getElementById('concepto_central').value = txtCompleto;
-                    generarSustanciaIA(txtCompleto);
-                };
-                contenedor.appendChild(divOpcion);
-            });
-
-            // AGREGAR OPCIÓN PERSONALIZADA DE ASUNTO A CONCEPTO CENTRAL (MÁXIMO 5 PALABRAS EN LA OPCIÓN)
-            const btnPersonalizadoCC = document.createElement('button');
-            btnPersonalizadoCC.type = 'button';
-            btnPersonalizadoCC.className = 'ia-btn-personalizado';
-            btnPersonalizadoCC.innerHTML = '➕ Agregar opción personalizada (Máx. 5 palabras)...';
-            btnPersonalizadoCC.onclick = function() {
-                let opcUsuario = prompt("Escribe tu opción de clasificación para el Asunto (Máximo 5 palabras):");
-                if (opcUsuario) {
-                    // Validar límite estricto de palabras en la OPCIÓN ingresada
-                    let palabrasOpc = opcUsuario.trim().split(/\s+/);
-                    if (palabrasOpc.length > 5) {
-                        alert("La opción personalizada ha excedido el límite de 5 palabras. El sistema recortará el texto automáticamente.");
-                        opcUsuario = palabrasOpc.slice(0, 5).join(" ");
-                    }
-                    const txtCompleto = `${globalIdeaCentral} lo cual deriva en un ${opcUsuario}.`;
-                    document.getElementById('concepto_central').value = txtCompleto;
-                    generarSustanciaIA(txtCompleto);
-                }
-            };
-            contenedor.appendChild(btnPersonalizadoCC);
-        });
-
-        // CONTROL DIRECTO DE ESCRITURA EN CONCEPTO CENTRAL - AHORA LIBRE, YA NO SE RECORTA AUTOMÁTICAMENTE
-        document.getElementById('concepto_central').addEventListener('input', function() {
-            // Se elimina la lógica de recortarPorPalabras para dejarlo libre no limitativo
-            generarSustanciaIA(this.value.trim());
-        });
-
-        // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA
-        function generarSustanciaIA(textoConcepto) {
-            const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
-            const txtMin = textoConcepto.toLowerCase();
-
-            if (!textoConcepto || textoConcepto.length < 15) {
-                contenedorSustancia.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>`;
-                return;
-            }
-
-            let opcionesSustancia = [];
-
-            if (txtMin.includes('precio') || txtMin.includes('catálogo') || txtMin.includes('fuera')) {
-                opcionesSustancia = [
-                    "Precios fuera de catálogo",
-                    "Pagos indebidos en catálogo",
-                    "Alteración de precios unitarios"
-                ];
-            } else if (txtMin.includes('acreditar') || txtMin.includes('especificación') || txtMin.includes('cumplimiento')) {
-                opcionesSustancia = [
-                    "Incumplimiento de especificaciones técnicas",
-                    "Conceptos ejecutados sin acreditar",
-                    "Falta de calidad técnica"
-                ];
-            } else if (txtMin.includes('estimación') || txtMin.includes('finiquito')) {
-                opcionesSustancia = [
-                    "Irregularidad en volumen estimado",
-                    "Sobreestimación de obra ejecutada",
-                    "Pagos en exceso finiquitados"
-                ];
-            } else if (txtMin.includes('recurso') || txtMin.includes('pago')) {
-                opcionesSustancia = [
-                    "Desvío de fondos públicos",
-                    "Egresos sin soporte documental",
-                    "Pagos improcedentes a contratistas"
-                ];
-            } else {
-                opcionesSustancia = [
-                    "Deficiencia en control interno",
-                    "Incumplimiento de normativa legal",
-                    "Omisión en expediente técnico"
-                ];
-            }
-
-            contenedorSustancia.innerHTML = '';
-            opcionesSustancia.forEach((sust) => {
-                const divSust = document.createElement('div');
-                divSust.className = 'ia-badge-sustancia';
-                divSust.innerHTML = `🧬 <strong>Sustancia sugerida:</strong> "${sust}"`;
-                
-                divSust.onclick = function() {
-                    let ajustado = recortarPorPalabras(sust, 6);
-                    document.getElementById('sustancia_tramite').value = ajustado;
-                };
-                contenedorSustancia.appendChild(divSust);
-            });
-
-            const btnPersonalizadoSust = document.createElement('button');
-            btnPersonalizadoSust.type = 'button';
-            btnPersonalizadoSust.className = 'ia-btn-personalizado';
-            btnPersonalizadoSust.innerHTML = '➕ Agregar sustancia personalizada (Máx. 6 palabras)...';
-            btnPersonalizadoSust.style.borderColor = '#3c763d';
-            btnPersonalizadoSust.style.color = '#3c763d';
-            btnPersonalizadoSust.onclick = function() {
-                let sustUsuario = prompt("Escribe la sustancia resumida (Máximo 6 palabras):");
-                if (sustUsuario) {
-                    sustUsuario = recortarPorPalabras(sustUsuario, 6);
-                    document.getElementById('sustancia_tramite').value = sustUsuario;
-                }
-            };
-            contenedorSustancia.appendChild(btnPersonalizadoSust);
-        }
-
-        // CONTROL DIRECTO DE ESCRITURA EN SUSTANCIA (MÁXIMO 6 PALABRAS)
-        document.getElementById('sustancia_tramite').addEventListener('input', function() {
-            let textoAjustado = recortarPorPalabras(this.value, 6);
-            if (this.value !== textoAjustado) {
-                this.value = textoAjustado;
-            }
-        });
-
-        document.getElementById('documento_adjunto').addEventListener('change', function(e) {
-            const statusMessage = document.getElementById('file-status-message');
-                
-            if (this.files && this.files.length > 0) {
-                const nombreArchivo = this.files[0].name;
-                const tamanoMegaBytes = (this.files[0].size / (1024 * 1024)).toFixed(2);
-                    
-                statusMessage.style.color = "var(--verde-exito)";
-                statusMessage.innerHTML = `<strong>✅ Archivo listo para cargarse:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
-            } else {
-                statusMessage.style.color = "#666";
-                statusMessage.textContent = "Ningún archivo seleccionado (Máx. 15MB)";
-            }
-        });
-
-        // ENVÍO DE DATOS SEGURO A SUPABASE (INCLUYENDO CONCEPTO CENTRAL Y SUSTANCIA)
-        document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const servicio = document.getElementById('servicio_solicitado').value;
-            const folioGenerado = document.getElementById('folio_calculado').value;
-
-            let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
-            let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
-
-            const inputArchivo = document.getElementById('documento_adjunto');
-            const archivoNombreSoporte = inputArchivo.files.length > 0 ? inputArchivo.files[0].name : "Sin archivo adjunto";
-
-            // MAPEADO Y CONEXIÓN COMPLETA A LAS COLUMNAS DE SUPABASE
-            const dataSolicitud = {
-                folio_ticket: folioGenerado,
-                nombre_solicitante: document.getElementById('user_nombre').value,
-                puesto_solicitante: document.getElementById('user_puesto').value,
-                area_solicitante: document.getElementById('user_area').value,
-                servicio: servicio,
-                prioridad: document.getElementById('prioridad_tramite').value,
-                asunto: document.getElementById('asunto_solicitud').value.trim(),
-                concepto_central: document.getElementById('concepto_central').value.trim(), 
-                sustancia: document.getElementById('sustancia_tramite').value.trim(),         
-                documento_respaldo: archivoNombreSoporte,
-                fecha_creacion: new Date().toISOString()
-            };
-
-            const misHeaders = {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-            };
-
-            try {
-                const response = await fetch(SUPABASE_SOLICITUDES_URL, {
-                    method: 'POST',
-                    headers: misHeaders,
-                    body: JSON.stringify(dataSolicitud)
-                });
-
-                if (response.ok) {
-                    localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
-
-                    let urlTablaDestino = "";
-                    let objetoDestino = {};
-
-                    switch (servicio) {
-                        case "DCPL_B001":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-                            objetoDestino = {
-                                folio_user: folioGenerado,
-                                usuario_nombre: document.getElementById('user_nombre').value,
-                                puesto_usuario: document.getElementById('user_puesto').value,
-                                area_usuario: document.getElementById('user_area').value,
-                                tipo_solicitud: "Análisis de Hallazgo",
-                                sujeto_fiscalizado: "PENDIENTE",
-                                tipo_auditoria: "Por Asignar",
-                                tipo_hallazgo: "En Espera",
-                                comentarios_revision: "Tu solicitud ha sido recibida con éxito. Está en la fila virtual esperando asignación de un supervisor jurídico."
-                            };
-                            break;
-
-                        case "DCPL_B002":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/pliegos";
-                            objetoDestino = {
-                                folio_user: folioGenerado,
-                                estatus_revision: "Enviado a Pliegos"
-                            };
-                            break;
-
-                        case "DCPL_B003":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/informes";
-                            objetoDestino = {
-                                folio_user: folioGenerado,
-                                estatus_revision: "Enviado a Informes"
-                            };
-                            break;
-
-                        case "DCPL_C001":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/denuncias";
-                            objetoDestino = {
-                                folio_user: folioGenerado
-                            };
-                            break;
-
-                        case "DCPL_D001":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tarjetas";
-                            objetoDestino = {
-                                folio_user: folioGenerado
-                            };
-                            break;
-                    }
-
-                    if (urlTablaDestino !== "") {
-                        const resDestino = await fetch(urlTablaDestino, {
-                            method: 'POST',
-                            headers: misHeaders,
-                            body: JSON.stringify(objetoDestino)
-                        });
-                        if (resDestino.ok) {
-                            console.log("🔗 Renglón relacional pre-registrado.");
-                        } else {
-                            console.warn("⚠️ Advertencia: Falló el pre-registro de enlace.");
-                        }
-                    }
-
-                    localStorage.setItem('last_generated_folio', folioGenerado);
-                    localStorage.setItem('jurix_folio_activo', folioGenerado);
-                    localStorage.setItem('folio_ticket', folioGenerado);
-                    localStorage.setItem('folio_user', folioGenerado);
-                            
-                    localStorage.setItem('usuario_nombre', document.getElementById('user_nombre').value);
-                    localStorage.setItem('puesto_usuario', document.getElementById('user_puesto').value);
-                    localStorage.setItem('area_usuario', document.getElementById('user_area').value);
-
-                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
-                                        
-                    if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
-                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
-                    } else {
-                        window.location.href = "estatus.html";
-                    }
-                } else {
-                    const err = await response.json();
-                    console.error(err);
-                    alert("Error en la respuesta del servidor de base de datos.");
-                }
-            } catch (error) {
-                console.error("Error de red:", error);
-                alert("Fallo crítico de conexión con la API de Supabase.");
-            }
-        });
-    </script>
+<header>
+<h1>JURIX-DGAJ</h1>
+</header>
+<nav>
+<a href="solicitud.html">Nueva Solicitud</a>
+<a href="hallazgo.html">Cédula de Hallazgos</a>
+<a href="index.html">Salir</a>
+</nav>
+<div class="container">
+<h2>Formulario de Nueva Solicitud de Trámite</h2>
+<div id="folioTicketPrevisualizacion" class="subtitle-folio">Seleccione un Servicio para Generar Folio...</div>
+
+<form id="solicitudForm">
+<div class="form-grid">
+
+<div class="section-divider"> 👤  Datos del Servidor Público (Sesión Activa)</div>
+<div class="form-group full-width">
+<label for="user_nombre">Nombre Completo:</label>
+<input type="text" id="user_nombre" readonly required>
+</div>
+<div class="form-group">
+<label for="user_puesto">Puesto:</label>
+<input type="text" id="user_puesto" readonly required>
+</div>
+<div class="form-group">
+<label for="user_area">Área Adscripción:</label>
+<input type="text" id="user_area" readonly required>
+</div>
+<div class="section-divider"> 📋  Detalles del Trámite o Ticket</div>
+<div class="form-group">
+<label for="servicio_solicitado">Servicio / Tipo de Trámite:</label>
+<select id="servicio_solicitado" required>
+<option value="" disabled selected>-- Seleccione Servicio --</option>
+<option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
+<option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
+<option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
+<option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
+<option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
+<option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
+</select>
+</div>
+<div class="form-group">
+<label for="folio_calculado">Número de Ticket Interno (Folio):</label>
+<input type="text" id="folio_calculado" readonly placeholder="Se generará automáticamente" required>
+</div>
+<div class="form-group">
+<label for="prioridad_tramite">Prioridad del Trámite:</label>
+<select id="prioridad_tramite" required>
+<option value="Normal" selected>Normal</option>
+<option value="Urgente"> ⚠ ️ Urgente</option>
+</select>
+</div>
+<div class="form-group">
+<label for="fecha_registro">Fecha de Registro:</label>
+<input type="text" id="fecha_registro" readonly required>
+</div>
+<div class="form-group full-width">
+<label for="asunto_solicitud">Asunto / Condición:</label>
+<textarea id="asunto_solicitud" rows="3" required placeholder="Describa el objetivo o motivo de esta solicitud (IA extraerá la idea central automáticamente)..."></textarea>
+</div>
+<div class="form-group full-width">
+<div class="ia-box-sugerencias">
+<strong> 🤖  Sugerencias de Concepto Central (Análisis IA - Máx. 6 palabras):</strong>
+<div id="ia_opciones_flotantes" class="ia-opciones-contenedor">
+<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer la idea central...</span>
+</div>
+</div>
+</div>
+<div class="form-group full-width">
+<label for="concepto_central">Concepto Central:</label>
+<textarea id="concepto_central" rows="2" placeholder="Selecciona una opción de arriba o escribe el concepto central directamente..." required></textarea>
+</div>
+<div class="form-group full-width">
+<div class="ia-box-sustancia">
+<strong> 🧬  Sustancia del Concepto (Análisis IA - Máx. 4 palabras):</strong>
+<div id="ia_sustancia_flotantes" class="ia-opciones-contenedor">
+<span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir la sustancia...</span>
+</div>
+</div>
+</div>
+<div class="form-group full-width">
+<label for="sustancia_tramite">Sustancia del Hallazgo / Asunto:</label>
+<input type="text" id="sustancia_tramite" placeholder="Selecciona una opción corta de arriba..." required>
+</div>
+<div class="section-divider"> 📂  Expediente Digital / Documento Adjunto</div>
+
+<div class="form-group full-width">
+<div class="file-upload-box">
+<label for="documento_adjunto" class="upload-label-btn"> 📎  Seleccionar Documento de Soporte</label>
+<input type="file" id="documento_adjunto" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg">
+<div id="file-status-message">Ningún archivo seleccionado (Máx. 15MB)</div>
+</div>
+</div>
+</div>
+<div class="btn-container">
+<a href="index.html" class="btn-cancelar">Cancelar</a>
+<button type="submit" class="btn-enviar">Registrar Ticket e Ir a Cédula</button>
+</div>
+</form>
+</div>
+<script>
+const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
+const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+
+function recortarPorPalabras(texto, maxPalabras) {
+let palabras = texto.trim().split(/\s+/).filter(p => p.length > 0);
+if (palabras.length > maxPalabras) {
+return palabras.slice(0, maxPalabras).join(" ");
+}
+return texto;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
+alert("Acceso denegado. Por favor, inicie sesión primero en el index.");
+window.location.href = "index.html";
+return;
+}
+document.getElementById('user_nombre').value = localStorage.getItem('last_user_name') || "No detectado";
+document.getElementById('user_puesto').value = localStorage.getItem('last_user_puesto') || "No detectado";
+document.getElementById('user_area').value = localStorage.getItem('last_user_area') || "No detectado";
+const hoy = new Date();
+const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
+document.getElementById('fecha_registro').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
+});
+
+document.getElementById('servicio_solicitado').addEventListener('change', function() {
+const servicio = this.value;
+if (!servicio) return;
+let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
+let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
+const numFormateado = String(numActual).padStart(4, '0');
+const prefijoTicket = servicio.replace('_', '-');
+const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
+document.getElementById('folio_calculado').value = ticketFinal;
+document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
+});
+
+// 1. GESTIÓN DEL CAMPO ASUNTO HACIA CONCEPTO CENTRAL (MÁXIMO 6 PALABRAS)
+document.getElementById('asunto_solicitud').addEventListener('input', function() {
+const textoOriginal = this.value.trim();
+const textoMinusculas = textoOriginal.toLowerCase();
+const contenedor = document.getElementById('ia_opciones_flotantes');
+
+if(textoOriginal.length < 10) {
+contenedor.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer la idea central...</span>`;
+return;
+}
+
+let sugerenciasAsunto = [];
+
+// Evaluación de razonamiento lógico: Caso Enajenación de Inmuebles
+if (textoMinusculas.includes('desafectación') || textoMinusculas.includes('enajenación') || textoMinusculas.includes('particular') || textoMinusculas.includes('inmueble')) {
+sugerenciasAsunto = [
+"Municipio vendió inmueble público a particular.",
+"Municipio traspasó terreno municipal cobrando dinero.",
+"Municipio privatizó onerosamente propiedad mediante venta.",
+"Municipio vendió bien público a privado.",
+"Municipio enajenó propiedad pública con costo."
+];
+} 
+// Evaluación de razonamiento lógico: Caso Obra Pública
+else if (textoMinusculas.includes('obra') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('anticipo') || textoMinusculas.includes('finiquito')) {
+sugerenciasAsunto = [
+"Municipio pagó obra pública no ejecutada.",
+"Contratista incumplió términos de contrato estatal.",
+"Expediente técnico carece de soporte documental.",
+"Anticipo otorgado no fue debidamente amortizado.",
+"Finiquito de obra presenta sobreestimación evidente."
+];
+} 
+// Evaluación de razonamiento lógico: Caso Recursos Financieros
+else if (textoMinusculas.includes('cuenta') || textoMinusculas.includes('pago') || textoMinusculas.includes('recurso') || textoMinusculas.includes('gasto')) {
+sugerenciasAsunto = [
+"Entidad desvió recursos a fines distintos.",
+"Egresos municipales carecen de soporte fiscal.",
+"Gasto público ejercido sin suficiencia presupuestal.",
+"Detectaron duplicidad en pago a proveedores.",
+"Tesorería realizó pagos improcedentes no validados."
+];
+} 
+// Abstracción y razonamiento genérico para cualquier otro texto distinto ingresado por el usuario
+else {
+// Algoritmo dinámico de abstracción: Sujeto + Acción básica + Contexto
+let sujeto = "Municipio";
+if(textoMinusculas.includes('sistema') || textoMinusculas.includes('dif')) sujeto = "Organismo";
+if(textoMinusculas.includes('contratista') || textoMinusculas.includes('proveedor')) sujeto = "Particular";
+
+let accion = "incumplió";
+if(textoMinusculas.includes('falta') || textoMinusculas.includes('omisi')) accion = "omitió";
+if(textoMinusculas.includes('pago') || textoMinusculas.includes('entreg')) accion = "ejecutó";
+if(textoMinusculas.includes('daño') || textoMinusculas.includes('perjuicio')) accion = "afectó";
+
+sugerenciasAsunto = [
+`${sujeto} ${accion} normatividad legal aplicable.`,
+`Se detectó posible irregularidad en gestión.`,
+`Falta control interno en área responsable.`,
+`Omisión documental compromete legalidad del acto.`,
+`Ejecución de actividades evidencia deficiencia administrativa.`
+];
+}
+
+contenedor.innerHTML = '';
+sugerenciasAsunto.forEach((opcion) => {
+// Forzar y garantizar cumplimiento del límite estricto de 6 palabras
+const opcionFiltrada = recortarPorPalabras(opcion, 6);
+const divOpcion = document.createElement('div');
+divOpcion.className = 'ia-badge-opcion';
+divOpcion.innerHTML = ` 💡  ${opcionFiltrada}`;
+
+divOpcion.onclick = function() {
+document.getElementById('concepto_central').value = opcionFiltrada;
+generarSustanciaIA(opcionFiltrada);
+};
+contenedor.appendChild(divOpcion);
+});
+
+// Opción de adición manual de concepto central
+const btnPersonalizadoCC = document.createElement('button');
+btnPersonalizadoCC.type = 'button';
+btnPersonalizadoCC.className = 'ia-btn-personalizado';
+btnPersonalizadoCC.innerHTML = ' ➕  Agregar opción de concepto central manualmente...';
+btnPersonalizadoCC.onclick = function() {
+let opcUsuario = prompt("Escribe tu opción personalizada de Concepto Central (Máximo 6 palabras):");
+if (opcUsuario) {
+const verificado = recortarPorPalabras(opcUsuario, 6);
+document.getElementById('concepto_central').value = verificado;
+generarSustanciaIA(verificado);
+}
+};
+contenedor.appendChild(btnPersonalizadoCC);
+});
+
+// CONTROL DIRECTO DE ESCRITURA EN CONCEPTO CENTRAL
+document.getElementById('concepto_central').addEventListener('input', function() {
+generarSustanciaIA(this.value.trim());
+});
+
+// 2. LÓGICA DEL SUBMENÚ DE SUSTANCIA (MÁXIMO 4 PALABRAS)
+function generarSustanciaIA(textoConcepto) {
+const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
+const txtMin = textoConcepto.toLowerCase();
+
+if (!textoConcepto || textoConcepto.length < 5) {
+contenedorSustancia.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir la sustancia...</span>`;
+return;
+}
+
+let opcionesSustancia = [];
+
+// Evaluación de razonamiento lógico sustancia: Enajenaciones / Propiedades
+if (txtMin.includes('vendió') || txtMin.includes('traspasó') || txtMin.includes('privatizó') || txtMin.includes('enajenó') || txtMin.includes('inmueble')) {
+opcionesSustancia = [
+"Municipio vendió inmueble.",
+"Municipio traspasó terreno.",
+"Municipio privatizó propiedad.",
+"Municipio vendió incorrectamente bien.",
+"Municipio enajenó mal propiedad."
+];
+}
+// Evaluación de razonamiento lógico sustancia: Obras Públicas
+else if (txtMin.includes('obra') || txtMin.includes('contratista') || txtMin.includes('anticipo') || txtMin.includes('ejecutada')) {
+opcionesSustancia = [
+"Obra pública deficiente.",
+"Incumplimiento de contrato.",
+"Anticipo no amortizado.",
+"Sobreestimación de conceptos.",
+"Expediente técnico incompleto."
+];
+}
+// Evaluación de razonamiento lógico sustancia: Gasto Financiero
+else if (txtMin.includes('recurso') || txtMin.includes('gasto') || txtMin.includes('pago') || txtMin.includes('proveedores')) {
+opcionesSustancia = [
+"Desvío fondos públicos.",
+"Gasto sin soporte.",
+"Pagos indebidos detectados.",
+"Duplicidad egresos financieros.",
+"Presupuesto mal ejercido."
+];
+}
+// Abstracción genérica de sustancia a 4 palabras máximas para cualquier otro caso
+else {
+opcionesSustancia = [
+"Deficiencia control interno.",
+"Incumplimiento normativo legal.",
+"Omisión soporte documental.",
+"Falta validación oficial.",
+"Conducta administrativa irregular."
+];
+}
+
+contenedorSustancia.innerHTML = '';
+opcionesSustancia.forEach((sust) => {
+// Forzar y garantizar cumplimiento del límite estricto de 4 palabras
+const sustanciaFiltrada = recortarPorPalabras(sust, 4);
+const divSust = document.createElement('div');
+divSust.className = 'ia-badge-sustancia';
+divSust.innerHTML = ` 🧬  ${sustanciaFiltrada}`;
+
+divSust.onclick = function() {
+document.getElementById('sustancia_tramite').value = sustanciaFiltrada;
+};
+contenedorSustancia.appendChild(divSust);
+});
+
+// Opción de adición manual de sustancia
+const btnPersonalizadoSust = document.createElement('button');
+btnPersonalizadoSust.type = 'button';
+btnPersonalizadoSust.className = 'ia-btn-personalizado';
+btnPersonalizadoSust.innerHTML = ' ➕  Agregar sustancia de manera manual...';
+btnPersonalizadoSust.style.borderColor = '#3c763d';
+btnPersonalizadoSust.style.color = '#3c763d';
+btnPersonalizadoSust.onclick = function() {
+let sustUsuario = prompt("Escribe tu sustancia resumida manualmente (Máximo 4 palabras):");
+if (sustUsuario) {
+const verificadoSust = recortarPorPalabras(sustUsuario, 4);
+document.getElementById('sustancia_tramite').value = verificadoSust;
+}
+};
+contenedorSustancia.appendChild(btnPersonalizadoSust);
+}
+
+// CONTROL DIRECTO DE ESCRITURA EN SUSTANCIA (MÁXIMO 4 PALABRAS)
+document.getElementById('sustancia_tramite').addEventListener('input', function() {
+let textoAjustado = recortarPorPalabras(this.value, 4);
+if (this.value !== textoAjustado) {
+this.value = textoAjustado;
+}
+});
+
+document.getElementById('documento_adjunto').addEventListener('change', function(e) {
+const statusMessage = document.getElementById('file-status-message');
+if (this.files && this.files.length > 0) {
+const nombreArchivo = this.files[0].name;
+const tamanoMegaBytes = (this.files[0].size / (1024 * 1024)).toFixed(2);
+statusMessage.style.color = "var(--verde-exito)";
+statusMessage.innerHTML = `<strong> ✅  Archivo listo para cargarse:</strong> ${nombreArchivo} (${tamanoMegaBytes} MB)`;
+} else {
+statusMessage.style.color = "#666";
+statusMessage.textContent = "Ningún archivo seleccionado (Máx. 15MB)";
+}
+});
+
+// ENVÍO DE DATOS SEGURO A SUPABASE (INCLUYENDO CONCEPTO CENTRAL Y SUSTANCIA)
+document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
+e.preventDefault();
+const servicio = document.getElementById('servicio_solicitado').value;
+const folioGenerado = document.getElementById('folio_calculado').value;
+let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
+let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
+const inputArchivo = document.getElementById('documento_adjunto');
+const archivoNombreSoporte = inputArchivo.files.length > 0 ? inputArchivo.files[0].name : "Sin archivo adjunto";
+
+const dataSolicitud = {
+folio_ticket: folioGenerado,
+nombre_solicitante: document.getElementById('user_nombre').value,
+puesto_solicitante: document.getElementById('user_puesto').value,
+area_solicitante: document.getElementById('user_area').value,
+servicio: servicio,
+prioridad: document.getElementById('prioridad_tramite').value,
+asunto: document.getElementById('asunto_solicitud').value.trim(),
+concepto_central: document.getElementById('concepto_central').value.trim(),
+sustancia: document.getElementById('sustancia_tramite').value.trim(),
+documento_respaldo: archivoNombreSoporte,
+fecha_creacion: new Date().toISOString()
+};
+
+const misHeaders = {
+'apikey': SUPABASE_KEY,
+'Authorization': `Bearer ${SUPABASE_KEY}`,
+'Content-Type': 'application/json',
+'Prefer': 'return=minimal'
+};
+
+try {
+const response = await fetch(SUPABASE_SOLICITUDES_URL, {
+method: 'POST',
+headers: misHeaders,
+body: JSON.stringify(dataSolicitud)
+});
+
+if (response.ok) {
+localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
+let urlTablaDestino = "";
+let objetoDestino = {};
+
+switch (servicio) {
+case "DCPL_B001":
+urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+objetoDestino = {
+folio_user: folioGenerado,
+usuario_nombre: document.getElementById('user_nombre').value,
+puesto_usuario: document.getElementById('user_puesto').value,
+area_usuario: document.getElementById('user_area').value,
+tipo_solicitud: "Análisis de Hallazgo",
+sujeto_fiscalizado: "PENDIENTE",
+tipo_auditoria: "Por Asignar",
+tipo_hallazgo: "En Espera",
+comentarios_revision: "Tu solicitud ha sido recibida con éxito. Está en la fila virtual esperando asignación de un supervisor jurídico."
+};
+break;
+case "DCPL_B002":
+urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/pliegos";
+objetoDestino = {
+folio_user: folioGenerado,
+estatus_revision: "Enviado a Pliegos"
+};
+break;
+case "DCPL_B003":
+urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/informes";
+objetoDestino = {
+folio_user: folioGenerado,
+estatus_revision: "Enviado a Informes"
+};
+break;
+case "DCPL_C001":
+urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/denuncias";
+objetoDestino = {
+folio_user: folioGenerado
+};
+break;
+case "DCPL_D001":
+urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tarjetas";
+objetoDestino = {
+folio_user: folioGenerado
+};
+break;
+}
+
+if (urlTablaDestino !== "") {
+const resDestino = await fetch(urlTablaDestino, {
+method: 'POST',
+headers: misHeaders,
+body: JSON.stringify(objetoDestino)
+});
+if (resDestino.ok) {
+console.log(" 🔗  Renglón relacional pre-registrado.");
+} else {
+console.warn(" ⚠ ️ Advertencia: Falló el pre-registro de enlace.");
+}
+}
+
+localStorage.setItem('last_generated_folio', folioGenerado);
+localStorage.setItem('jurix_folio_activo', folioGenerado);
+localStorage.setItem('folio_ticket', folioGenerado);
+localStorage.setItem('folio_user', folioGenerado);
+localStorage.setItem('usuario_nombre', document.getElementById('user_nombre').value);
+localStorage.setItem('puesto_usuario', document.getElementById('user_puesto').value);
+localStorage.setItem('area_usuario', document.getElementById('user_area').value);
+
+alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
+
+if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
+window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
+} else {
+window.location.href = "estatus.html";
+}
+} else {
+const err = await response.json();
+console.error(err);
+alert("Error en la respuesta del servidor de base de datos.");
+}
+} catch (error) {
+console.error("Error de red:", error);
+alert("Fallo crítico de conexión con la API de Supabase.");
+}
+});
+</script>
 </body>
 </html>
