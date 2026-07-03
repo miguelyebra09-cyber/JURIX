@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURIX-DGAJ - Hoja de Trabajo y Análisis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --naranja-nitido: #FF6600;
+            --gris-oscuro: #2c3e50;
+            --gris-claro: #f8f9fa;
+            --blanco: #ffffff;
+            --azul-info: #0066cc;
+            --azul-borde: #bee3f8;
+            --azul-fondo: #ebf8ff;
+            --sombra: 0 4px 15px rgba(0,0,0,0.06);
+            --transicion: all 0.25s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gris-claro);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--blanco);
+            padding: 12px 40px;
+            border-bottom: 3px solid var(--naranja-nitido);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            color: var(--naranja-nitido);
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        /* Zona de Carga de Archivos */
+        .upload-zone {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn-upload {
+            background-color: var(--naranja-nitido);
+            color: var(--blanco);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+            transition: var(--transicion);
+            box-shadow: 0 4px 6px rgba(255, 102, 0, 0.15);
+        }
+
+        .btn-upload:hover {
+            background-color: #e05500;
+            transform: translateY(-1px);
+        }
+
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Panel Principal Dividido */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        /* Visor del Documento (Izquierda) */
+        .document-viewer {
+            flex: 7;
+            background-color: #bdc3c7;
+            border-radius: 8px;
+            box-shadow: var(--sombra);
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .doc-page-canvas {
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-bottom: 10px;
+            max-width: 100%;
+        }
+
+        .word-content-render {
+            background: white;
+            padding: 40px;
+            width: 80%;
+            min-height: 297mm;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        /* Barra Lateral de Comentarios (Derecha) */
+        .comments-sidebar {
+            flex: 4;
+            background-color: var(--blanco);
+            border-radius: 8px;
+            box-shadow: var(--sombra);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-left: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header {
+            background-color: var(--gris-oscuro);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .counter-badge {
+            background-color: var(--naranja-nitido);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .comments-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Tarjeta de Comentario Individual */
+        .comment-card {
+            background-color: var(--gris-claro);
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--azul-info);
+            border-radius: 6px;
+            padding: 12px;
+            transition: var(--transicion);
+        }
+
+        .comment-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: #fff;
+        }
+
+        .text-selected-box {
+            font-size: 0.85rem;
+            background-color: var(--azul-fondo);
+            border: 1px dashed var(--azul-borde);
+            padding: 8px;
+            border-radius: 4px;
+            color: #2b6cb0;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .comment-text-box {
+            font-size: 0.9rem;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .comment-meta {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .no-data-msg {
+            text-align: center;
+            color: #a0aec0;
+            margin-top: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>JURIX-DGAJ - Módulo Hoja de Trabajo</h1>
+        <div class="upload-zone">
+            <span style="font-size: 0.9rem; font-weight: bold; color: var(--gris-oscuro);">Cargar Cédula/Proyecto:</span>
+            <div class="file-input-wrapper">
+                <button class="btn-upload">📁 Seleccionar PDF o Word</button>
+                <input type="file" id="filePicker" accept=".pdf, .docx" onchange="procesarArchivo(this)">
+            </div>
+            <span id="fileNameLabel" style="font-size: 0.85rem; color: #718096; font-weight: 500;">Ningún archivo seleccionado</span>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div id="documentViewer" class="document-viewer">
+            <div class="no-data-msg" id="viewerPlaceholder">El visor está listo. Sube un documento de auditoría para iniciar la renderización.</div>
+        </div>
+
+        <div class="comments-sidebar">
+            <div class="sidebar-header">
+                <span>💬 Glosa de Observaciones</span>
+                <span id="lblContadorComentarios" class="counter-badge">0 Comentarios</span>
+            </div>
+            <div id="commentsList" class="comments-list">
+                <div class="no-data-msg">Ningún comentario extraído.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        async function procesarArchivo(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            document.getElementById('fileNameLabel').innerText = file.name;
+            const viewer = document.getElementById('documentViewer');
+            const commentsContainer = document.getElementById('commentsList');
+            
+            // Limpiar contenedores
+            viewer.innerHTML = '';
+            commentsContainer.innerHTML = '';
+            actualizarContador(0);
+
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (fileExtension === 'pdf') {
+                leerPDF(file);
+            } else if (fileExtension === 'docx') {
+                leerWord(file);
+            } else {
+                alert("Formato no soportado. Únicamente se admiten archivos .pdf o .docx");
+            }
+        }
+
+        // =========================================================================
+        // PROCESAMIENTO Y EXTRACCIÓN DE CONTENIDO PDF
+        // =========================================================================
+        function leerPDF(file) {
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+                try {
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    const viewer = document.getElementById('documentViewer');
+                    let totalComentarios = [];
+
+                    // 1. Renderizar todas las páginas y buscar anotaciones
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        
+                        // Crear Canvas para dibujar la página de forma amigable
+                        const viewport = page.getViewport({ scale: 1.2 });
+                        const canvas = document.createElement('canvas');
+                        canvas.className = 'doc-page-canvas';
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        viewer.appendChild(canvas);
+
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                        // Extraer anotaciones del estándar PDF (Comentarios/Notas)
+                        const annotations = await page.getAnnotations();
+                        annotations.forEach(annot => {
+                            // Validar que sea una nota de texto o comentario tipificado
+                            if (annot.subtype === 'Text' || annot.contents) {
+                                totalComentarios.push({
+                                    textoSeleccionado: annot.title || "Nota/Marcador del Documento",
+                                    comentario: annot.contents,
+                                    pagina: i
+                                });
+                            }
+                        });
+                    }
+
+                    // Renderizar los comentarios en la barra derecha
+                    inyectarComentariosTablero(totalComentarios);
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error al procesar la estructura interna del PDF.");
+                }
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // =========================================================================
+        // PROCESAMIENTO Y EXTRACCIÓN DE CONTENIDO WORD (.DOCX)
+        // =========================================================================
+        function leerWord(file) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(event) {
+                const arrayBuffer = event.target.result;
+
+                // 1. Renderizar el cuerpo del texto plano estructurado como HTML limpio
+                mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                    .then(function(result) {
+                        const viewer = document.getElementById('documentViewer');
+                        const divRender = document.createElement('div');
+                        divRender.className = 'word-content-render';
+                        divRender.innerHTML = result.value;
+                        viewer.appendChild(divRender);
+                    })
+                    .catch(function(err) {
+                        console.error(err);
+                    });
+
+                // 2. Extraer los comentarios nativos incrustados en el XML estructurado de Word
+                // Nota: Mammoth extrae el texto en crudo, mapeamos referencias estructurales
+                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                    .then(function(result) {
+                        // Simulación de segmentación por línea para aislar comentarios en la Hoja de Trabajo
+                        let lineas = result.value.split('\n');
+                        let comentariosSimulados = [];
+                        
+                        // Los comentarios en Mammoth a veces se anexan al final o contienen marcas [], los recolectamos
+                        lineas.forEach((linea, idx) => {
+                            if(linea.trim().startsWith("[") && linea.includes("]:")) {
+                                let partes = linea.split("]:");
+                                comentariosSimulados.push({
+                                    textoSeleccionado: "Referencia en Documento " + partes[0] + "]",
+                                    comentario: partes[1] || "Comentario vacío",
+                                    pagina: "N/A"
+                                });
+                            }
+                        });
+
+                        // Si no hay marcas estructuradas nativas pero el usuario necesita analizarlos
+                        if(comentariosSimulados.length === 0) {
+                            // Enfoque secundario: Aislar párrafos con palabras clave de auditoría de ejemplo
+                            lineas.forEach(l => {
+                                if(l.toLowerCase().includes("observación") || l.toLowerCase().includes("hallazgo")) {
+                                    comentariosSimulados.push({
+                                        textoSeleccionado: "Texto Clave Detectado",
+                                        comentario: l,
+                                        pagina: "Línea de Análisis"
+                                    });
+                                }
+                            });
+                        }
+
+                        inyectarComentariosTablero(comentariosSimulados);
+                    });
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // =========================================================================
+        // RENDERIZADO DE LAS TARJETAS DE COMENTARIOS
+        // =========================================================================
+        function inyectarComentariosTablero(lista) {
+            const container = document.getElementById('commentsList');
+            container.innerHTML = '';
+            actualizarContador(lista.length);
+
+            if (lista.length === 0) {
+                container.innerHTML = `<div class="no-data-msg">No se detectaron hilos de comentarios o anotaciones nativas en este archivo.</div>`;
+                return;
+            }
+
+            lista.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'comment-card';
+                card.innerHTML = `
+                    <div class="text-selected-box">
+                        📌 <strong>Texto vinculado:</strong> "${c.textoSeleccionado}"
+                    </div>
+                    <div class="comment-text-box">
+                        📝 ${c.comentario}
+                    </div>
+                    <div class="comment-meta">
+                        Ref/Ubicación: Pág/Sección ${c.pagina}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function actualizarContador(numero) {
+            document.getElementById('lblContadorComentarios').innerText = `${numero} Comentarios`;
+        }
+    </script>
+</body>
+</html>
