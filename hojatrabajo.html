@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Hoja de Trabajo y Análisis</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <title>JURIX-DGAJ - Hoja de Trabajo (Comentarios Nativos)</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     
     <style>
@@ -50,7 +51,6 @@
             font-weight: bold;
         }
 
-        /* Zona de Carga de Archivos */
         .upload-zone {
             display: flex;
             align-items: center;
@@ -89,7 +89,6 @@
             cursor: pointer;
         }
 
-        /* Panel Principal Dividido */
         .workspace {
             display: flex;
             flex: 1;
@@ -98,9 +97,9 @@
             gap: 15px;
         }
 
-        /* Visor del Documento (Izquierda) */
+        /* Visor Izquierdo */
         .document-viewer {
-            flex: 7;
+            flex: 6;
             background-color: #bdc3c7;
             border-radius: 8px;
             box-shadow: var(--sombra);
@@ -109,27 +108,27 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-        }
-
-        .doc-page-canvas {
-            background: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            margin-bottom: 10px;
-            max-width: 100%;
         }
 
         .word-content-render {
             background: white;
             padding: 40px;
-            width: 80%;
+            width: 85%;
             min-height: 297mm;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             border-radius: 4px;
             line-height: 1.6;
+            font-size: 1rem;
         }
 
-        /* Barra Lateral de Comentarios (Derecha) */
+        /* Resaltados simulados en el documento renderizado */
+        .word-content-render comment-ref {
+            background-color: #fff3cd;
+            border-bottom: 2px dashed #ffc107;
+            cursor: pointer;
+        }
+
+        /* Barra Lateral Derecha */
         .comments-sidebar {
             flex: 4;
             background-color: var(--blanco);
@@ -168,19 +167,30 @@
             gap: 12px;
         }
 
-        /* Tarjeta de Comentario Individual */
+        /* Tarjetas de comentarios corregidas */
         .comment-card {
             background-color: var(--gris-claro);
             border: 1px solid #e2e8f0;
-            border-left: 5px solid var(--azul-info);
+            border-left: 5px solid var(--naranja-nitido);
             border-radius: 6px;
-            padding: 12px;
+            padding: 14px;
             transition: var(--transicion);
         }
 
         .comment-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
             background-color: #fff;
+        }
+
+        .comment-author-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--gris-oscuro);
+            margin-bottom: 6px;
+            text-transform: uppercase;
         }
 
         .text-selected-box {
@@ -195,16 +205,14 @@
         }
 
         .comment-text-box {
-            font-size: 0.9rem;
-            color: #2d3748;
+            font-size: 0.92rem;
+            color: #1a202c;
             font-weight: 500;
-        }
-
-        .comment-meta {
-            font-size: 0.75rem;
-            color: #718096;
-            margin-top: 6px;
-            text-align: right;
+            line-height: 1.4;
+            background: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #edf2f7;
         }
 
         .no-data-msg {
@@ -220,10 +228,9 @@
     <header>
         <h1>JURIX-DGAJ - Módulo Hoja de Trabajo</h1>
         <div class="upload-zone">
-            <span style="font-size: 0.9rem; font-weight: bold; color: var(--gris-oscuro);">Cargar Cédula/Proyecto:</span>
             <div class="file-input-wrapper">
-                <button class="btn-upload">📁 Seleccionar PDF o Word</button>
-                <input type="file" id="filePicker" accept=".pdf, .docx" onchange="procesarArchivo(this)">
+                <button class="btn-upload">📁 Seleccionar Documento Word (.docx)</button>
+                <input type="file" id="filePicker" accept=".docx" onchange="analizarWordConComentarios(this)">
             </div>
             <span id="fileNameLabel" style="font-size: 0.85rem; color: #718096; font-weight: 500;">Ningún archivo seleccionado</span>
         </div>
@@ -231,25 +238,22 @@
 
     <div class="workspace">
         <div id="documentViewer" class="document-viewer">
-            <div class="no-data-msg" id="viewerPlaceholder">El visor está listo. Sube un documento de auditoría para iniciar la renderización.</div>
+            <div class="no-data-msg" id="viewerPlaceholder">Sube la Cédula de Hallazgo de prueba para mapear sus hilos de revisión internos.</div>
         </div>
 
         <div class="comments-sidebar">
             <div class="sidebar-header">
-                <span>💬 Glosa de Observaciones</span>
+                <span>💬 Comentarios y Notas Técnicas</span>
                 <span id="lblContadorComentarios" class="counter-badge">0 Comentarios</span>
             </div>
             <div id="commentsList" class="comments-list">
-                <div class="no-data-msg">Ningún comentario extraído.</div>
+                <div class="no-data-msg">Esperando extracción de marcas XML...</div>
             </div>
         </div>
     </div>
 
     <script>
-        // Inicializar PDF.js worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
-        async function procesarArchivo(input) {
+        async function analizarWordConComentarios(input) {
             const file = input.files[0];
             if (!file) return;
 
@@ -257,145 +261,125 @@
             const viewer = document.getElementById('documentViewer');
             const commentsContainer = document.getElementById('commentsList');
             
-            // Limpiar contenedores
-            viewer.innerHTML = '';
+            viewer.innerHTML = '<div class="no-data-msg">Procesando mapa de marcas estructurales...</div>';
             commentsContainer.innerHTML = '';
-            actualizarContador(0);
 
-            const fileExtension = file.name.split('.').pop().toLowerCase();
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                
+                // 1. Descomprimir el archivo .docx usando JSZip para leer los XML internos de Microsoft Word
+                const zip = await JSZip.loadAsync(arrayBuffer);
+                
+                // Diccionario para guardar comentarios extraídos del XML estructurado
+                let mapaComentarios = {};
 
-            if (fileExtension === 'pdf') {
-                leerPDF(file);
-            } else if (fileExtension === 'docx') {
-                leerWord(file);
-            } else {
-                alert("Formato no soportado. Únicamente se admiten archivos .pdf o .docx");
+                // Examinar si el archivo contiene el paquete nativo de comentarios de Word
+                if (zip.file("word/comments.xml")) {
+                    const commentsXmlText = await zip.file("word/comments.xml").async("text");
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(commentsXmlText, "text/xml");
+                    
+                    // Buscar todas las etiquetas estructurales <w:comment>
+                    const commentsElements = xmlDoc.getElementsByTagName("w:comment");
+                    
+                    for (let i = 0; i < commentsElements.length; i++) {
+                        let cEl = commentsElements[i];
+                        let id = cEl.getAttribute("w:id");
+                        let autor = cEl.getAttribute("w:author") || "Revisor Anónimo";
+                        let fecha = cEl.getAttribute("w:date") || "";
+                        
+                        // Extraer el texto del comentario sumando sus fragmentos (<w:t>)
+                        let textNodes = cEl.getElementsByTagName("w:t");
+                        let comentarioTexto = "";
+                        for (let j = 0; j < textNodes.length; j++) {
+                            comentarioTexto += textNodes[j].textContent + " ";
+                        }
+
+                        mapaComentarios[id] = {
+                            id: id,
+                            autor: autor,
+                            fecha: fecha.split("T")[0], // Simplificar fecha
+                            comentario: comentarioTexto.trim(),
+                            textoSeleccionado: "" // Se llenará al parsear el documento principal
+                        };
+                    }
+                }
+
+                // 2. Extraer el texto principal y ligar en qué palabras se hicieron las anotaciones
+                if (zip.file("word/document.xml")) {
+                    const docXmlText = await zip.file("word/document.xml").async("text");
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(docXmlText, "text/xml");
+                    
+                    // Buscar los rangos donde inicia un comentario en el documento (<w:commentRangeStart>)
+                    const rangesStart = xmlDoc.getElementsByTagName("w:commentRangeStart");
+                    
+                    for(let i=0; i < rangesStart.length; i++) {
+                        let id = rangesStart[i].getAttribute("w:id");
+                        if (mapaComentarios[id]) {
+                            // Buscar nodos hermanos para extraer el texto exacto seleccionado en Word
+                            let textoResaltado = "";
+                            let siguienteNodo = rangesStart[i].nextSibling;
+                            
+                            while(siguienteNodo && siguienteNodo.nodeName !== "w:commentRangeEnd") {
+                                if(siguienteNodo.getElementsByTagName) {
+                                    let ts = siguienteNodo.getElementsByTagName("w:t");
+                                    for(let k=0; k<ts.length; k++) {
+                                        textoResaltado += ts[k].textContent;
+                                    }
+                                }
+                                siguienteNodo = siguienteNodo.nextSibling;
+                            }
+                            mapaComentarios[id].textoSeleccionado = textoResaltado.trim() || "[Texto/Objeto Seleccionado]";
+                        }
+                    }
+                }
+
+                // 3. Renderizar el cuerpo del documento en el panel izquierdo usando Mammoth
+                const renderResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                viewer.innerHTML = '';
+                const divRender = document.createElement('div');
+                divRender.className = 'word-content-render';
+                divRender.innerHTML = renderResult.value;
+                viewer.appendChild(divRender);
+
+                // Convertir el mapa a un arreglo plano y limpiar vacíos
+                let listaComentariosFinal = Object.values(mapaComentarios).filter(c => c.comentario.length > 0);
+
+                // Si por alguna razón la estructura XML falló, aplicamos extracción predictiva secundaria
+                if(listaComentariosFinal.length === 0) {
+                    const rawTextResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                    let lineas = rawTextResult.value.split("\n");
+                    lineas.forEach((l, idx) => {
+                        if(l.includes("✍️") || l.toLowerCase().includes("comentario") || l.trim().startsWith("[")) {
+                            listaComentariosFinal.push({
+                                id: idx,
+                                autor: "Auditor Revisor",
+                                fecha: "Reciente",
+                                textoSeleccionado: "Fragmento de Párrafo de Cédula",
+                                comentario: l
+                            });
+                        }
+                    });
+                }
+
+                // 4. Inyectar las tarjetas con los datos requeridos (Quién lo hizo, En qué parte y Qué dice)
+                inyectarComentariosSidebar(listaComentariosFinal);
+
+            } catch (error) {
+                console.error(error);
+                alert("Error crítico al procesar los hilos de comentarios del archivo .docx");
+                viewer.innerHTML = '<div class="no-data-msg">Error al cargar el documento.</div>';
             }
         }
 
-        // =========================================================================
-        // PROCESAMIENTO Y EXTRACCIÓN DE CONTENIDO PDF
-        // =========================================================================
-        function leerPDF(file) {
-            const fileReader = new FileReader();
-            fileReader.onload = async function() {
-                const typedarray = new Uint8Array(this.result);
-                try {
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    const viewer = document.getElementById('documentViewer');
-                    let totalComentarios = [];
-
-                    // 1. Renderizar todas las páginas y buscar anotaciones
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        
-                        // Crear Canvas para dibujar la página de forma amigable
-                        const viewport = page.getViewport({ scale: 1.2 });
-                        const canvas = document.createElement('canvas');
-                        canvas.className = 'doc-page-canvas';
-                        const context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-                        viewer.appendChild(canvas);
-
-                        await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-                        // Extraer anotaciones del estándar PDF (Comentarios/Notas)
-                        const annotations = await page.getAnnotations();
-                        annotations.forEach(annot => {
-                            // Validar que sea una nota de texto o comentario tipificado
-                            if (annot.subtype === 'Text' || annot.contents) {
-                                totalComentarios.push({
-                                    textoSeleccionado: annot.title || "Nota/Marcador del Documento",
-                                    comentario: annot.contents,
-                                    pagina: i
-                                });
-                            }
-                        });
-                    }
-
-                    // Renderizar los comentarios en la barra derecha
-                    inyectarComentariosTablero(totalComentarios);
-
-                } catch (error) {
-                    console.error(error);
-                    alert("Error al procesar la estructura interna del PDF.");
-                }
-            };
-            fileReader.readAsArrayBuffer(file);
-        }
-
-        // =========================================================================
-        // PROCESAMIENTO Y EXTRACCIÓN DE CONTENIDO WORD (.DOCX)
-        // =========================================================================
-        function leerWord(file) {
-            const fileReader = new FileReader();
-            fileReader.onload = function(event) {
-                const arrayBuffer = event.target.result;
-
-                // 1. Renderizar el cuerpo del texto plano estructurado como HTML limpio
-                mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
-                    .then(function(result) {
-                        const viewer = document.getElementById('documentViewer');
-                        const divRender = document.createElement('div');
-                        divRender.className = 'word-content-render';
-                        divRender.innerHTML = result.value;
-                        viewer.appendChild(divRender);
-                    })
-                    .catch(function(err) {
-                        console.error(err);
-                    });
-
-                // 2. Extraer los comentarios nativos incrustados en el XML estructurado de Word
-                // Nota: Mammoth extrae el texto en crudo, mapeamos referencias estructurales
-                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-                    .then(function(result) {
-                        // Simulación de segmentación por línea para aislar comentarios en la Hoja de Trabajo
-                        let lineas = result.value.split('\n');
-                        let comentariosSimulados = [];
-                        
-                        // Los comentarios en Mammoth a veces se anexan al final o contienen marcas [], los recolectamos
-                        lineas.forEach((linea, idx) => {
-                            if(linea.trim().startsWith("[") && linea.includes("]:")) {
-                                let partes = linea.split("]:");
-                                comentariosSimulados.push({
-                                    textoSeleccionado: "Referencia en Documento " + partes[0] + "]",
-                                    comentario: partes[1] || "Comentario vacío",
-                                    pagina: "N/A"
-                                });
-                            }
-                        });
-
-                        // Si no hay marcas estructuradas nativas pero el usuario necesita analizarlos
-                        if(comentariosSimulados.length === 0) {
-                            // Enfoque secundario: Aislar párrafos con palabras clave de auditoría de ejemplo
-                            lineas.forEach(l => {
-                                if(l.toLowerCase().includes("observación") || l.toLowerCase().includes("hallazgo")) {
-                                    comentariosSimulados.push({
-                                        textoSeleccionado: "Texto Clave Detectado",
-                                        comentario: l,
-                                        pagina: "Línea de Análisis"
-                                    });
-                                }
-                            });
-                        }
-
-                        inyectarComentariosTablero(comentariosSimulados);
-                    });
-            };
-            fileReader.readAsArrayBuffer(file);
-        }
-
-        // =========================================================================
-        // RENDERIZADO DE LAS TARJETAS DE COMENTARIOS
-        // =========================================================================
-        function inyectarComentariosTablero(lista) {
+        function inyectarComentariosSidebar(lista) {
             const container = document.getElementById('commentsList');
             container.innerHTML = '';
-            actualizarContador(lista.length);
+            document.getElementById('lblContadorComentarios').innerText = `${lista.length} Comentarios`;
 
             if (lista.length === 0) {
-                container.innerHTML = `<div class="no-data-msg">No se detectaron hilos de comentarios o anotaciones nativas en este archivo.</div>`;
+                container.innerHTML = `<div class="no-data-msg">No se encontraron comentarios incrustados por revisores en las marcas de este Word.</div>`;
                 return;
             }
 
@@ -403,22 +387,18 @@
                 const card = document.createElement('div');
                 card.className = 'comment-card';
                 card.innerHTML = `
+                    <div class="comment-author-box">
+                        👤 <strong>Revisor:</strong> ${c.autor} <span style="color:#718096; font-weight:normal; margin-left:auto;">📅 ${c.fecha}</span>
+                    </div>
                     <div class="text-selected-box">
-                        📌 <strong>Texto vinculado:</strong> "${c.textoSeleccionado}"
+                        🎯 <strong>Parte del Documento:</strong> "${c.textoSeleccionado || 'Texto bajo revisión'}"
                     </div>
                     <div class="comment-text-box">
-                        📝 ${c.comentario}
-                    </div>
-                    <div class="comment-meta">
-                        Ref/Ubicación: Pág/Sección ${c.pagina}
+                        💬 ${c.comentario}
                     </div>
                 `;
                 container.appendChild(card);
             });
-        }
-
-        function actualizarContador(numero) {
-            document.getElementById('lblContadorComentarios').innerText = `${numero} Comentarios`;
         }
     </script>
 </body>
