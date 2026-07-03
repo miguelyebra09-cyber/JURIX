@@ -145,7 +145,6 @@
             margin: 2px;
            font-weight: bold;
         }
-
         /* --- CONTENEDOR DE OPCIONES DE SÍNTESIS --- */
         .ai-synthesis-box {
             margin-top: 10px;
@@ -155,14 +154,12 @@
             border-radius: 4px;
             font-size: 0.88rem;
         }
-
         .synthesis-options-container {
             margin-top: 8px;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-
         .synthesis-btn-option {
             background-color: var(--blanco);
             border: 1px solid #7dd3fc;
@@ -176,7 +173,6 @@
             width: 100%;
             font-family: inherit;
         }
-
         .synthesis-btn-option:hover {
             background-color: #e0f2fe;
             border-color: #0284c7;
@@ -548,7 +544,6 @@
             <option value="1.2.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.2 Bienes en Arrendamiento Financiero</option>
             <option value="1.2.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.3 Bienes en Custodia</option>
         </optgroup>
-
         <optgroup label="2 PASIVO">
             <option value="2.1">2.1 PASIVO CIRCULANTE</option>
             <option value="2.1.1">&nbsp;&nbsp;2.1.1 Cuentas por Pagar a Corto Plazo</option>
@@ -635,7 +630,6 @@
             <option value="2.2.6.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.3 Provisión para Contingencias a Largo Plazo</option>
             <option value="2.2.6.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.9 Otras Provisiones a Largo Plazo</option>
         </optgroup>
-
         <optgroup label="3 HACIENDA PÚBLICA/PATRIMONIO">
             <option value="3.1">3.1 HACIENDA PÚBLICA/PATRIMONIO CONTRIBUIDO</option>
             <option value="3.1.1">&nbsp;&nbsp;3.1.1 Aportaciones</option>
@@ -653,7 +647,6 @@
             <option value="3.3.1">&nbsp;&nbsp;3.3.1 Resultado por Posición Monetaria</option>
             <option value="3.3.2">&nbsp;&nbsp;3.3.2 Resultado por Tenencia de Activos No Monetarios</option>
         </optgroup>
-
         <optgroup label="4 INGRESOS Y OTROS BENEFICIOS">
             <option value="4.1">4.1 INGRESOS DE GESTIÓN</option>
             <option value="4.1.1">&nbsp;&nbsp;4.1.1 Impuestos</option>
@@ -675,7 +668,6 @@
             <option value="4.3.4">&nbsp;&nbsp;4.3.4 Disminución del Exceso de Provisiones</option>
             <option value="4.3.9">&nbsp;&nbsp;4.3.9 Otros Ingresos y Beneficios Varios</option>
         </optgroup>
-
         <optgroup label="5 GASTOS Y OTRAS PÉRDIDAS">
             <option value="5.1">5.1 GASTOS DE FUNCIONAMIENTO</option>
             <option value="5.1.1">&nbsp;&nbsp;5.1.1 Servicios Personales</option>
@@ -688,7 +680,6 @@
         </optgroup>
     </select>
 </div>
-
  
                <div class="form-group">
                    <label for="importe">💲 Importe ($):</label>
@@ -701,14 +692,13 @@
                </div>
  
                <div class="form-group full-width">
-                   <label for="condicion_hallazgo">⚖️ Condición:</label>
+                   <label for="condicion_hallazgo">⚖️ Asunto/Condición:</label>
                    <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
                    
                    <div class="ai-keywords-box">
                        <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
                        <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
                    </div>
-
                    <!-- NUEVO MODULO DE SÍNTESIS DE IA -->
                    <div class="ai-synthesis-box">
                        <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
@@ -717,10 +707,16 @@
                        </div>
                    </div>
                </div>
+               
+               <!-- CAMPO TRASLADADO: SUSTANCIA DEL HALLAZGO -->
+               <div class="form-group full-width">
+                   <label for="sustancia_hallazgo">📌 Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
+                   <input type="text" id="sustancia_hallazgo" placeholder="Ej: Falta de aplicación de penas" required>
+               </div>
 
                <!-- CAMPO DONDE SE CAPTURA LA SÍNTESIS FINAL SELECCIONADA -->
                <div class="form-group full-width">
-                   <label for="sintesis_condicion">📝 Síntesis de Condición (5-8 palabras):</label>
+                   <label for="sintesis_condicion">📝 Concepto General:</label>
                    <input type="text" id="sintesis_condicion" placeholder="Selecciona una opción de arriba o escribe una síntesis breve..." required>
                </div>
  
@@ -866,7 +862,7 @@
                 const patronesAI = [
                     /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, 
                     /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, 
-                    /(?:aplicación|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, 
+                    /(?:application|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, 
                     /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi 
                 ];
  
@@ -885,13 +881,11 @@
                 } else {
                     containerKeywords.innerHTML = "<span style='color: #999;'>Analizando... (No se detectan verbos rectores aún)</span>";
                 }
-
                 // 2. MOTOR DINÁMICO DE SÍNTESIS (NUEVO REGEX SEMÁNTICO)
                 if (texto.length < 15) {
                     containerSynthesis.innerHTML = "<span style='color: #666; font-style: italic;'>Escribe una condición más extensa para estructurar las opciones...</span>";
                     return;
                 }
-
                 // Obtener el nombre limpio del Sujeto Fiscalizado seleccionado
                 let sujetoNombre = "El sujeto";
                 if(cmbSujeto.value) {
@@ -899,27 +893,23 @@
                     sujetoNombre = optionText.split('-')[0].split('_')[1] || optionText.split('-')[0] || "El municipio";
                     sujetoNombre = sujetoNombre.trim();
                 }
-
                 // Búsqueda inteligente de conceptos jurídicos en el texto del usuario
                 let conceptoIncumplimiento = texto.includes("contrat") ? "incumplimiento contractual" : 
                                              texto.includes("estimaci") ? "estimación tardía" : "sanción administrativa";
                 
                 let conceptoPena = texto.includes("multa") ? "multa" : 
                                    texto.includes("sanci") ? "sanción" : "penalización";
-
                 // Modelos de síntesis estructurados de 5 a 8 palabras según tus ejemplos de diseño
                 let opcionesGeneradas = [
                     `${sujetoNombre} no acreditó ${conceptoPena} por ${conceptoIncumplimiento}`,
                     `Falta acreditación de ${conceptoPena} al contratista`,
                     `Incumplimiento contractual sin ${conceptoPena} al contratista`
                 ];
-
                 // Ajustes contextuales finos si la condición habla de autorizaciones o retrasos
                 if (texto.includes("tard") || texto.includes("retras") || texto.includes("autoriz")) {
                     opcionesGeneradas[1] = `Autorización tardía sin aplicación de ${conceptoPena} contractual`;
                     opcionesGeneradas[2] = `No se acreditó ${conceptoPena} por estimación tardía`;
                 }
-
                 // Renderizar los botones interactivos
                 containerSynthesis.innerHTML = opcionesGeneradas.map((opcion, index) => {
                     // Limpiar mayúscula inicial por estética uniforme
@@ -933,7 +923,6 @@
                 }).join('');
             });
         });
-
         // Función global para capturar la opción seleccionada con el clic
         function seleccionarSintesis(textoSeleccionado) {
             const txtSintesisFinal = document.getElementById('sintesis_condicion');
@@ -972,7 +961,8 @@
                     link_soporte: document.getElementById('link_soporte').value || null,
                     condicion: document.getElementById('condicion_hallazgo').value,
                     palabras_clave_ia: palabrasClaveExtraidas.join(', '), 
-                    sintesis_condicion: document.getElementById('sintesis_condicion').value, // NUEVO CAMPO ENVIADO A SUPABASE
+                    sintesis_condicion: document.getElementById('sintesis_condicion').value, // ENVIADO COMO CONCEPTO GENERAL
+                    sustancia_hallazgo: document.getElementById('sustancia_hallazgo').value, // NUEVO CAMPO ADICIONAL
                     comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
                 };
  
