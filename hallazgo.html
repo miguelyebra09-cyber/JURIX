@@ -682,6 +682,7 @@
             });
  
             // ==================== LÓGICA DE SÍNTESIS DE IA EN DOS NIVELES ====================
+         // ==================== LÓGICA DE SÍNTESIS DE IA EN DOS NIVELES ====================
             const txtCondicion = document.getElementById('condicion_hallazgo');
             const containerKeywords = document.getElementById('keywordsContainer');
             const contenedorOpciones = document.getElementById('ia_opciones_flotantes');
@@ -691,60 +692,92 @@
                 let textoOriginal = txtCondicion.value.trim();
                 let textoMinusculas = textoOriginal.toLowerCase();
                 
-                // Análisis de Palabras Clave tradicionales
-                const patronesAI = [
-                    /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, 
-                    /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, 
-                    /(?:application|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, 
-                    /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi 
-                ];
+                // --- ANÁLISIS LOGIX AVANZADO DE IDEA PRINCIPAL ---
                 palabrasClaveExtraidas = [];
-                patronesAI.forEach(regex => {
-                    let coincidencias = textoMinusculas.match(regex);
-                    if (coincidencias) palabrasClaveExtraidas = palabrasClaveExtraidas.concat(coincidencias);
-                });
-                palabrasClaveExtraidas = [...new Set(palabrasClaveExtraidas)];
+                
+                if (textoOriginal.length > 15) {
+                    // Limpiar saltos de línea y espacios dobles para procesar el texto linealmente
+                    let textoLimpio = textoOriginal.replace(/\s+/g, ' ');
+                    
+                    // Expresión Regular Avanzada para detectar la acción ("el Municipio realizó...") y la omisión ("sin acreditar...")
+                    const regexLogix = /(?:se observa que|detectó que|incumplió en virtud de que)\s+([^,.;]+(?:[^,.;]+){0,10})\s*(?:[^,.;]*?)\s*(,\s*(?:sin|no|omitiendo|careciendo)\s+[^.;]+)/i;
+                    
+                    let match = textoLimpio.match(regexLogix);
+                    
+                    if (match && match[1] && match[2]) {
+                        let accionCentral = match[1].trim();
+                        let omisionCentral = match[2].trim();
+                        
+                        if (omisionCentral.startsWith(',')) {
+                            omisionCentral = omisionCentral.substring(1).trim();
+                        }
+                        
+                        let ideaPrincipal = `${accionCentral}, sin ${omisionCentral.replace(/^sin\s+/i, '')}`;
+                        palabrasClaveExtraidas.push(ideaPrincipal);
+                    } else {
+                        // Lógica alternativa: Buscar directamente fragmentos clave de acción + omisión
+                        const regexAccionDirecta = /(?:el municipio|la entidad|el sujeto)\s+([a-záéíóú]+\s+la\s+compra\s+de\s+[a-záéíóú]+|[a-záéíóú]+\s+enajenó\s+[a-záéíóú]+|realizó\s+[^,.]+)/i;
+                        const regexOmisionDirecta = /(sin\s+acreditar\s+documentalmente\s+[^,.]+|(?:no|sin)\s+contar\s+con\s+[^,.]+)/i;
+                        
+                        let matchAccion = textoLimpio.match(regexAccionDirecta);
+                        let matchOmision = textoLimpio.match(regexOmisionDirecta);
+                        
+                        if (matchAccion && matchOmision) {
+                            palabrasClaveExtraidas.push(`${matchAccion[0].trim()}, ${matchOmision[0].trim()}`);
+                        }
+                    }
+                }
+                
+                // Renderizado en pantalla de la Idea Principal extraída
                 if (palabrasClaveExtraidas.length > 0) {
-                    containerKeywords.innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('');
+                    containerKeywords.innerHTML = palabrasClaveExtraidas.map(p => 
+                        `<div class="keyword-tag" style="display:block; margin: 5px 0; border-radius: 4px; padding: 6px 10px; text-align: left; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">
+                            🔍 <strong>Idea Principal Detectada:</strong> "${p}"
+                         </div>`
+                    ).join('');
                 } else {
-                    containerKeywords.innerHTML = "<span style='color: #999;'>Analizando...</span>";
+                    const palabrasComunes = /(?:incumplimiento|omisión|inexistencia|sin acreditar|compra de|medicamentos|bienes públicos)/gi;
+                    let basicas = textoMinusculas.match(palabrasComunes);
+                    if (basicas) {
+                        basicas = [...new Set(basicas)];
+                        containerKeywords.innerHTML = basicas.map(p => `<span class="keyword-tag">${p}</span>`).join(' ');
+                    } else {
+                        containerKeywords.innerHTML = "<span style='color: #999;'>Esperando texto analizable...</span>";
+                    }
                 }
 
-                // Generación de Nivel 1: Concepto Central (Máx 6 palabras)
+                // Generación de Nivel 1: Concepto Central (Opciones dinámicas de IA)
                 if(textoOriginal.length < 10) {
                     contenedorOpciones.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>`;
                     return;
                 }
 
                 let sugerencias = [];
-                if (textoMinusculas.includes('desafectación') || textoMinusculas.includes('enajenación') || textoMinusculas.includes('particular') || textoMinusculas.includes('inmueble')) {
+                if (textoMinusculas.includes('medicamento') || textoMinusculas.includes('salud') || textoMinusculas.includes('médica')) {
+                    sugerencias = [
+                        "Compra de medicamentos sin acreditar destino.",
+                        "Adquisición de insumos médicos no justificada.",
+                        "Falta de recetas en entrega de fármacos.",
+                        "Medicamentos adquiridos sin evidencia de beneficiarios."
+                    ];
+                } else if (textoMinusculas.includes('desafectación') || textoMinusculas.includes('enajenación') || textoMinusculas.includes('particular') || textoMinusculas.includes('inmueble')) {
                     sugerencias = [
                         "Municipio vendió inmueble público a particular.",
                         "Municipio traspasó terreno municipal cobrando dinero.",
                         "Municipio privatizó onerosamente propiedad mediante venta.",
-                        "Municipio vendió bien público a privado.",
-                        "Municipio enajenó propiedad pública con costo."
+                        "Municipio vendió bien público a privado."
                     ];
                 } else if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('concepto')) {
                     sugerencias = [
                         "Incumplimiento en Ejecución de Obra Pública",
                         "Irregularidad en Estimaciones y Pagos Finiquitos",
-                        "Deficiencia Documental en Expediente Técnico de Obra",
-                        "Falta de Amortización de Anticipos Otorgados"
-                    ];
-                } else if (textoMinusculas.includes('cuenta') || textoMinusculas.includes('pago') || textoMinusculas.includes('recurso') || textoMinusculas.includes('financiero')) {
-                    sugerencias = [
-                        "Desvío de Recursos o Aplicación Incorrecta del Gasto",
-                        "Falta de Soporte Documental de Egresos",
-                        "Duplicidad en Registro de Operaciones Financieras",
-                        "Pagos Improcedentes o Excesivos a Proveedores"
+                        "Deficiencia Documental en Expediente Técnico de Obra"
                     ];
                 } else {
                     sugerencias = [
                         "Inconsistencia en Control Interno de la Entidad",
                         "Incumplimiento Normativo de Disposiciones Legales",
-                        "Omisión de Actas de Entrega-Recepción Oficiales",
-                        "Falta de Resguardo y Custodia de Bienes Públicos"
+                        "Falta de Resguardo y Custodia de Bienes"
                     ];
                 }
                 
