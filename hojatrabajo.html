@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Hoja de Trabajo (Comentarios Nativos)</title>
+    <title>JURIX-DGAJ - Hoja de Trabajo (Vinculación Directa)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -15,8 +15,10 @@
             --gris-claro: #f8f9fa;
             --blanco: #ffffff;
             --azul-info: #0066cc;
+            --azul-hover: #0052a3;
             --azul-borde: #bee3f8;
             --azul-fondo: #ebf8ff;
+            --verde-exito: #2ecc71;
             --sombra: 0 4px 15px rgba(0,0,0,0.06);
             --transicion: all 0.25s ease;
         }
@@ -77,7 +79,6 @@
 
         .btn-upload:hover {
             background-color: #e05500;
-            transform: translateY(-1px);
         }
 
         .file-input-wrapper input[type=file] {
@@ -97,7 +98,6 @@
             gap: 15px;
         }
 
-        /* Visor Izquierdo */
         .document-viewer {
             flex: 6;
             background-color: #bdc3c7;
@@ -121,14 +121,6 @@
             font-size: 1rem;
         }
 
-        /* Resaltados simulados en el documento renderizado */
-        .word-content-render comment-ref {
-            background-color: #fff3cd;
-            border-bottom: 2px dashed #ffc107;
-            cursor: pointer;
-        }
-
-        /* Barra Lateral Derecha */
         .comments-sidebar {
             flex: 4;
             background-color: var(--blanco);
@@ -167,7 +159,6 @@
             gap: 12px;
         }
 
-        /* Tarjetas de comentarios corregidas */
         .comment-card {
             background-color: var(--gris-claro);
             border: 1px solid #e2e8f0;
@@ -177,20 +168,13 @@
             transition: var(--transicion);
         }
 
-        .comment-card:hover {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            background-color: #fff;
-        }
-
         .comment-author-box {
             display: flex;
             align-items: center;
-            gap: 6px;
             font-size: 0.8rem;
             font-weight: bold;
             color: var(--gris-oscuro);
             margin-bottom: 6px;
-            text-transform: uppercase;
         }
 
         .text-selected-box {
@@ -208,11 +192,31 @@
             font-size: 0.92rem;
             color: #1a202c;
             font-weight: 500;
-            line-height: 1.4;
             background: #fff;
             padding: 8px;
             border-radius: 4px;
             border: 1px solid #edf2f7;
+            margin-bottom: 10px;
+        }
+
+        /* Botón de Vinculación */
+        .btn-vincular-comentario {
+            background-color: var(--azul-info);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transicion);
+        }
+
+        .btn-vincular-comentario:hover {
+            background-color: var(--azul-hover);
         }
 
         .no-data-msg {
@@ -228,31 +232,44 @@
     <header>
         <h1>JURIX-DGAJ - Módulo Hoja de Trabajo</h1>
         <div class="upload-zone">
+            <span style="font-size: 0.9rem; font-weight: bold;">Folio Ticket Activo:</span>
+            <input type="text" id="txtFolioManual" placeholder="Ej: F-2026-001" style="padding: 6px; border-radius: 4px; border:1px solid #ccc; width: 120px;">
             <div class="file-input-wrapper">
-                <button class="btn-upload">📁 Seleccionar Documento Word (.docx)</button>
+                <button class="btn-upload">📁 Cargar Cédula Word</button>
                 <input type="file" id="filePicker" accept=".docx" onchange="analizarWordConComentarios(this)">
             </div>
-            <span id="fileNameLabel" style="font-size: 0.85rem; color: #718096; font-weight: 500;">Ningún archivo seleccionado</span>
+            <span id="fileNameLabel" style="font-size: 0.85rem; color: #718096;">Ninguno seleccionado</span>
         </div>
     </header>
 
     <div class="workspace">
         <div id="documentViewer" class="document-viewer">
-            <div class="no-data-msg" id="viewerPlaceholder">Sube la Cédula de Hallazgo de prueba para mapear sus hilos de revisión internos.</div>
+            <div class="no-data-msg">Sube la Cédula de Hallazgo de prueba para mapear sus marcas de revisión.</div>
         </div>
 
         <div class="comments-sidebar">
             <div class="sidebar-header">
-                <span>💬 Comentarios y Notas Técnicas</span>
+                <span>💬 Comentarios Nativos Word</span>
                 <span id="lblContadorComentarios" class="counter-badge">0 Comentarios</span>
             </div>
             <div id="commentsList" class="comments-list">
-                <div class="no-data-msg">Esperando extracción de marcas XML...</div>
+                <div class="no-data-msg">Esperando archivo...</div>
             </div>
         </div>
     </div>
 
     <script>
+        const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4";
+
+        // Intentar rescatar el último folio activo del localStorage de JURIX
+        window.addEventListener('DOMContentLoaded', () => {
+            const folioGuardado = localStorage.getItem('jurix_folio_activo') || localStorage.getItem('folio_user') || "";
+            if(folioGuardado) {
+                document.getElementById('txtFolioManual').value = folioGuardado;
+            }
+        });
+
         async function analizarWordConComentarios(input) {
             const file = input.files[0];
             if (!file) return;
@@ -261,34 +278,25 @@
             const viewer = document.getElementById('documentViewer');
             const commentsContainer = document.getElementById('commentsList');
             
-            viewer.innerHTML = '<div class="no-data-msg">Procesando mapa de marcas estructurales...</div>';
+            viewer.innerHTML = '<div class="no-data-msg">Abriendo marcas XML...</div>';
             commentsContainer.innerHTML = '';
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
-                
-                // 1. Descomprimir el archivo .docx usando JSZip para leer los XML internos de Microsoft Word
                 const zip = await JSZip.loadAsync(arrayBuffer);
-                
-                // Diccionario para guardar comentarios extraídos del XML estructurado
                 let mapaComentarios = {};
 
-                // Examinar si el archivo contiene el paquete nativo de comentarios de Word
+                // 1. Extraer comentarios del Standard XML de Office
                 if (zip.file("word/comments.xml")) {
                     const commentsXmlText = await zip.file("word/comments.xml").async("text");
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(commentsXmlText, "text/xml");
-                    
-                    // Buscar todas las etiquetas estructurales <w:comment>
+                    const xmlDoc = new DOMParser().parseFromString(commentsXmlText, "text/xml");
                     const commentsElements = xmlDoc.getElementsByTagName("w:comment");
                     
                     for (let i = 0; i < commentsElements.length; i++) {
                         let cEl = commentsElements[i];
                         let id = cEl.getAttribute("w:id");
-                        let autor = cEl.getAttribute("w:author") || "Revisor Anónimo";
-                        let fecha = cEl.getAttribute("w:date") || "";
+                        let autor = cEl.getAttribute("w:author") || "Revisor DGAJ";
                         
-                        // Extraer el texto del comentario sumando sus fragmentos (<w:t>)
                         let textNodes = cEl.getElementsByTagName("w:t");
                         let comentarioTexto = "";
                         for (let j = 0; j < textNodes.length; j++) {
@@ -298,29 +306,23 @@
                         mapaComentarios[id] = {
                             id: id,
                             autor: autor,
-                            fecha: fecha.split("T")[0], // Simplificar fecha
                             comentario: comentarioTexto.trim(),
-                            textoSeleccionado: "" // Se llenará al parsear el documento principal
+                            textoSeleccionado: ""
                         };
                     }
                 }
 
-                // 2. Extraer el texto principal y ligar en qué palabras se hicieron las anotaciones
+                // 2. Extraer fragmento de texto original seleccionado
                 if (zip.file("word/document.xml")) {
                     const docXmlText = await zip.file("word/document.xml").async("text");
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(docXmlText, "text/xml");
-                    
-                    // Buscar los rangos donde inicia un comentario en el documento (<w:commentRangeStart>)
+                    const xmlDoc = new DOMParser().parseFromString(docXmlText, "text/xml");
                     const rangesStart = xmlDoc.getElementsByTagName("w:commentRangeStart");
                     
                     for(let i=0; i < rangesStart.length; i++) {
                         let id = rangesStart[i].getAttribute("w:id");
                         if (mapaComentarios[id]) {
-                            // Buscar nodos hermanos para extraer el texto exacto seleccionado en Word
                             let textoResaltado = "";
                             let siguienteNodo = rangesStart[i].nextSibling;
-                            
                             while(siguienteNodo && siguienteNodo.nodeName !== "w:commentRangeEnd") {
                                 if(siguienteNodo.getElementsByTagName) {
                                     let ts = siguienteNodo.getElementsByTagName("w:t");
@@ -330,12 +332,12 @@
                                 }
                                 siguienteNodo = siguienteNodo.nextSibling;
                             }
-                            mapaComentarios[id].textoSeleccionado = textoResaltado.trim() || "[Texto/Objeto Seleccionado]";
+                            mapaComentarios[id].textoSeleccionado = textoResaltado.trim();
                         }
                     }
                 }
 
-                // 3. Renderizar el cuerpo del documento en el panel izquierdo usando Mammoth
+                // 3. Renderizar texto plano amigable a HTML
                 const renderResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
                 viewer.innerHTML = '';
                 const divRender = document.createElement('div');
@@ -343,33 +345,12 @@
                 divRender.innerHTML = renderResult.value;
                 viewer.appendChild(divRender);
 
-                // Convertir el mapa a un arreglo plano y limpiar vacíos
                 let listaComentariosFinal = Object.values(mapaComentarios).filter(c => c.comentario.length > 0);
-
-                // Si por alguna razón la estructura XML falló, aplicamos extracción predictiva secundaria
-                if(listaComentariosFinal.length === 0) {
-                    const rawTextResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-                    let lineas = rawTextResult.value.split("\n");
-                    lineas.forEach((l, idx) => {
-                        if(l.includes("✍️") || l.toLowerCase().includes("comentario") || l.trim().startsWith("[")) {
-                            listaComentariosFinal.push({
-                                id: idx,
-                                autor: "Auditor Revisor",
-                                fecha: "Reciente",
-                                textoSeleccionado: "Fragmento de Párrafo de Cédula",
-                                comentario: l
-                            });
-                        }
-                    });
-                }
-
-                // 4. Inyectar las tarjetas con los datos requeridos (Quién lo hizo, En qué parte y Qué dice)
                 inyectarComentariosSidebar(listaComentariosFinal);
 
             } catch (error) {
                 console.error(error);
-                alert("Error crítico al procesar los hilos de comentarios del archivo .docx");
-                viewer.innerHTML = '<div class="no-data-msg">Error al cargar el documento.</div>';
+                viewer.innerHTML = '<div class="no-data-msg">Error de lectura estructural.</div>';
             }
         }
 
@@ -379,26 +360,86 @@
             document.getElementById('lblContadorComentarios').innerText = `${lista.length} Comentarios`;
 
             if (lista.length === 0) {
-                container.innerHTML = `<div class="no-data-msg">No se encontraron comentarios incrustados por revisores en las marcas de este Word.</div>`;
+                container.innerHTML = `<div class="no-data-msg">No se detectaron hilos de revisión.</div>`;
                 return;
             }
 
-            lista.forEach(c => {
+            lista.forEach((c, index) => {
                 const card = document.createElement('div');
                 card.className = 'comment-card';
+                
+                // Sanitizar comillas para pasar de forma segura como argumentos en JavaScript
+                const comentarioEscapado = c.comentario.replace(/'/g, "\\'").replace(/"/g, '\\"');
+                const textoEscapado = (c.textoSeleccionado || "Texto de Referencia").replace(/'/g, "\\'").replace(/"/g, '\\"');
+
                 card.innerHTML = `
                     <div class="comment-author-box">
-                        👤 <strong>Revisor:</strong> ${c.autor} <span style="color:#718096; font-weight:normal; margin-left:auto;">📅 ${c.fecha}</span>
+                        👤 <strong>Autor:</strong> ${c.autor}
                     </div>
                     <div class="text-selected-box">
-                        🎯 <strong>Parte del Documento:</strong> "${c.textoSeleccionado || 'Texto bajo revisión'}"
+                        🎯 <strong>Texto Original:</strong> "${c.textoSeleccionado || 'N/A'}"
                     </div>
                     <div class="comment-text-box">
                         💬 ${c.comentario}
                     </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-vincular-comentario" onclick="ejecutarVinculacionSupabase('${comentarioEscapado}', '${textoEscapado}', 'sustancia')">
+                            🔗 Vincular a Sustancia
+                        </button>
+                        <button class="btn-vincular-comentario" style="background:#27ae60;" onclick="ejecutarVinculacionSupabase('${comentarioEscapado}', '${textoEscapado}', 'concepto')">
+                            🧠 Vincular a Concepto
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
+        }
+
+        // =========================================================================
+        // ACCIÓN DE VINCULACIÓN EN CALIENTE CON LA BASE DE DATOS SUPABASE
+        // =========================================================================
+        async function ejecutarVinculacionSupabase(comentarioText, textoOriginal, destino) {
+            const folioTicket = document.getElementById('txtFolioManual').value.trim();
+            
+            if(!folioTicket) {
+                alert("⚠️ Por favor introduce o valida el Folio del Ticket en la parte superior para poder guardarlo en Supabase.");
+                return;
+            }
+
+            // Mapear columnas reales del esquema relacional de JURIX-DGAJ
+            let payload = {};
+            if(destino === 'sustancia') {
+                payload.sustancia_hallazgo = comentarioText;
+            } else {
+                payload.sintesis_condicion = comentarioText;
+            }
+
+            // También podemos adjuntar el texto original en las palabras clave si está libre
+            payload.palabras_clave_ia = `Texto analizado: ${textoOriginal}`;
+
+            try {
+                const urlFiltro = `${URL_HALLAZGOS}?folio_user=eq.${encodeURIComponent(folioTicket)}`;
+                
+                const response = await fetch(urlFiltro, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if(response.ok) {
+                    alert(`✅ ¡Éxito! El comentario fue vinculado correctamente al folio: ${folioTicket} en el campo [${destino === 'sustancia' ? 'Sustancia del Hallazgo' : 'Concepto Central'}].`);
+                } else {
+                    alert("❌ Error de coincidencia: El folio ingresado no existe en Supabase o los campos tienen restricciones.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("❌ Error crítico de conexión de red.");
+            }
         }
     </script>
 </body>
