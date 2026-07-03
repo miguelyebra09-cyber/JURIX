@@ -12,6 +12,7 @@
             --blanco: #ffffff;
            --azul-info: #0066cc;
            --verde-exito: #2ecc71;
+           --input-bloqueado: #eaeded;
         }
  
         body {
@@ -145,39 +146,81 @@
             margin: 2px;
            font-weight: bold;
         }
-        /* --- CONTENEDOR DE OPCIONES DE SÍNTESIS --- */
-        .ai-synthesis-box {
+
+        /* --- CONTENEDORES DE SUGERENCIAS DE IA (ESTILOS ORIGINALES) --- */
+        .ia-box-sugerencias {
+            border: 1px solid #bce8f1;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #eef7ff;
+            color: #31708f;
+            font-size: 0.9rem;
             margin-top: 10px;
-            background-color: #f0f7ff;
-            border: 1px solid #bae6fd;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 0.88rem;
         }
-        .synthesis-options-container {
-            margin-top: 8px;
+        .ia-box-sustancia {
+            border: 1px solid #d6e9c6;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f2f9ed;
+            color: #3c763d;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .ia-opciones-contenedor {
+            margin-top: 10px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
-        .synthesis-btn-option {
+        .ia-badge-opcion {
             background-color: var(--blanco);
-            border: 1px solid #7dd3fc;
+            border: 1px dashed var(--azul-info);
             padding: 8px 12px;
             border-radius: 4px;
-            text-align: left;
             cursor: pointer;
-            font-size: 0.9rem;
-            color: #0369a1;
+            font-weight: 500;
+            color: var(--gris-oscuro);
             transition: all 0.2s ease;
-            width: 100%;
-            font-family: inherit;
+            text-align: left;
         }
-        .synthesis-btn-option:hover {
-            background-color: #e0f2fe;
-            border-color: #0284c7;
-            color: #0369a1;
+        .ia-badge-opcion:hover {
+            background-color: #d9edf7;
             transform: translateX(3px);
+            border-style: solid;
+        }
+        .ia-badge-sustancia {
+            background-color: var(--blanco);
+            border: 1px dashed #3c763d;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris-oscuro);
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .ia-badge-sustancia:hover {
+            background-color: #dff0d8;
+            transform: translateX(3px);
+            border-style: solid;
+        }
+        .ia-btn-personalizado {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            color: #495057;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s;
+            margin-top: 5px;
+        }
+        .ia-btn-personalizado:hover {
+            background-color: #e2e6ea;
+            color: #212529;
+            border-color: #adb5bd;
         }
  
         /* --- FILA VIRTUAL AVANZADA Y DINÁMICA --- */
@@ -428,258 +471,35 @@
                </div>
  
             <div class="form-group">
-    <label for="rubro_combobox">🗂️ Rubro Específico:</label>
-    <select id="rubro_combobox" required>
-        <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
-        
-        <optgroup label="1 ACTIVO">
-            <option value="1.1">1.1 ACTIVO CIRCULANTE</option>
-            <option value="1.1.1">&nbsp;&nbsp;1.1.1 Efectivo y Equivalentes</option>
-            <option value="1.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.1 Efectivo</option>
-            <option value="1.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.2 Bancos/Tesorería</option>
-            <option value="1.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.3 Bancos/Dependencias y Otros</option>
-            <option value="1.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.4 Inversiones Temporales (Hasta 3 meses)</option>
-            <option value="1.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.5 Fondos con Afectación Específica</option>
-            <option value="1.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.6 Depósitos de Fondos de Terceros en Garantía y/o Administración</option>
-            <option value="1.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.9 Otros Efectivos y Equivalentes</option>
-            
-            <option value="1.1.2">&nbsp;&nbsp;1.1.2 Derechos a Recibir Efectivo o Equivalentes</option>
-            <option value="1.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.1 Inversiones Financieras de Corto Plazo</option>
-            <option value="1.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.2 Cuentas por Cobrar a Corto Plazo</option>
-            <option value="1.1.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.3 Deudores Diversos por Cobrar a Corto Plazo</option>
-            <option value="1.1.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.4 Ingresos por Recuperar a Corto Plazo</option>
-            <option value="1.1.2.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.5 Deudores por Anticipos de la Tesorería a Corto Plazo</option>
-            <option value="1.1.2.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.6 Préstamos Otorgados a Corto Plazo</option>
-            <option value="1.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Corto Plazo</option>
-            
-            <option value="1.1.3">&nbsp;&nbsp;1.1.3 Derechos a Recibir Bienes o Servicios</option>
-            <option value="1.1.3.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.1 Anticipo a Proveedores por Adquisición de Bienes y Prestación de Servicios a Corto Plazo</option>
-            <option value="1.1.3.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.2 Anticipo a Proveedores por Adquisición de Bienes Inmuebles y Muebles a Corto Plazo</option>
-            <option value="1.1.3.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.3 Anticipo a Proveedores por Adquisición de Bienes Intangibles a Corto Plazo</option>
-            <option value="1.1.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.4 Anticipo a Contratistas por Obras Públicas a Corto Plazo</option>
-            <option value="1.1.3.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.9 Otros Derechos a Recibir Bienes o Servicios a Corto Plazo</option>
-            
-            <option value="1.1.4">&nbsp;&nbsp;1.1.4 Inventarios</option>
-            <option value="1.1.4.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.1 Inventario de Mercancías para Venta</option>
-            <option value="1.1.4.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.2 Inventario de Mercancías para Transformación</option>
-            <option value="1.1.4.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.3 Inventario de Materias Primas, Materiales y Suministros para Production</option>
-            <option value="1.1.4.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.4 Inventario de Materias Primas, Materiales y Suministros de Consumo</option>
-            <option value="1.1.4.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.5 Inventario de Bienes en Tránsito</option>
-            
-            <option value="1.1.5">&nbsp;&nbsp;1.1.5 Almacenes</option>
-            <option value="1.1.5.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.5.1 Almacén de Materiales y Suministros de Consumo</option>
-            
-            <option value="1.1.6">&nbsp;&nbsp;1.1.6 Estimación por Pérdida o Deterioro de Activos Circulantes</option>
-            <option value="1.1.6.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.1 Estimaciones para Cuentas Incobrables por Derechos a Recibir Efectivo o Equivalentes</option>
-            <option value="1.1.6.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.2 Estimación por Deterioro de Inventarios</option>
-            
-            <option value="1.1.9">&nbsp;&nbsp;1.1.9 Otros Activos Circulantes</option>
-            <option value="1.1.9.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.1 Valores en Garantía</option>
-            <option value="1.1.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.2 Bienes Enajenados de Corto Plazo</option>
-            <option value="1.1.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.3 Bienes en Custodia (Bienes decomisados, retenidos y en depósito)</option>
-            <option value="1.1.9.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.9 Otros Activos Derivados de Operaciones Financieras</option>
-            
-            <option value="1.2">1.2 ACTIVO NO CIRCULANTE</option>
-            <option value="1.2.1">&nbsp;&nbsp;1.2.1 Inversiones Financieras a Largo Plazo</option>
-            <option value="1.2.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.1 Inversiones a Largo Plazo</option>
-            <option value="1.2.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.2 Títulos y Valores a Largo Plazo</option>
-            <option value="1.2.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.3 Fideicomisos, Mandatos y Contratos Análogos</option>
-            <option value="1.2.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.4 Participaciones y Aportaciones de Capital</option>
-            
-            <option value="1.2.2">&nbsp;&nbsp;1.2.2 Derechos a Recibir Efectivo o Equivalentes a Largo Plazo</option>
-            <option value="1.2.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.1 Documentos por Cobrar a Largo Plazo</option>
-            <option value="1.2.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.2 Deudores Diversos a Largo Plazo</option>
-            <option value="1.2.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.3 Ingresos por Recuperar a Largo Plazo</option>
-            <option value="1.2.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.4 Préstamos Otorgados a Largo Plazo</option>
-            <option value="1.2.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Largo Plazo</option>
-            
-            <option value="1.2.3">&nbsp;&nbsp;1.2.3 Bienes Inmuebles, Infraestructura y Construcciones en Proceso</option>
-            <option value="1.2.3.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.1 Terrenos</option>
-            <option value="1.2.3.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.2 Viviendas</option>
-            <option value="1.2.3.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.3 Edificios No Habitacionales</option>
-            <option value="1.2.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.4 Infraestructura</option>
-            <option value="1.2.3.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.5 Construcciones en Proceso en Bienes de Dominio Público</option>
-            <option value="1.2.3.6">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.6 Construcciones en Proceso en Bienes Propios</option>
-            <option value="1.2.3.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.9 Otros Bienes Inmuebles</option>
-            
-            <option value="1.2.4">&nbsp;&nbsp;1.2.4 Bienes Muebles</option>
-            <option value="1.2.4.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.1 Mobiliario y Equipo de Administración</option>
-            <option value="1.2.4.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.2 Mobiliario y Equipo Educacional y Recreativo</option>
-            <option value="1.2.4.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.3 Equipo e Instrumental Médico y de Laboratorio</option>
-            <option value="1.2.4.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.4 Vehículos y Equipo de Transporte</option>
-            <option value="1.2.4.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.5 Equipo de Defensa y Seguridad</option>
-            <option value="1.2.4.6">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.6 Maquinaria, Otros Equipos y Herramientas</option>
-            <option value="1.2.4.7">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.7 Colecciones, Obras de Arte y Objetos Valiosos</option>
-            <option value="1.2.4.8">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.8 Activos Biológicos</option>
-            
-            <option value="1.2.5">&nbsp;&nbsp;1.2.5 Activos Intangibles</option>
-            <option value="1.2.5.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.1 Software</option>
-            <option value="1.2.5.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.2 Patentes, Marcas y Derechos</option>
-            <option value="1.2.5.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.3 Concesiones y Franquicias</option>
-            <option value="1.2.5.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.4 Licencias</option>
-            <option value="1.2.5.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.9 Otros Activos Intangibles</option>
-            
-            <option value="1.2.6">&nbsp;&nbsp;1.2.6 Depreciación, Deterioro y Amortización Acumulada de Bienes</option>
-            <option value="1.2.6.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.1 Depreciación Acumulada de Bienes Inmuebles</option>
-            <option value="1.2.6.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.2 Depreciación Acumulada de Infraestructura</option>
-            <option value="1.2.6.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.3 Depreciación Acumulada de Bienes Muebles</option>
-            <option value="1.2.6.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.4 Deterioro Acumulado de Activos Biológicos</option>
-            <option value="1.2.6.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.5 Amortización Acumulada de Activos Intangibles</option>
-            
-            <option value="1.2.7">&nbsp;&nbsp;1.2.7 Activos Diferidos</option>
-            <option value="1.2.7.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.1 Estudios, Formulación y Evaluación de Proyectos</option>
-            <option value="1.2.7.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.2 Derechos sobre Bienes en Régimen de Arrendamiento Financiero</option>
-            <option value="1.2.7.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.3 Gastos Pagados por Adelantado a Largo Plazo</option>
-            <option value="1.2.7.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.4 Anticipos a Largo Plazo</option>
-            <option value="1.2.7.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.5 Beneficios al Retiro de Empleados Pagados por Adelantado</option>
-            <option value="1.2.7.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.9 Otros Activos Diferidos</option>
-            
-            <option value="1.2.8">&nbsp;&nbsp;1.2.8 Estimación por Pérdida o Deterioro de Activos no Circulantes</option>
-            <option value="1.2.8.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.8.1 Estimaciones por Pérdida de Cuentas Incobrables a Largo Plazo</option>
-            <option value="1.2.8.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.8.2 Estimación por Deterioro de Inversiones Financieras a Largo Plazo</option>
-            <option value="1.2.8.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.8.3 Estimación por Deterioro de Bienes</option>
-            
-            <option value="1.2.9">&nbsp;&nbsp;1.2.9 Otros Activos No Circulantes</option>
-            <option value="1.2.9.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.1 Bienes en Concesión</option>
-            <option value="1.2.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.2 Bienes en Arrendamiento Financiero</option>
-            <option value="1.2.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.3 Bienes en Custodia</option>
-        </optgroup>
-        <optgroup label="2 PASIVO">
-            <option value="2.1">2.1 PASIVO CIRCULANTE</option>
-            <option value="2.1.1">&nbsp;&nbsp;2.1.1 Cuentas por Pagar a Corto Plazo</option>
-            <option value="2.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.1 Servicios Personales por Pagar a Corto Plazo</option>
-            <option value="2.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.2 Proveedores por Pagar a Corto Plazo</option>
-            <option value="2.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.3 Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
-            <option value="2.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.4 Participaciones y Aportaciones por Pagar a Corto Plazo</option>
-            <option value="2.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.5 Transferencias Otorgadas por Pagar a Corto Plazo</option>
-            <option value="2.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.6 Intereses, Comisiones y Otros Gastos de la Deuda Pública por Pagar a Corto Plazo</option>
-            <option value="2.1.1.7">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.7 Retenciones y Contribuciones por Pagar a Corto Plazo</option>
-            <option value="2.1.1.8">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.8 Devoluciones de Ley de Ingresos por Pagar a Corto Plazo</option>
-            <option value="2.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.9 Otras Cuentas por Pagar a Corto Plazo</option>
-            
-            <option value="2.1.2">&nbsp;&nbsp;2.1.2 Documentos por Pagar a Corto Plazo</option>
-            <option value="2.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.2.1 Documentos Comerciales por Pagar a Corto Plazo</option>
-            <option value="2.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.2.2 Documentos con Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
-            <option value="2.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.2.9 Otros Documentos por Pagar a Corto Plazo</option>
-            
-            <option value="2.1.3">&nbsp;&nbsp;2.1.3 Porción a Corto Plazo de la Deuda Pública a Largo Plazo</option>
-            <option value="2.1.3.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.3.1 Porción a Corto Plazo de la Deuda Pública Interna</option>
-            <option value="2.1.3.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.3.2 Porción a Corto Plazo de la Deuda Pública Externa</option>
-            <option value="2.1.3.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.3.3 Porción a Corto Plazo de Arrendamiento Financiero</option>
-            
-            <option value="2.1.4">&nbsp;&nbsp;2.1.4 Títulos y Valores a Corto Plazo</option>
-            <option value="2.1.4.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.4.1 Títulos y Valores de la Deuda Pública Interna a Corto Plazo</option>
-            <option value="2.1.4.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.4.2 Títulos y Valores de la Deuda Pública Externa a Corto Plazo</option>
-            
-            <option value="2.1.5">&nbsp;&nbsp;2.1.5 Pasivos Diferidos a Corto Plazo</option>
-            <option value="2.1.5.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.5.1 Ingresos Cobrados por Adelantado a Corto Plazo</option>
-            <option value="2.1.5.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.5.2 Intereses Cobrados por Adelantado a Corto Plazo</option>
-            <option value="2.1.5.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.5.9 Otros Pasivos Diferidos a Corto Plazo</option>
-            
-            <option value="2.1.6">&nbsp;&nbsp;2.1.6 Fondos y Bienes de Terceros en Garantía y/o Administración a Corto Plazo</option>
-            <option value="2.1.6.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.1 Fondos en Garantía a Corto Plazo</option>
-            <option value="2.1.6.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.2 Fondos en Administración a Corto Plazo</option>
-            <option value="2.1.6.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.3 Fondos Contingentes a Corto Plazo</option>
-            <option value="2.1.6.4">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.4 Fondos de Fideicomisos, Mandatos y Contratos Análogos a Corto Plazo</option>
-            <option value="2.1.6.5">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.5 Otros Fondos de Terceros en Garantía y/o Administración a Corto Plazo</option>
-            <option value="2.1.6.6">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.6 Bienes en Garantía a Corto Plazo</option>
-            
-            <option value="2.1.7">&nbsp;&nbsp;2.1.7 Provisiones a Corto Plazo</option>
-            <option value="2.1.7.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.7.1 Provisión para Demandas y Juicios a Corto Plazo</option>
-            <option value="2.1.7.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.7.2 Provisión para Contingencias a Corto Plazo</option>
-            <option value="2.1.7.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.7.9 Otras Provisiones a Corto Plazo</option>
-            
-            <option value="2.1.9">&nbsp;&nbsp;2.1.9 Otros Pasivos Corto Plazo</option>
-            <option value="2.1.9.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.9.1 Ingresos por Clasificar</option>
-            <option value="2.1.9.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.9.2 Recaudación por Participar</option>
-            <option value="2.1.9.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.9.9 Otros Pasivos Circulantes</option>
-            
-            <option value="2.2">2.2 PASIVO NO CIRCULANTE</option>
-            <option value="2.2.1">&nbsp;&nbsp;2.2.1 Cuentas por Pagar a Largo Plazo</option>
-            <option value="2.2.1.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.1.1 Proveedores por Pagar a Largo Plazo</option>
-            <option value="2.2.1.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.1.2 Contratistas por Obras Públicas por Pagar a Largo Plazo</option>
-            <option value="2.2.1.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.1.9 Otras Cuentas por Pagar a Largo Plazo</option>
-            
-            <option value="2.2.2">&nbsp;&nbsp;2.2.2 Documentos por Pagar a Largo Plazo</option>
-            <option value="2.2.2.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.2.1 Documentos Comerciales por Pagar a Largo Plazo</option>
-            <option value="2.2.2.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.2.2 Documentos con Contratistas por Obras Públicas por Pagar a Largo Plazo</option>
-            <option value="2.2.2.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.2.9 Otros Documentos por Pagar a Largo Plazo</option>
-            
-            <option value="2.2.3">&nbsp;&nbsp;2.2.3 Deuda Pública a Largo Plazo</option>
-            <option value="2.2.3.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.1 Títulos y Valores de la Deuda Pública Interna a Largo Plazo</option>
-            <option value="2.2.3.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.2 Títulos y Valores de la Deuda Pública Externa a Largo Plazo</option>
-            <option value="2.2.3.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.3 Préstamos de la Deuda Pública Interna por Pagar a Largo Plazo</option>
-            <option value="2.2.3.4">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.4 Préstamos de la Deuda Pública Externa por Pagar a Largo Plazo</option>
-            
-            <option value="2.2.4">&nbsp;&nbsp;2.2.4 Pasivos Diferidos a Largo Plazo</option>
-            <option value="2.2.4.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.4.1 Ingresos Cobrados por Adelantado a Largo Plazo</option>
-            <option value="2.2.4.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.4.2 Intereses Cobrados por Adelantado a Largo Plazo</option>
-            <option value="2.2.4.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.4.9 Otros Pasivos Diferidos a Largo Plazo</option>
-            
-            <option value="2.2.5">&nbsp;&nbsp;2.2.5 Fondos y Bienes de Terceros en Garantía y/o Administración a Largo Plazo</option>
-            <option value="2.2.5.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.1 Fondos en Garantía a Largo Plazo</option>
-            <option value="2.2.5.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.2 Fondos en Administración a Largo Plazo</option>
-            <option value="2.2.5.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.3 Fondos Contingentes a Largo Plazo</option>
-            <option value="2.2.5.4">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.4 Fondos de Fideicomisos, Mandatos y Contratos Análogos a Largo Plazo</option>
-            <option value="2.2.5.5">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.5 Otros Fondos de Terceros en Garantía y/o Administración a Largo Plazo</option>
-            <option value="2.2.5.6">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.6 Bienes en Garantía a Largo Plazo</option>
-            
-            <option value="2.2.6">&nbsp;&nbsp;2.2.6 Provisiones a Largo Plazo</option>
-            <option value="2.2.6.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.1 Provisión para Demandas y Juicios a Largo Plazo</option>
-            <option value="2.2.6.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.2 Provisión para Pensiones a Largo Plazo</option>
-            <option value="2.2.6.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.3 Provisión para Contingencias a Largo Plazo</option>
-            <option value="2.2.6.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.9 Otras Provisiones a Largo Plazo</option>
-        </optgroup>
-        <optgroup label="3 HACIENDA PÚBLICA/PATRIMONIO">
-            <option value="3.1">3.1 HACIENDA PÚBLICA/PATRIMONIO CONTRIBUIDO</option>
-            <option value="3.1.1">&nbsp;&nbsp;3.1.1 Aportaciones</option>
-            <option value="3.1.2">&nbsp;&nbsp;3.1.2 Donaciones de Capital</option>
-            <option value="3.1.3">&nbsp;&nbsp;3.1.3 Actualización de la Hacienda Pública/Patrimonio</option>
-            
-            <option value="3.2">3.2 HACIENDA PÚBLICA/PATRIMONIO GENERADO</option>
-            <option value="3.2.1">&nbsp;&nbsp;3.2.1 Resultados del Ejercicio (Ahorro/Desahorro)</option>
-            <option value="3.2.2">&nbsp;&nbsp;3.2.2 Resultados de Ejercicios Anteriores</option>
-            <option value="3.2.3">&nbsp;&nbsp;3.2.3 Revalúos</option>
-            <option value="3.2.4">&nbsp;&nbsp;3.2.4 Reservas</option>
-            <option value="3.2.5">&nbsp;&nbsp;3.2.5 Rectificaciones de Resultados de Ejercicios Anteriores</option>
-            
-            <option value="3.3">3.3 EXCESO O INSUFICIENCIA EN LA ACTUALIZACIÓN DE LA HACIENDA PÚBLICA/PATRIMONIO</option>
-            <option value="3.3.1">&nbsp;&nbsp;3.3.1 Resultado por Posición Monetaria</option>
-            <option value="3.3.2">&nbsp;&nbsp;3.3.2 Resultado por Tenencia de Activos No Monetarios</option>
-        </optgroup>
-        <optgroup label="4 INGRESOS Y OTROS BENEFICIOS">
-            <option value="4.1">4.1 INGRESOS DE GESTIÓN</option>
-            <option value="4.1.1">&nbsp;&nbsp;4.1.1 Impuestos</option>
-            <option value="4.1.2">&nbsp;&nbsp;4.1.2 Cuotas y Aportaciones de Seguridad Social</option>
-            <option value="4.1.3">&nbsp;&nbsp;4.1.3 Contribuciones de Mejoras</option>
-            <option value="4.1.4">&nbsp;&nbsp;4.1.4 Derechos</option>
-            <option value="4.1.5">&nbsp;&nbsp;4.1.5 Productos</option>
-            <option value="4.1.6">&nbsp;&nbsp;4.1.6 Aprovechamientos</option>
-            <option value="4.1.7">&nbsp;&nbsp;4.1.7 Ingresos por Venta de Bienes y Prestación de Servicios</option>
-            
-            <option value="4.2">4.2 PARTICIPACIONES, APORTACIONES, CONVENIOS, INCENTIVOS DERIVADOS DE LA COLABORACIÓN FISCAL Y FONDOS DISTINTOS DE APORTACIONES</option>
-            <option value="4.2.1">&nbsp;&nbsp;4.2.1 Participaciones, Aportaciones, Convenios, Incentivos Derivados de la Colaboración Fiscal y Fondos Distintos de Aportaciones</option>
-            <option value="4.2.2">&nbsp;&nbsp;4.2.2 Transferencias, Asignaciones, Subsidios y Subvenciones, y Pensiones y Jubilaciones</option>
-            
-            <option value="4.3">4.3 OTROS INGRESOS Y BENEFICIOS</option>
-            <option value="4.3.1">&nbsp;&nbsp;4.3.1 Ingresos Financieros</option>
-            <option value="4.3.2">&nbsp;&nbsp;4.3.2 Incremento por Variación de Inventarios</option>
-            <option value="4.3.3">&nbsp;&nbsp;4.3.3 Disminución del Exceso de Estimaciones por Pérdida o Deterioro u Obsolescencia</option>
-            <option value="4.3.4">&nbsp;&nbsp;4.3.4 Disminución del Exceso de Provisiones</option>
-            <option value="4.3.9">&nbsp;&nbsp;4.3.9 Otros Ingresos y Beneficios Varios</option>
-        </optgroup>
-        <optgroup label="5 GASTOS Y OTRAS PÉRDIDAS">
-            <option value="5.1">5.1 GASTOS DE FUNCIONAMIENTO</option>
-            <option value="5.1.1">&nbsp;&nbsp;5.1.1 Servicios Personales</option>
-            <option value="5.1.2">&nbsp;&nbsp;5.1.2 Materiales y Suministros</option>
-            <option value="5.1.3">&nbsp;&nbsp;5.1.3 Servicios Generales</option>
-            
-            <option value="5.2">5.2 TRANSFERENCIAS, ASIGNACIONES, SUBSIDIOS Y OTRAS AYUDAS</option>
-            <option value="5.2.1">&nbsp;&nbsp;5.2.1 Transferencias Internas y Asignaciones al Sector Público</option>
-            <option value="5.2.2">&nbsp;&nbsp;5.2.2 Transferencias al Resto del Sector Público</option>
-        </optgroup>
-    </select>
-</div>
+                <label for="rubro_combobox">🗂️ Rubro Específico:</label>
+                <select id="rubro_combobox" required>
+                    <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
+                    <optgroup label="1 ACTIVO">
+                        <option value="1.1">1.1 ACTIVO CIRCULANTE</option>
+                        <option value="1.1.1">&nbsp;&nbsp;1.1.1 Efectivo y Equivalentes</option>
+                        <option value="1.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.1 Efectivo</option>
+                        <option value="1.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.2 Bancos/Tesorería</option>
+                        <option value="1.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.3 Bancos/Dependencias y Otros</option>
+                        <option value="1.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.4 Inversiones Temporales (Hasta 3 meses)</option>
+                        <option value="1.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.5 Fondos con Afectación Específica</option>
+                        <option value="1.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.6 Depósitos de Fondos de Terceros en Garantía y/o Administration</option>
+                        <option value="1.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.9 Otros Efectivos y Equivalentes</option>
+                        <option value="1.1.2">&nbsp;&nbsp;1.1.2 Derechos a Recibir Efectivo o Equivalentes</option>
+                        <option value="1.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.1 Inversiones Financieras de Corto Plazo</option>
+                        <option value="1.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.2 Cuentas por Cobrar a Corto Plazo</option>
+                        <option value="1.1.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.3 Deudores Diversos por Cobrar a Corto Plazo</option>
+                        <option value="1.1.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.4 Ingresos por Recuperar a Corto Plazo</option>
+                        <option value="1.1.2.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.5 Deudores por Anticipos de la Tesorería a Corto Plazo</option>
+                        <option value="1.1.2.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.6 Préstamos Otorgados a Corto Plazo</option>
+                        <option value="1.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Corto Plazo</option>
+                    </optgroup>
+                    <optgroup label="2 PASIVO">
+                        <option value="2.1">2.1 PASIVO CIRCULANTE</option>
+                        <option value="2.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.2 Proveedores por Pagar a Corto Plazo</option>
+                        <option value="2.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.3 Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
+                    </optgroup>
+                </select>
+            </div>
  
                <div class="form-group">
                    <label for="importe">💲 Importe ($):</label>
@@ -691,33 +511,43 @@
                    <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
                </div>
  
+               <!-- BLOQUE REESTRUCTURADO DE ACUERDO A TU DISEÑO ORIGINAL DE SOLICITUDES -->
                <div class="form-group full-width">
-                   <label for="condicion_hallazgo">⚖️ Asunto/Condición:</label>
-                   <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
+                   <label for="condicion_hallazgo">⚖️ Asunto / Condición:</label>
+                   <textarea id="condicion_hallazgo" rows="4" placeholder="Describa brevemente el objetivo o motivo de esta solicitud..." required></textarea>
                    
                    <div class="ai-keywords-box">
                        <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
                        <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
                    </div>
-                   <!-- NUEVO MODULO DE SÍNTESIS DE IA -->
-                   <div class="ai-synthesis-box">
-                       <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
-                       <div id="synthesisOptions" class="synthesis-options-container">
-                           <span style="color: #666; font-style: italic;">Esperando texto en la condición para generar síntesis breves...</span>
-                       </div>
-                   </div>
-               </div>
-               
-               <!-- CAMPO TRASLADADO: SUSTANCIA DEL HALLAZGO -->
-               <div class="form-group full-width">
-                   <label for="sustancia_hallazgo">📌 Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
-                   <input type="text" id="sustancia_hallazgo" placeholder="Ej: Falta de aplicación de penas" required>
                </div>
 
-               <!-- CAMPO DONDE SE CAPTURA LA SÍNTESIS FINAL SELECCIONADA -->
                <div class="form-group full-width">
-                   <label for="sintesis_condicion">📝 Concepto General:</label>
-                   <input type="text" id="sintesis_condicion" placeholder="Selecciona una opción de arriba o escribe una síntesis breve..." required>
+                    <div class="ia-box-sugerencias">
+                        <strong> 🤖  Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
+                        <div id="ia_opciones_flotantes" class="ia-opciones-contenedor">
+                            <span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="sintesis_condicion">📝 Concepto Central:</label>
+                    <textarea id="sintesis_condicion" rows="3" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <div class="ia-box-sustancia">
+                        <strong> 🧬  Sustancia del Concepto (Análisis de IA - Haz clic para elegir):</strong>
+                        <div id="ia_sustancia_flotantes" class="ia-opciones-contenedor">
+                            <span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>
+                        </div>
+                    </div>
+                </div>
+               
+               <div class="form-group full-width">
+                   <label for="sustancia_hallazgo">📌 Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
+                   <input type="text" id="sustancia_hallazgo" placeholder="Selecciona una opción resumida de arriba..." required>
                </div>
  
                <div class="form-group full-width">
@@ -764,8 +594,15 @@
         let folioTicketActivo = "";
         let palabrasClaveExtraidas = [];
  
+        function recortarPorPalabras(texto, maxPalabras) {
+            let palabras = texto.trim().split(/\s+/).filter(p => p.length > 0);
+            if (palabras.length > maxPalabras) {
+                return palabras.slice(0, maxPalabras).join(" ");
+            }
+            return texto;
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            // Asignar fecha del sistema automáticamente
             const txtFecha = document.getElementById('fecha_recepcion');
             const hoy = new Date();
             const yyyy = hoy.getFullYear();
@@ -773,7 +610,6 @@
             const dd = String(hoy.getDate()).padStart(2, '0');
             txtFecha.value = `${yyyy}-${mm}-${dd}`;
  
-            // Recuperación de Folio
             const urlParams = new URLSearchParams(window.location.search);
             folioTicketActivo = urlParams.get('folio');
  
@@ -794,7 +630,6 @@
                 if (subtitleFolio) subtitleFolio.innerText = "⚠️ Advertencia: Sin Folio de Ticket Activo";
             }
  
-            // Cambios de Tipo de Auditoría y Rubro Automático
             const cmbAuditoria = document.getElementById('tipo_auditoria');
             const cmbRubro = document.getElementById('rubro_hallazgo');
             const queueCard = document.getElementById('queueCardElement');
@@ -830,7 +665,6 @@
                 });
             }
  
-            // Formatear el concepto numérico a 3 dígitos obligatorios ("000")
             const txtConcepto = document.getElementById('num_concepto');
             txtConcepto.addEventListener('blur', () => {
                 let valor = txtConcepto.value.trim();
@@ -839,7 +673,6 @@
                 }
             });
  
-            // Máscara y formato de Pesos en tiempo real para el Importe
             const txtImporte = document.getElementById('importe');
             txtImporte.addEventListener('input', (e) => {
                 let valor = e.target.value.replace(/\D/g, "");
@@ -848,93 +681,178 @@
                 e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(numero);
             });
  
-            // Extractor IA Lógico Semántico del Campo Condición y Generador de Síntesis
+            // ==================== LÓGICA DE SÍNTESIS DE IA EN DOS NIVELES ====================
             const txtCondicion = document.getElementById('condicion_hallazgo');
             const containerKeywords = document.getElementById('keywordsContainer');
-            const containerSynthesis = document.getElementById('synthesisOptions');
-            const txtSintesisFinal = document.getElementById('sintesis_condicion');
-            const cmbSujeto = document.getElementById('sujeto_fiscalizado');
+            const contenedorOpciones = document.getElementById('ia_opciones_flotantes');
+            const txtConceptoCentral = document.getElementById('sintesis_condicion');
  
             txtCondicion.addEventListener('input', () => {
-                let texto = txtCondicion.value.toLowerCase().trim();
+                let textoOriginal = txtCondicion.value.trim();
+                let textoMinusculas = textoOriginal.toLowerCase();
                 
-                // 1. ANÁLISIS DE PALABRAS CLAVE (MANTIENE TU LÓGICA)
+                // Análisis de Palabras Clave tradicionales
                 const patronesAI = [
                     /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, 
                     /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, 
                     /(?:application|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, 
                     /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi 
                 ];
- 
                 palabrasClaveExtraidas = [];
                 patronesAI.forEach(regex => {
-                    let coincidencias = texto.match(regex);
-                    if (coincidencias) {
-                        palabrasClaveExtraidas = palabrasClaveExtraidas.concat(coincidencias);
-                    }
+                    let coincidencias = textoMinusculas.match(regex);
+                    if (coincidencias) palabrasClaveExtraidas = palabrasClaveExtraidas.concat(coincidencias);
                 });
- 
                 palabrasClaveExtraidas = [...new Set(palabrasClaveExtraidas)];
- 
                 if (palabrasClaveExtraidas.length > 0) {
                     containerKeywords.innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('');
                 } else {
-                    containerKeywords.innerHTML = "<span style='color: #999;'>Analizando... (No se detectan verbos rectores aún)</span>";
+                    containerKeywords.innerHTML = "<span style='color: #999;'>Analizando...</span>";
                 }
-                // 2. MOTOR DINÁMICO DE SÍNTESIS (NUEVO REGEX SEMÁNTICO)
-                if (texto.length < 15) {
-                    containerSynthesis.innerHTML = "<span style='color: #666; font-style: italic;'>Escribe una condición más extensa para estructurar las opciones...</span>";
+
+                // Generación de Nivel 1: Concepto Central (Máx 6 palabras)
+                if(textoOriginal.length < 10) {
+                    contenedorOpciones.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>`;
                     return;
                 }
-                // Obtener el nombre limpio del Sujeto Fiscalizado seleccionado
-                let sujetoNombre = "El sujeto";
-                if(cmbSujeto.value) {
-                    let optionText = cmbSujeto.options[cmbSujeto.selectedIndex].text;
-                    sujetoNombre = optionText.split('-')[0].split('_')[1] || optionText.split('-')[0] || "El municipio";
-                    sujetoNombre = sujetoNombre.trim();
+
+                let sugerencias = [];
+                if (textoMinusculas.includes('desafectación') || textoMinusculas.includes('enajenación') || textoMinusculas.includes('particular') || textoMinusculas.includes('inmueble')) {
+                    sugerencias = [
+                        "Municipio vendió inmueble público a particular.",
+                        "Municipio traspasó terreno municipal cobrando dinero.",
+                        "Municipio privatizó onerosamente propiedad mediante venta.",
+                        "Municipio vendió bien público a privado.",
+                        "Municipio enajenó propiedad pública con costo."
+                    ];
+                } else if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('concepto')) {
+                    sugerencias = [
+                        "Incumplimiento en Ejecución de Obra Pública",
+                        "Irregularidad en Estimaciones y Pagos Finiquitos",
+                        "Deficiencia Documental en Expediente Técnico de Obra",
+                        "Falta de Amortización de Anticipos Otorgados"
+                    ];
+                } else if (textoMinusculas.includes('cuenta') || textoMinusculas.includes('pago') || textoMinusculas.includes('recurso') || textoMinusculas.includes('financiero')) {
+                    sugerencias = [
+                        "Desvío de Recursos o Aplicación Incorrecta del Gasto",
+                        "Falta de Soporte Documental de Egresos",
+                        "Duplicidad en Registro de Operaciones Financieras",
+                        "Pagos Improcedentes o Excesivos a Proveedores"
+                    ];
+                } else {
+                    sugerencias = [
+                        "Inconsistencia en Control Interno de la Entidad",
+                        "Incumplimiento Normativo de Disposiciones Legales",
+                        "Omisión de Actas de Entrega-Recepción Oficiales",
+                        "Falta de Resguardo y Custodia de Bienes Públicos"
+                    ];
                 }
-                // Búsqueda inteligente de conceptos jurídicos en el texto del usuario
-                let conceptoIncumplimiento = texto.includes("contrat") ? "incumplimiento contractual" : 
-                                             texto.includes("estimaci") ? "estimación tardía" : "sanción administrativa";
                 
-                let conceptoPena = texto.includes("multa") ? "multa" : 
-                                   texto.includes("sanci") ? "sanción" : "penalización";
-                // Modelos de síntesis estructurados de 5 a 8 palabras según tus ejemplos de diseño
-                let opcionesGeneradas = [
-                    `${sujetoNombre} no acreditó ${conceptoPena} por ${conceptoIncumplimiento}`,
-                    `Falta acreditación de ${conceptoPena} al contratista`,
-                    `Incumplimiento contractual sin ${conceptoPena} al contratista`
-                ];
-                // Ajustes contextuales finos si la condición habla de autorizaciones o retrasos
-                if (texto.includes("tard") || texto.includes("retras") || texto.includes("autoriz")) {
-                    opcionesGeneradas[1] = `Autorización tardía sin aplicación de ${conceptoPena} contractual`;
-                    opcionesGeneradas[2] = `No se acreditó ${conceptoPena} por estimación tardía`;
+                contenedorOpciones.innerHTML = '';
+                sugerencias.forEach((opcion) => {
+                    const opcionFiltrada = recortarPorPalabras(opcion, 6);
+                    const divOpcion = document.createElement('div');
+                    divOpcion.className = 'ia-badge-opcion';
+                    divOpcion.innerHTML = ` 💡  <strong>Clasificar como:</strong> ${opcionFiltrada}`;
+                    divOpcion.onclick = function() {
+                        txtConceptoCentral.value = opcionFiltrada;
+                        generarSustanciaIA(opcionFiltrada);
+                    };
+                    contenedorOpciones.appendChild(divOpcion);
+                });
+
+                const btnPersonalizadoCC = document.createElement('button');
+                btnPersonalizadoCC.type = 'button';
+                btnPersonalizadoCC.className = 'ia-btn-personalizado';
+                btnPersonalizadoCC.innerHTML = ' ➕  Agregar opción personalizada (Máx. 6 palabras)...';
+                btnPersonalizadoCC.onclick = function() {
+                    let opcUsuario = prompt("Escribe tu opción de clasificación para el Asunto (Máximo 6 palabras):");
+                    if (opcUsuario) {
+                        const verificado = recortarPorPalabras(opcUsuario, 6);
+                        txtConceptoCentral.value = verificado;
+                        generarSustanciaIA(verificado);
+                    }
+                };
+                contenedorOpciones.appendChild(btnPersonalizadoCC);
+            });
+
+            txtConceptoCentral.addEventListener('input', function() {
+                generarSustanciaIA(this.value.trim());
+            });
+
+            // Generación de Nivel 2: Sustancia (Máx 4 o 5 palabras)
+            function generarSustanciaIA(textoConcepto) {
+                const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
+                const txtMin = textoConcepto.toLowerCase();
+                if (!textoConcepto || textoConcepto.length < 5) {
+                    contenedorSustancia.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>`;
+                    return;
                 }
-                // Renderizar los botones interactivos
-                containerSynthesis.innerHTML = opcionesGeneradas.map((opcion, index) => {
-                    // Limpiar mayúscula inicial por estética uniforme
-                    let opcionFormateada = opcion.charAt(0).toUpperCase() + opcion.slice(1);
-                    let numPalabras = opcionFormateada.split(/\s+/).length;
-                    return `
-                        <button type="button" class="synthesis-btn-option" onclick="seleccionarSintesis('${opcionFormateada}')">
-                            ✨ "${opcionFormateada}" <span style="float: right; font-size: 0.75rem; color: #7f8c8d;">(${numPalabras} palabras)</span>
-                        </button>
-                    `;
-                }).join('');
+                
+                let opcionesSustancia = [];
+                if (txtMin.includes('vendió') || txtMin.includes('traspasó') || txtMin.includes('privatizó') || txtMin.includes('enajenó') || txtMin.includes('inmueble')) {
+                    opcionesSustancia = [
+                        "Municipio vendió inmueble.",
+                        "Municipio traspasó terreno.",
+                        "Municipio privatizó propiedad.",
+                        "Municipio vendió incorrectamente bien.",
+                        "Municipio enajenó mal propiedad."
+                    ];
+                } else if (txtMin.includes('precio') || txtMin.includes('catálogo') || txtMin.includes('fuera')) {
+                    opcionesSustancia = [
+                        "Precios fuera catálogo.",
+                        "Pagos indebidos catálogo.",
+                        "Alteración precios unitarios."
+                    ];
+                } else if (txtMin.includes('estimación') || txtMin.includes('finiquito') || txtMin.includes('obra')) {
+                    opcionesSustancia = [
+                        "Irregularidad volumen estimado.",
+                        "Sobreestimación obra ejecutada.",
+                        "Pagos exceso finiquitados."
+                    ];
+                } else {
+                    opcionesSustancia = [
+                        "Deficiencia control interno.",
+                        "Incumplimiento normativa legal.",
+                        "Omisión expediente técnico."
+                    ];
+                }
+                
+                contenedorSustancia.innerHTML = '';
+                opcionesSustancia.forEach((sust) => {
+                    const sustanciaFiltrada = recortarPorPalabras(sust, 4);
+                    const divSust = document.createElement('div');
+                    divSust.className = 'ia-badge-sustancia';
+                    divSust.innerHTML = ` 🧬  <strong>Sustancia sugerida:</strong> "${sustanciaFiltrada}"`;
+                    divSust.onclick = function() {
+                        document.getElementById('sustancia_hallazgo').value = sustanciaFiltrada;
+                    };
+                    contenedorSustancia.appendChild(divSust);
+                });
+                
+                const btnPersonalizadoSust = document.createElement('button');
+                btnPersonalizadoSust.type = 'button';
+                btnPersonalizadoSust.className = 'ia-btn-personalizado';
+                btnPersonalizadoSust.innerHTML = ' ➕  Agregar sustancia personalizada (Máx. 4 palabras)...';
+                btnPersonalizadoSust.style.borderColor = '#3c763d';
+                btnPersonalizadoSust.style.color = '#3c763d';
+                btnPersonalizadoSust.onclick = function() {
+                    let sustUsuario = prompt("Escribe la sustancia resumida (Máximo 4 palabras):");
+                    if (sustUsuario) {
+                        const verificadoSust = recortarPorPalabras(sustUsuario, 4);
+                        document.getElementById('sustancia_hallazgo').value = verificadoSust;
+                    }
+                };
+                contenedorSustancia.appendChild(btnPersonalizadoSust);
+            }
+
+            document.getElementById('sustancia_hallazgo').addEventListener('input', function() {
+                let textoAjustado = recortarPorPalabras(this.value, 4);
+                if (this.value !== textoAjustado) this.value = textoAjustado;
             });
         });
-        // Función global para capturar la opción seleccionada con el clic
-        function seleccionarSintesis(textoSeleccionado) {
-            const txtSintesisFinal = document.getElementById('sintesis_condicion');
-            if (txtSintesisFinal) {
-                txtSintesisFinal.value = textoSeleccionado;
-                // Breve efecto visual de confirmación en el input
-                txtSintesisFinal.style.backgroundColor = "#e8f8f5";
-                setTimeout(() => { txtSintesisFinal.style.backgroundColor = ""; }, 400);
-            }
-        }
  
-        // Evento Submit y Envío estructurado a Supabase
+        // ==================== SUBMIT Y ENVÍO A SUPABASE MAPPED ====================
         const form = document.getElementById('hallazgoForm');
         if (form) {
             form.addEventListener('submit', async (e) => {
@@ -945,7 +863,6 @@
                     return;
                 }
  
-                // Limpiar el formato de moneda para convertirlo en Float Puro para la Base de Datos
                 const rawImporte = document.getElementById('importe').value.replace(/[^0-9.-]+/g, "");
  
                 const registroHallazgo = {
@@ -961,8 +878,11 @@
                     link_soporte: document.getElementById('link_soporte').value || null,
                     condicion: document.getElementById('condicion_hallazgo').value,
                     palabras_clave_ia: palabrasClaveExtraidas.join(', '), 
-                    sintesis_condicion: document.getElementById('sintesis_condicion').value, // ENVIADO COMO CONCEPTO GENERAL
-                    sustancia_hallazgo: document.getElementById('sustancia_hallazgo').value, // NUEVO CAMPO ADICIONAL
+                    
+                    // CONEXIÓN MAREADA HACIA TU TABLA DE SUPABASE HALLAZGOS
+                    sintesis_condicion: document.getElementById('sintesis_condicion').value, // Guarda el Concepto Central
+                    sustancia_hallazgo: document.getElementById('sustancia_hallazgo').value, // Guarda la Sustancia (Máx 5 palabras)
+                    
                     comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
                 };
  
