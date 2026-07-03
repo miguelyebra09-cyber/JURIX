@@ -3,760 +3,998 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Nueva Solicitud</title>
+    <title>JURIX-DGAJ - Registro de Hallazgos</title>
     <style>
         :root {
-            --naranja-nitido: #FF6600;
-            --gris-oscuro: #333333;
-            --gris-claro: #f4f4f9;
+           --naranja-nitido: #FF6600;
+           --gris-oscuro: #333333;
+           --gris-claro: #f4f4f9;
             --blanco: #ffffff;
-            --azul-info: #0066cc;
-            --verde-exito: #2ecc71;
-            --input-bloqueado: #eaeded;
+           --azul-info: #0066cc;
+           --verde-exito: #2ecc71;
         }
+ 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gris-claro);
-            margin: 0;
-            padding: 0;
-            color: var(--gris-oscuro);
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           background-color: var(--gris-claro);
+           margin: 0;
+           padding: 0;
+           color: var(--gris-oscuro);
         }
+ 
         header {
-            background-color: var(--blanco);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid var(--naranja-nitido);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+           background-color: var(--blanco);
+           padding: 20px;
+           text-align: center;
+           border-bottom: 3px solid var(--naranja-nitido);
+           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+ 
         h1 {
             color: var(--naranja-nitido);
             margin: 0;
             font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 1px;
+           font-weight: bold;
+           letter-spacing: 1px;
         }
+ 
         nav {
-            background-color: var(--gris-oscuro);
-            padding: 10px;
-            text-align: center;
+           background-color: var(--gris-oscuro);
+           padding: 10px;
+           text-align: center;
         }
+ 
         nav a {
             color: var(--blanco);
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: 500;
-            transition: color 0.3s;
+           text-decoration: none;
+           margin: 0 15px;
+           font-weight: 500;
+           transition: color 0.3s;
         }
+ 
         nav a:hover {
             color: var(--naranja-nitido);
         }
+ 
         .container {
             max-width: 750px;
             margin: 30px auto;
-            background: var(--blanco);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+           background: var(--blanco);
+           padding: 30px;
+           border-radius: 8px;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
+ 
         h2 {
-            text-align: center;
+           text-align: center;
             color: var(--gris-oscuro);
-            margin-bottom: 5px;
+           margin-bottom: 5px;
             font-size: 1.6rem;
         }
-        .subtitle-folio {
-            text-align: center;
+ 
+       .subtitle-folio {
+           text-align: center;
             color: var(--azul-info);
             font-size: 1.2rem;
-            font-weight: bold;
-            background-color: #eef7ff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 25px;
+           font-weight: bold;
+           background-color: #eef7ff;
+           padding: 10px;
+           border-radius: 5px;
+           margin-bottom: 30px;
             border: 1px dashed var(--azul-info);
         }
-        
-        /* ESTILOS DE LA BARRA DE PROGRESO LLAMATIVA */
-        .progress-container {
-            grid-column: span 2;
-            background-color: #e9ecef;
-            border-radius: 20px;
-            padding: 3px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-            margin-bottom: 25px;
-            position: relative;
-        }
-        .progress-bar {
-            height: 20px;
-            background: linear-gradient(90deg, #ff9900 0%, var(--naranja-nitido) 100%);
-            border-radius: 20px;
-            width: 0%;
-            transition: width 0.4s ease-in-out;
-            box-shadow: 0 2px 4px rgba(255,102,0,0.4);
-        }
-        .progress-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            top: 4px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--gris-oscuro);
-            z-index: 2;
-            text-shadow: 0px 0px 2px rgba(255,255,255,0.8);
-        }
-
+ 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+           grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+ 
         .form-group {
-            margin-bottom: 15px;
+           margin-bottom: 15px;
         }
-        .form-group.full-width {
-            grid-column: span 2;
+ 
+       .form-group.full-width {
+           grid-column: span 2;
         }
+ 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+           margin-bottom: 8px;
+           font-weight: 600;
             font-size: 0.9rem;
         }
-        .form-group input[type="text"], .form-group input[type="number"], select, textarea {
+ 
+       input[type="text"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
             width: 100%;
-            padding: 11px;
+           padding: 11px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box;
+           box-sizing: border-box;
             font-size: 0.95rem;
+           font-family: inherit;
         }
+ 
         input:focus, select:focus, textarea:focus {
-            border-color: var(--naranja-nitido);
+           border-color: var(--naranja-nitido);
             outline: none;
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
         }
-        input[readonly] {
-            background-color: var(--input-bloqueado);
+ 
+       input[readonly] {
+           background-color: #eaeded;
             color: #7f8c8d;
             cursor: not-allowed;
-            font-weight: 500;
         }
-        .section-divider {
-            grid-column: span 2;
-            border-top: 1px dashed #ccc;
-            margin: 15px 0;
-            padding-top: 15px;
-            color: var(--naranja-nitido);
-            font-weight: bold;
-            font-size: 1rem;
+ 
+       .ai-keywords-box {
+           margin-top: 8px;
+           background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+           padding: 10px;
+           border-radius: 4px;
+            font-size: 0.85rem;
         }
-        .btn-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 35px;
+ 
+        .keyword-tag {
+            display: inline-block;
+           background: #dcfce7;
+            color: #166534;
+           padding: 2px 8px;
+           border-radius: 12px;
+            margin: 2px;
+           font-weight: bold;
         }
-        button, .btn-cancelar {
-            padding: 12px 30px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        .btn-enviar {
-            background-color: var(--naranja-nitido);
-            color: var(--blanco);
-            box-shadow: 0 3px 6px rgba(255,102,0,0.2);
-        }
-        .btn-enviar:hover {
-            background-color: #e05500;
-            transform: translateY(-1px);
-        }
-        .btn-cancelar {
-            background-color: #999999;
-            color: var(--blanco);
-        }
-        .btn-cancelar:hover {
-            background-color: #777777;
-        }
-        .ia-box-sugerencias {
-            border: 1px solid #bce8f1;
-            padding: 15px;
-            border-radius: 6px;
-            background-color: #eef7ff;
-            color: #31708f;
-            font-size: 0.9rem;
-        }
-        .ia-box-sustancia {
-            border: 1px solid #d6e9c6;
-            padding: 15px;
-            border-radius: 6px;
-            background-color: #f2f9ed;
-            color: #3c763d;
-            font-size: 0.9rem;
-        }
-        .ia-opciones-contenedor {
+        /* --- CONTENEDOR DE OPCIONES DE SÍNTESIS --- */
+        .ai-synthesis-box {
             margin-top: 10px;
+            background-color: #f0f7ff;
+            border: 1px solid #bae6fd;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.88rem;
+        }
+        .synthesis-options-container {
+            margin-top: 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
-        .ia-badge-opcion {
+        .synthesis-btn-option {
             background-color: var(--blanco);
-            border: 1px dashed var(--azul-info);
+            border: 1px solid #7dd3fc;
             padding: 8px 12px;
             border-radius: 4px;
+            text-align: left;
             cursor: pointer;
-            font-weight: 500;
-            color: var(--gris-oscuro);
+            font-size: 0.9rem;
+            color: #0369a1;
             transition: all 0.2s ease;
+            width: 100%;
+            font-family: inherit;
         }
-        .ia-badge-opcion:hover {
-            background-color: #d9edf7;
+        .synthesis-btn-option:hover {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+            color: #0369a1;
             transform: translateX(3px);
-            border-style: solid;
         }
-        .ia-badge-sustancia {
-            background-color: var(--blanco);
-            border: 1px dashed #3c763d;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
+ 
+        /* --- FILA VIRTUAL AVANZADA Y DINÁMICA --- */
+        .queue-section {
+           margin-top: 35px;
+           background: #fff;
+            border: 1px solid #e1e1e1;
+           border-radius: 8px;
+           padding: 20px;
+           box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+ 
+        .queue-title {
+            font-size: 1.15rem;
             color: var(--gris-oscuro);
-            transition: all 0.2s ease;
+           border-bottom: 2px solid var(--gris-claro);
+           padding-bottom: 8px;
+           margin-bottom: 15px;
+           font-weight: bold;
+           display: flex;
+           align-items: center;
+            gap: 10px;
         }
-        .ia-badge-sustancia:hover {
-            background-color: #dff0d8;
-            transform: translateX(3px);
-            border-style: solid;
+ 
+        .queue-card {
+           border-left: 6px solid #666;
+           padding: 20px;
+           border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+           align-items: flex-start;
+           transition: all 0.4s ease;
+           background: #fdf4f5;
+           border-left-color: #9b59b6;
         }
-        .ia-btn-personalizado {
-            background-color: #f8f9fa;
-            border: 1px solid #ced4da;
-            color: #495057;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+ 
+        .card-RCPF { background: #fffcf4; border-left-color: #f39c12; }
+       .card-RCPI { background: #f4fbf7; border-left-color: #2ecc71; }
+ 
+        .queue-grid {
+            display: grid;
+           grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 80%;
+        }
+ 
+        .queue-info p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: #555;
+        }
+ 
+        .queue-info strong {
+            color: var(--gris-oscuro);
+        }
+ 
+       .status-container {
+           text-align: right;
+            display: flex;
+           flex-direction: column;
+           align-items: flex-end;
+            gap: 10px;
+        }
+ 
+        .status-badge {
+           padding: 6px 14px;
+           border-radius: 20px;
             font-size: 0.85rem;
-            text-align: center;
-            transition: all 0.2s;
-            margin-top: 5px;
+           font-weight: bold;
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+           background-color: #f4ecf7; 
+            color: #6c3483;
         }
-        .ia-btn-personalizado:hover {
-            background-color: #e2e6ea;
-            color: #212529;
-            border-color: #adb5bd;
+        
+        .badge-RCPF { background-color: #fdebd0; color: #b9770e; }
+        .badge-RCPI { background-color: #d5f5e3; color: #1e8449; }
+ 
+        .time-display {
+            font-size: 0.9rem;
+           font-weight: bold;
+            color: #444;
+           background: rgba(255,255,255,0.7);
+           padding: 4px 10px;
+           border-radius: 4px;
+            border: 1px dashed #ccc;
+        }
+ 
+        /* --- BOTONERA --- */
+        .btn-container {
+            display: flex;
+           justify-content: space-between;
+           margin-top: 35px;
+        }
+ 
+        button, .btn-cancelar {
+           padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+           border-radius: 4px;
+            cursor: pointer;
+           font-weight: bold;
+           text-decoration: none;
+           text-align: center;
+           transition: all 0.3s;
+        }
+ 
+        .btn-enviar {
+           background-color: var(--naranja-nitido);
+            color: var(--blanco);
+           box-shadow: 0 3px 6px rgba(255,102,0,0.2);
+        }
+ 
+        .btn-enviar:hover {
+           background-color: #e05500;
+            transform: translateY(-1px);
+        }
+ 
+        .btn-cancelar {
+           background-color: #999999;
+            color: var(--blanco);
+        }
+ 
+       .btn-cancelar:hover {
+           background-color: #777777;
         }
     </style>
 </head>
 <body>
+ 
     <header>
-        <h1>JURIX-DGAJ</h1>
+       <h1>JURIX-DGAJ</h1>
     </header>
+ 
     <nav>
         <a href="solicitud.html">Nueva Solicitud</a>
-        <a href="hallazgo.html">Cédula de Hallazgos</a>
         <a href="index.html">Salir</a>
     </nav>
+ 
     <div class="container">
-        <h2>Formulario de Nueva Solicitud de Trámite</h2>
-        <div id="folioTicketPrevisualizacion" class="subtitle-folio">Seleccione un Servicio para Generar Folio...</div>
-
-        <form id="solicitudForm">
+       <h2>Cédula de Análisis de Hallazgos</h2>
+        <div id="folioTicketSub" class="subtitle-folio">Cargando Folio del Ticket...</div>
+        
+        <form id="hallazgoForm">
             <div class="form-grid">
-                
-                <div class="progress-container">
-                    <div id="barraProgresoForm" class="progress-bar"></div>
-                    <div id="textoProgresoForm" class="progress-text">Progreso del Formulario: 0%</div>
-                </div>
+               
+               <div class="form-group">
+                   <label for="fecha_recepcion">Fecha de Recepción:</label>
+                   <input type="date" id="fecha_recepcion" readonly required>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="sujeto_fiscalizado">Sujeto Fiscalizado:</label>
+                   <select id="sujeto_fiscalizado" required>
+                       <option value="" disabled selected>-- Seleccione Sujeto --</option>
+                       <option value="AIAI">AIAI- Instituto de Acceso a la Información Pública para el Estado de Guanajuato</option>
+                       <option value="FGEG">FGEG- Fiscalía General del Estado de Guanajuato</option>
+                       <option value="MABA">MABA_Abasolo</option>
+                       <option value="MACA">MACA_Acámbaro</option>
+                       <option value="MAPA">MAPA_Apaseo El Alto</option>
+                       <option value="MAPG">MAPG_Apaseo El Grande</option>
+                       <option value="MATA">MATA_Atarjea</option>
+                       <option value="MCOM">MCOM_Comonfort</option>
+                       <option value="MCOR">MCOR_Coroneo</option>
+                       <option value="MCTZ">MCTZ_Cortazar</option>
+                       <option value="MCUE">MCUE_Cuerámaro</option>
+                       <option value="MCYA">MCYA_Celaya</option>
+                       <option value="MDHI">MDHI_Dolores Hidalgo Cuna De La Independencia Nacional</option>
+                       <option value="MDRM">MDRM_Doctor Mora</option>
+                       <option value="MGTO">MGTO_Guanajuato</option>
+                       <option value="MHUA">MHUA_Huanímaro</option>
+                       <option value="MIRA">MIRA_Irapuato</option>
+                       <option value="MJER">MJER_Jerécuaro</option>
+                       <option value="MJPR">MJPR_Jaral Del Progreso</option>
+                       <option value="MLEO">MLEO_León</option>
+                       <option value="MMDB">MMDB_Manuel Doblado</option>
+                       <option value="MMOR">MMOR_Moroleón</option>
+                       <option value="MOCA">MOCA_Ocampo</option>
+                       <option value="MPJM">MPJM_Pénjamo</option>
+                       <option value="MPNV">MPNV_Pueblo Nuevo</option>
+                       <option value="MPRR">MPRR_Purísima Del Rincón</option>
+                       <option value="MROM">MROM_Romita</option>
+                       <option value="MSAL">MSAL_Salamanca</option>
+                       <option value="MSCT">MSCT_Santa Catarina</option>
+                       <option value="MSDU">MSDU_San Diego De La Unión</option>
+                       <option value="MSFP">MSFP_San Felipe</option>
+                       <option value="MSFR">MSFR_San Francisco Del Rincón</option>
+                       <option value="MSIL">MSIL_Silao De La Victoria</option>
+                       <option value="MSJI">MSJI_San José De Iturbide</option>
+                       <option value="MSJR">MSJR_Santa Cruz De Juventino Rosas</option>
+                       <option value="MSLP">MSLP_San Luis De La Paz</option>
+                       <option value="MSMA">MSMA_San Miguel De Allende</option>
+                       <option value="MSMV">MSMV_Santiago Maravatío</option>
+                       <option value="MSVT">MSVT_Salvatierra</option>
+                       <option value="MTAR">MTAR_Tarandacuao</option>
+                       <option value="MTBL">MTBL_Tierra Blanca</option>
+                       <option value="MTMO">MTMO_Tarimoro</option>
+                       <option value="MURI">MURI_Uriangato</option>
+                       <option value="MVIC">MVIC_Victoria</option>
+                       <option value="MVIL">MVIL_Villagrán</option>
+                       <option value="MVST">MVST_Valle De Santiago</option>
+                       <option value="MXIC">MXIC_Xichú</option>
+                       <option value="MYUR">MYUR_Yuriria</option>
+                       <option value="PEEG">PEEG-Poder Ejecutivo del Estado de Guanajuato</option>
+                       <option value="PJEG">PJEG-Poder Judicial del Estado de Guanajuato</option>
+                       <option value="PLGT">PLGT- Poder Legislativo del Estado de Guanajuato</option>
+                       <option value="PRODHEG">PRODHEG- Procuraduría de los Derechos Humanos del Estado de Guanajuato</option>
+                       <option value="TJA">TJA- Tribunal de Justicia Administrativa</option>
+                   </select>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="tipo_auditoria">Tipo de Auditoría:</label>
+                    <select id="tipo_auditoria" required>
+                       <option value="" disabled selected>-- Seleccione Tipo --</option>
+                       <option value="RCPF">💰 1.1 RCPF- Revisión Cuenta Pública-Financiero</option>
+                       <option value="RCPI">👷🏼 1.2 RCPI- Revisión Cuenta Pública-Infraestructura</option>
+                       <option value="Por definir">2.Por definir</option>
+                   </select>
+               </div>
+ 
+                <div class="form-group">
+                   <label for="rubro_hallazgo">Rubro de Hallazgo:</label>
+                   <select id="rubro_hallazgo" required disabled>
+                       <option value="" disabled selected>-- Seleccione Rubro --</option>
+                       <option value="Financiero">Financiero</option>
+                       <option value="Infraestructura">Infraestructura</option>
+                   </select>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="tipo_hallazgo">Tipo de Hallazgo:</label>
+                   <select id="tipo_hallazgo" required>
+                       <option value="" disabled selected>-- Seleccione Tipo --</option>
+                       <option value="Observación">🔎 Observación</option>
+                       <option value="Recomendación">⚠️ Recomendación</option>
+                   </select>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="num_concepto">🔢 Núm / Concepto en Cédula:</label>
+                   <input type="text" id="num_concepto" required placeholder="Ej. 001">
+               </div>
+ 
+               <div class="form-group">
+                   <label for="titulo_observacion">📋 Título de la Observación:</label>
+                   <input type="text" id="titulo_observacion" placeholder="Escriba el título del hallazgo..." required>
+               </div>
+ 
+            <div class="form-group">
+    <label for="rubro_combobox">🗂️ Rubro Específico:</label>
+    <select id="rubro_combobox" required>
+        <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
+        
+        <optgroup label="1 ACTIVO">
+            <option value="1.1">1.1 ACTIVO CIRCULANTE</option>
+            <option value="1.1.1">&nbsp;&nbsp;1.1.1 Efectivo y Equivalentes</option>
+            <option value="1.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.1 Efectivo</option>
+            <option value="1.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.2 Bancos/Tesorería</option>
+            <option value="1.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.3 Bancos/Dependencias y Otros</option>
+            <option value="1.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.4 Inversiones Temporales (Hasta 3 meses)</option>
+            <option value="1.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.5 Fondos con Afectación Específica</option>
+            <option value="1.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.6 Depósitos de Fondos de Terceros en Garantía y/o Administración</option>
+            <option value="1.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.9 Otros Efectivos y Equivalentes</option>
+            
+            <option value="1.1.2">&nbsp;&nbsp;1.1.2 Derechos a Recibir Efectivo o Equivalentes</option>
+            <option value="1.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.1 Inversiones Financieras de Corto Plazo</option>
+            <option value="1.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.2 Cuentas por Cobrar a Corto Plazo</option>
+            <option value="1.1.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.3 Deudores Diversos por Cobrar a Corto Plazo</option>
+            <option value="1.1.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.4 Ingresos por Recuperar a Corto Plazo</option>
+            <option value="1.1.2.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.5 Deudores por Anticipos de la Tesorería a Corto Plazo</option>
+            <option value="1.1.2.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.6 Préstamos Otorgados a Corto Plazo</option>
+            <option value="1.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Corto Plazo</option>
+            
+            <option value="1.1.3">&nbsp;&nbsp;1.1.3 Derechos a Recibir Bienes o Servicios</option>
+            <option value="1.1.3.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.1 Anticipo a Proveedores por Adquisición de Bienes y Prestación de Servicios a Corto Plazo</option>
+            <option value="1.1.3.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.2 Anticipo a Proveedores por Adquisición de Bienes Inmuebles y Muebles a Corto Plazo</option>
+            <option value="1.1.3.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.3 Anticipo a Proveedores por Adquisición de Bienes Intangibles a Corto Plazo</option>
+            <option value="1.1.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.4 Anticipo a Contratistas por Obras Públicas a Corto Plazo</option>
+            <option value="1.1.3.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.9 Otros Derechos a Recibir Bienes o Servicios a Corto Plazo</option>
+            
+            <option value="1.1.4">&nbsp;&nbsp;1.1.4 Inventarios</option>
+            <option value="1.1.4.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.1 Inventario de Mercancías para Venta</option>
+            <option value="1.1.4.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.2 Inventario de Mercancías para Transformación</option>
+            <option value="1.1.4.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.3 Inventario de Materias Primas, Materiales y Suministros para Production</option>
+            <option value="1.1.4.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.4 Inventario de Materias Primas, Materiales y Suministros de Consumo</option>
+            <option value="1.1.4.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.5 Inventario de Bienes en Tránsito</option>
+            
+            <option value="1.1.5">&nbsp;&nbsp;1.1.5 Almacenes</option>
+            <option value="1.1.5.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.5.1 Almacén de Materiales y Suministros de Consumo</option>
+            
+            <option value="1.1.6">&nbsp;&nbsp;1.1.6 Estimación por Pérdida o Deterioro de Activos Circulantes</option>
+            <option value="1.1.6.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.1 Estimaciones para Cuentas Incobrables por Derechos a Recibir Efectivo o Equivalentes</option>
+            <option value="1.1.6.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.2 Estimación por Deterioro de Inventarios</option>
+            
+            <option value="1.1.9">&nbsp;&nbsp;1.1.9 Otros Activos Circulantes</option>
+            <option value="1.1.9.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.1 Valores en Garantía</option>
+            <option value="1.1.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.2 Bienes Enajenados de Corto Plazo</option>
+            <option value="1.1.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.3 Bienes en Custodia (Bienes decomisados, retenidos y en depósito)</option>
+            <option value="1.1.9.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.9 Otros Activos Derivados de Operaciones Financieras</option>
+            
+            <option value="1.2">1.2 ACTIVO NO CIRCULANTE</option>
+            <option value="1.2.1">&nbsp;&nbsp;1.2.1 Inversiones Financieras a Largo Plazo</option>
+            <option value="1.2.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.1 Inversiones a Largo Plazo</option>
+            <option value="1.2.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.2 Títulos y Valores a Largo Plazo</option>
+            <option value="1.2.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.3 Fideicomisos, Mandatos y Contratos Análogos</option>
+            <option value="1.2.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.1.4 Participaciones y Aportaciones de Capital</option>
+            
+            <option value="1.2.2">&nbsp;&nbsp;1.2.2 Derechos a Recibir Efectivo o Equivalentes a Largo Plazo</option>
+            <option value="1.2.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.1 Documentos por Cobrar a Largo Plazo</option>
+            <option value="1.2.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.2 Deudores Diversos a Largo Plazo</option>
+            <option value="1.2.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.3 Ingresos por Recuperar a Largo Plazo</option>
+            <option value="1.2.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.4 Préstamos Otorgados a Largo Plazo</option>
+            <option value="1.2.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Largo Plazo</option>
+            
+            <option value="1.2.3">&nbsp;&nbsp;1.2.3 Bienes Inmuebles, Infraestructura y Construcciones en Proceso</option>
+            <option value="1.2.3.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.1 Terrenos</option>
+            <option value="1.2.3.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.2 Viviendas</option>
+            <option value="1.2.3.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.3 Edificios No Habitacionales</option>
+            <option value="1.2.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.4 Infraestructura</option>
+            <option value="1.2.3.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.5 Construcciones en Proceso en Bienes de Dominio Público</option>
+            <option value="1.2.3.6">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.6 Construcciones en Proceso en Bienes Propios</option>
+            <option value="1.2.3.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.9 Otros Bienes Inmuebles</option>
+            
+            <option value="1.2.4">&nbsp;&nbsp;1.2.4 Bienes Muebles</option>
+            <option value="1.2.4.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.1 Mobiliario y Equipo de Administración</option>
+            <option value="1.2.4.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.2 Mobiliario y Equipo Educacional y Recreativo</option>
+            <option value="1.2.4.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.3 Equipo e Instrumental Médico y de Laboratorio</option>
+            <option value="1.2.4.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.4 Vehículos y Equipo de Transporte</option>
+            <option value="1.2.4.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.5 Equipo de Defensa y Seguridad</option>
+            <option value="1.2.4.6">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.6 Maquinaria, Otros Equipos y Herramientas</option>
+            <option value="1.2.4.7">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.7 Colecciones, Obras de Arte y Objetos Valiosos</option>
+            <option value="1.2.4.8">&nbsp;&nbsp;&nbsp;&nbsp;1.2.4.8 Activos Biológicos</option>
+            
+            <option value="1.2.5">&nbsp;&nbsp;1.2.5 Activos Intangibles</option>
+            <option value="1.2.5.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.1 Software</option>
+            <option value="1.2.5.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.2 Patentes, Marcas y Derechos</option>
+            <option value="1.2.5.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.3 Concesiones y Franquicias</option>
+            <option value="1.2.5.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.4 Licencias</option>
+            <option value="1.2.5.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.5.9 Otros Activos Intangibles</option>
+            
+            <option value="1.2.6">&nbsp;&nbsp;1.2.6 Depreciación, Deterioro y Amortización Acumulada de Bienes</option>
+            <option value="1.2.6.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.1 Depreciación Acumulada de Bienes Inmuebles</option>
+            <option value="1.2.6.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.2 Depreciación Acumulada de Infraestructura</option>
+            <option value="1.2.6.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.3 Depreciación Acumulada de Bienes Muebles</option>
+            <option value="1.2.6.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.4 Deterioro Acumulado de Activos Biológicos</option>
+            <option value="1.2.6.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.6.5 Amortización Acumulada de Activos Intangibles</option>
+            
+            <option value="1.2.7">&nbsp;&nbsp;1.2.7 Activos Diferidos</option>
+            <option value="1.2.7.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.1 Estudios, Formulación y Evaluación de Proyectos</option>
+            <option value="1.2.7.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.2 Derechos sobre Bienes en Régimen de Arrendamiento Financiero</option>
+            <option value="1.2.7.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.3 Gastos Pagados por Adelantado a Largo Plazo</option>
+            <option value="1.2.7.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.4 Anticipos a Largo Plazo</option>
+            <option value="1.2.7.5">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.5 Beneficios al Retiro de Empleados Pagados por Adelantado</option>
+            <option value="1.2.7.9">&nbsp;&nbsp;&nbsp;&nbsp;1.2.7.9 Otros Activos Diferidos</option>
+            
+            <option value="1.2.8">&nbsp;&nbsp;1.2.8 Estimación por Pérdida o Deterioro de Activos no Circulantes</option>
+            <option value="1.2.8.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.8.1 Estimaciones por Pérdida de Cuentas Incobrables a Largo Plazo</option>
+            <option value="1.2.8.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.8.2 Estimación por Deterioro de Inversiones Financieras a Largo Plazo</option>
+            <option value="1.2.8.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.8.3 Estimación por Deterioro de Bienes</option>
+            
+            <option value="1.2.9">&nbsp;&nbsp;1.2.9 Otros Activos No Circulantes</option>
+            <option value="1.2.9.1">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.1 Bienes en Concesión</option>
+            <option value="1.2.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.2 Bienes en Arrendamiento Financiero</option>
+            <option value="1.2.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.2.9.3 Bienes en Custodia</option>
+        </optgroup>
+        <optgroup label="2 PASIVO">
+            <option value="2.1">2.1 PASIVO CIRCULANTE</option>
+            <option value="2.1.1">&nbsp;&nbsp;2.1.1 Cuentas por Pagar a Corto Plazo</option>
+            <option value="2.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.1 Servicios Personales por Pagar a Corto Plazo</option>
+            <option value="2.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.2 Proveedores por Pagar a Corto Plazo</option>
+            <option value="2.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.3 Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
+            <option value="2.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.4 Participaciones y Aportaciones por Pagar a Corto Plazo</option>
+            <option value="2.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.5 Transferencias Otorgadas por Pagar a Corto Plazo</option>
+            <option value="2.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.6 Intereses, Comisiones y Otros Gastos de la Deuda Pública por Pagar a Corto Plazo</option>
+            <option value="2.1.1.7">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.7 Retenciones y Contribuciones por Pagar a Corto Plazo</option>
+            <option value="2.1.1.8">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.8 Devoluciones de Ley de Ingresos por Pagar a Corto Plazo</option>
+            <option value="2.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.9 Otras Cuentas por Pagar a Corto Plazo</option>
+            
+            <option value="2.1.2">&nbsp;&nbsp;2.1.2 Documentos por Pagar a Corto Plazo</option>
+            <option value="2.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.2.1 Documentos Comerciales por Pagar a Corto Plazo</option>
+            <option value="2.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.2.2 Documentos con Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
+            <option value="2.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.2.9 Otros Documentos por Pagar a Corto Plazo</option>
+            
+            <option value="2.1.3">&nbsp;&nbsp;2.1.3 Porción a Corto Plazo de la Deuda Pública a Largo Plazo</option>
+            <option value="2.1.3.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.3.1 Porción a Corto Plazo de la Deuda Pública Interna</option>
+            <option value="2.1.3.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.3.2 Porción a Corto Plazo de la Deuda Pública Externa</option>
+            <option value="2.1.3.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.3.3 Porción a Corto Plazo de Arrendamiento Financiero</option>
+            
+            <option value="2.1.4">&nbsp;&nbsp;2.1.4 Títulos y Valores a Corto Plazo</option>
+            <option value="2.1.4.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.4.1 Títulos y Valores de la Deuda Pública Interna a Corto Plazo</option>
+            <option value="2.1.4.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.4.2 Títulos y Valores de la Deuda Pública Externa a Corto Plazo</option>
+            
+            <option value="2.1.5">&nbsp;&nbsp;2.1.5 Pasivos Diferidos a Corto Plazo</option>
+            <option value="2.1.5.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.5.1 Ingresos Cobrados por Adelantado a Corto Plazo</option>
+            <option value="2.1.5.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.5.2 Intereses Cobrados por Adelantado a Corto Plazo</option>
+            <option value="2.1.5.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.5.9 Otros Pasivos Diferidos a Corto Plazo</option>
+            
+            <option value="2.1.6">&nbsp;&nbsp;2.1.6 Fondos y Bienes de Terceros en Garantía y/o Administración a Corto Plazo</option>
+            <option value="2.1.6.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.1 Fondos en Garantía a Corto Plazo</option>
+            <option value="2.1.6.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.2 Fondos en Administración a Corto Plazo</option>
+            <option value="2.1.6.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.3 Fondos Contingentes a Corto Plazo</option>
+            <option value="2.1.6.4">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.4 Fondos de Fideicomisos, Mandatos y Contratos Análogos a Corto Plazo</option>
+            <option value="2.1.6.5">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.5 Otros Fondos de Terceros en Garantía y/o Administración a Corto Plazo</option>
+            <option value="2.1.6.6">&nbsp;&nbsp;&nbsp;&nbsp;2.1.6.6 Bienes en Garantía a Corto Plazo</option>
+            
+            <option value="2.1.7">&nbsp;&nbsp;2.1.7 Provisiones a Corto Plazo</option>
+            <option value="2.1.7.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.7.1 Provisión para Demandas y Juicios a Corto Plazo</option>
+            <option value="2.1.7.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.7.2 Provisión para Contingencias a Corto Plazo</option>
+            <option value="2.1.7.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.7.9 Otras Provisiones a Corto Plazo</option>
+            
+            <option value="2.1.9">&nbsp;&nbsp;2.1.9 Otros Pasivos Corto Plazo</option>
+            <option value="2.1.9.1">&nbsp;&nbsp;&nbsp;&nbsp;2.1.9.1 Ingresos por Clasificar</option>
+            <option value="2.1.9.2">&nbsp;&nbsp;&nbsp;&nbsp;2.1.9.2 Recaudación por Participar</option>
+            <option value="2.1.9.9">&nbsp;&nbsp;&nbsp;&nbsp;2.1.9.9 Otros Pasivos Circulantes</option>
+            
+            <option value="2.2">2.2 PASIVO NO CIRCULANTE</option>
+            <option value="2.2.1">&nbsp;&nbsp;2.2.1 Cuentas por Pagar a Largo Plazo</option>
+            <option value="2.2.1.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.1.1 Proveedores por Pagar a Largo Plazo</option>
+            <option value="2.2.1.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.1.2 Contratistas por Obras Públicas por Pagar a Largo Plazo</option>
+            <option value="2.2.1.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.1.9 Otras Cuentas por Pagar a Largo Plazo</option>
+            
+            <option value="2.2.2">&nbsp;&nbsp;2.2.2 Documentos por Pagar a Largo Plazo</option>
+            <option value="2.2.2.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.2.1 Documentos Comerciales por Pagar a Largo Plazo</option>
+            <option value="2.2.2.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.2.2 Documentos con Contratistas por Obras Públicas por Pagar a Largo Plazo</option>
+            <option value="2.2.2.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.2.9 Otros Documentos por Pagar a Largo Plazo</option>
+            
+            <option value="2.2.3">&nbsp;&nbsp;2.2.3 Deuda Pública a Largo Plazo</option>
+            <option value="2.2.3.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.1 Títulos y Valores de la Deuda Pública Interna a Largo Plazo</option>
+            <option value="2.2.3.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.2 Títulos y Valores de la Deuda Pública Externa a Largo Plazo</option>
+            <option value="2.2.3.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.3 Préstamos de la Deuda Pública Interna por Pagar a Largo Plazo</option>
+            <option value="2.2.3.4">&nbsp;&nbsp;&nbsp;&nbsp;2.2.3.4 Préstamos de la Deuda Pública Externa por Pagar a Largo Plazo</option>
+            
+            <option value="2.2.4">&nbsp;&nbsp;2.2.4 Pasivos Diferidos a Largo Plazo</option>
+            <option value="2.2.4.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.4.1 Ingresos Cobrados por Adelantado a Largo Plazo</option>
+            <option value="2.2.4.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.4.2 Intereses Cobrados por Adelantado a Largo Plazo</option>
+            <option value="2.2.4.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.4.9 Otros Pasivos Diferidos a Largo Plazo</option>
+            
+            <option value="2.2.5">&nbsp;&nbsp;2.2.5 Fondos y Bienes de Terceros en Garantía y/o Administración a Largo Plazo</option>
+            <option value="2.2.5.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.1 Fondos en Garantía a Largo Plazo</option>
+            <option value="2.2.5.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.2 Fondos en Administración a Largo Plazo</option>
+            <option value="2.2.5.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.3 Fondos Contingentes a Largo Plazo</option>
+            <option value="2.2.5.4">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.4 Fondos de Fideicomisos, Mandatos y Contratos Análogos a Largo Plazo</option>
+            <option value="2.2.5.5">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.5 Otros Fondos de Terceros en Garantía y/o Administración a Largo Plazo</option>
+            <option value="2.2.5.6">&nbsp;&nbsp;&nbsp;&nbsp;2.2.5.6 Bienes en Garantía a Largo Plazo</option>
+            
+            <option value="2.2.6">&nbsp;&nbsp;2.2.6 Provisiones a Largo Plazo</option>
+            <option value="2.2.6.1">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.1 Provisión para Demandas y Juicios a Largo Plazo</option>
+            <option value="2.2.6.2">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.2 Provisión para Pensiones a Largo Plazo</option>
+            <option value="2.2.6.3">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.3 Provisión para Contingencias a Largo Plazo</option>
+            <option value="2.2.6.9">&nbsp;&nbsp;&nbsp;&nbsp;2.2.6.9 Otras Provisiones a Largo Plazo</option>
+        </optgroup>
+        <optgroup label="3 HACIENDA PÚBLICA/PATRIMONIO">
+            <option value="3.1">3.1 HACIENDA PÚBLICA/PATRIMONIO CONTRIBUIDO</option>
+            <option value="3.1.1">&nbsp;&nbsp;3.1.1 Aportaciones</option>
+            <option value="3.1.2">&nbsp;&nbsp;3.1.2 Donaciones de Capital</option>
+            <option value="3.1.3">&nbsp;&nbsp;3.1.3 Actualización de la Hacienda Pública/Patrimonio</option>
+            
+            <option value="3.2">3.2 HACIENDA PÚBLICA/PATRIMONIO GENERADO</option>
+            <option value="3.2.1">&nbsp;&nbsp;3.2.1 Resultados del Ejercicio (Ahorro/Desahorro)</option>
+            <option value="3.2.2">&nbsp;&nbsp;3.2.2 Resultados de Ejercicios Anteriores</option>
+            <option value="3.2.3">&nbsp;&nbsp;3.2.3 Revalúos</option>
+            <option value="3.2.4">&nbsp;&nbsp;3.2.4 Reservas</option>
+            <option value="3.2.5">&nbsp;&nbsp;3.2.5 Rectificaciones de Resultados de Ejercicios Anteriores</option>
+            
+            <option value="3.3">3.3 EXCESO O INSUFICIENCIA EN LA ACTUALIZACIÓN DE LA HACIENDA PÚBLICA/PATRIMONIO</option>
+            <option value="3.3.1">&nbsp;&nbsp;3.3.1 Resultado por Posición Monetaria</option>
+            <option value="3.3.2">&nbsp;&nbsp;3.3.2 Resultado por Tenencia de Activos No Monetarios</option>
+        </optgroup>
+        <optgroup label="4 INGRESOS Y OTROS BENEFICIOS">
+            <option value="4.1">4.1 INGRESOS DE GESTIÓN</option>
+            <option value="4.1.1">&nbsp;&nbsp;4.1.1 Impuestos</option>
+            <option value="4.1.2">&nbsp;&nbsp;4.1.2 Cuotas y Aportaciones de Seguridad Social</option>
+            <option value="4.1.3">&nbsp;&nbsp;4.1.3 Contribuciones de Mejoras</option>
+            <option value="4.1.4">&nbsp;&nbsp;4.1.4 Derechos</option>
+            <option value="4.1.5">&nbsp;&nbsp;4.1.5 Productos</option>
+            <option value="4.1.6">&nbsp;&nbsp;4.1.6 Aprovechamientos</option>
+            <option value="4.1.7">&nbsp;&nbsp;4.1.7 Ingresos por Venta de Bienes y Prestación de Servicios</option>
+            
+            <option value="4.2">4.2 PARTICIPACIONES, APORTACIONES, CONVENIOS, INCENTIVOS DERIVADOS DE LA COLABORACIÓN FISCAL Y FONDOS DISTINTOS DE APORTACIONES</option>
+            <option value="4.2.1">&nbsp;&nbsp;4.2.1 Participaciones, Aportaciones, Convenios, Incentivos Derivados de la Colaboración Fiscal y Fondos Distintos de Aportaciones</option>
+            <option value="4.2.2">&nbsp;&nbsp;4.2.2 Transferencias, Asignaciones, Subsidios y Subvenciones, y Pensiones y Jubilaciones</option>
+            
+            <option value="4.3">4.3 OTROS INGRESOS Y BENEFICIOS</option>
+            <option value="4.3.1">&nbsp;&nbsp;4.3.1 Ingresos Financieros</option>
+            <option value="4.3.2">&nbsp;&nbsp;4.3.2 Incremento por Variación de Inventarios</option>
+            <option value="4.3.3">&nbsp;&nbsp;4.3.3 Disminución del Exceso de Estimaciones por Pérdida o Deterioro u Obsolescencia</option>
+            <option value="4.3.4">&nbsp;&nbsp;4.3.4 Disminución del Exceso de Provisiones</option>
+            <option value="4.3.9">&nbsp;&nbsp;4.3.9 Otros Ingresos y Beneficios Varios</option>
+        </optgroup>
+        <optgroup label="5 GASTOS Y OTRAS PÉRDIDAS">
+            <option value="5.1">5.1 GASTOS DE FUNCIONAMIENTO</option>
+            <option value="5.1.1">&nbsp;&nbsp;5.1.1 Servicios Personales</option>
+            <option value="5.1.2">&nbsp;&nbsp;5.1.2 Materiales y Suministros</option>
+            <option value="5.1.3">&nbsp;&nbsp;5.1.3 Servicios Generales</option>
+            
+            <option value="5.2">5.2 TRANSFERENCIAS, ASIGNACIONES, SUBSIDIOS Y OTRAS AYUDAS</option>
+            <option value="5.2.1">&nbsp;&nbsp;5.2.1 Transferencias Internas y Asignaciones al Sector Público</option>
+            <option value="5.2.2">&nbsp;&nbsp;5.2.2 Transferencias al Resto del Sector Público</option>
+        </optgroup>
+    </select>
+</div>
+ 
+               <div class="form-group">
+                   <label for="importe">💲 Importe ($):</label>
+                   <input type="text" id="importe" placeholder="$0.00" required>
+               </div>
+ 
+               <div class="form-group">
+                   <label for="link_soporte">🌐 Link de Soporte Documental:</label>
+                   <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
+               </div>
+ 
+               <div class="form-group full-width">
+                   <label for="condicion_hallazgo">⚖️ Asunto/Condición:</label>
+                   <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
+                   
+                   <div class="ai-keywords-box">
+                       <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
+                       <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
+                   </div>
+                   <!-- NUEVO MODULO DE SÍNTESIS DE IA -->
+                   <div class="ai-synthesis-box">
+                       <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
+                       <div id="synthesisOptions" class="synthesis-options-container">
+                           <span style="color: #666; font-style: italic;">Esperando texto en la condición para generar síntesis breves...</span>
+                       </div>
+                   </div>
+               </div>
+               
+               <!-- CAMPO TRASLADADO: SUSTANCIA DEL HALLAZGO -->
+               <div class="form-group full-width">
+                   <label for="sustancia_hallazgo">📌 Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
+                   <input type="text" id="sustancia_hallazgo" placeholder="Ej: Falta de aplicación de penas" required>
+               </div>
 
-                <div class="section-divider"> 👤  Datos del Servidor Público (Sesión Activa)</div>
-                <div class="form-group full-width">
-                    <label for="user_nombre">Nombre Completo:</label>
-                    <input type="text" id="user_nombre" readonly required>
-                </div>
-                <div class="form-group">
-                    <label for="user_puesto">Puesto:</label>
-                    <input type="text" id="user_puesto" readonly required>
-                </div>
-                <div class="form-group">
-                    <label for="user_area">Área Adscripción:</label>
-                    <input type="text" id="user_area" readonly required>
-                </div>
-                
-                <div class="section-divider"> 📋  Detalles del Trámite o Ticket</div>
-                <div class="form-group">
-                    <label for="servicio_solicitado">Servicio / Tipo de Trámite:</label>
-                    <select id="servicio_solicitado" required>
-                        <option value="" disabled selected>-- Seleccione Servicio --</option>
-                        <option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
-                        <option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
-                        <option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
-                        <option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
-                        <option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
-                        <option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="folio_calculado">Número de Ticket Interno (Folio):</label>
-                    <input type="text" id="folio_calculado" readonly placeholder="Se generará automáticamente" required>
-                </div>
-                <div class="form-group">
-                    <label for="prioridad_tramite">Prioridad del Trámite:</label>
-                    <select id="prioridad_tramite" required>
-                        <option value="Normal" selected>Normal</option>
-                        <option value="Urgente"> ⚠ ️ Urgente</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="fecha_registro">Fecha de Registro:</label>
-                    <input type="text" id="fecha_registro" readonly required>
-                </div>
-                <div class="form-group full-width">
-                    <label for="asunto_solicitud">Asunto / Condición:</label>
-                    <textarea id="asunto_solicitud" rows="3" required placeholder="Describa brevemente el objetivo o motivo de esta solicitud..."></textarea>
-                </div>
-                
-                <div class="form-group full-width">
-                    <div class="ia-box-sugerencias">
-                        <strong> 🤖  Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
-                        <div id="ia_opciones_flotantes" class="ia-opciones-contenedor">
-                            <span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group full-width">
-                    <label for="concepto_central">Concepto Central:</label>
-                    <textarea id="concepto_central" rows="3" placeholder="Selecciona una opción de arriba o escribe el concepto central..." required></textarea>
-                </div>
-                
-                <div class="form-group full-width">
-                    <div class="ia-box-sustancia">
-                        <strong> 🧬  Sustancia del Concepto (Análisis de IA - Haz clic para elegir):</strong>
-                        <div id="ia_sustancia_flotantes" class="ia-opciones-contenedor">
-                            <span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group full-width">
-                    <label for="sustancia_tramite">Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
-                    <input type="text" id="sustancia_tramite" placeholder="Selecciona una opción resumida de arriba..." required>
-                </div>
-
-            </div>
+               <!-- CAMPO DONDE SE CAPTURA LA SÍNTESIS FINAL SELECCIONADA -->
+               <div class="form-group full-width">
+                   <label for="sintesis_condicion">📝 Concepto General:</label>
+                   <input type="text" id="sintesis_condicion" placeholder="Selecciona una opción de arriba o escribe una síntesis breve..." required>
+               </div>
+ 
+               <div class="form-group full-width">
+                   <label for="comentarios_revision">💬 Comentarios de Revisión:</label>
+                   <textarea id="comentarios_revision" rows="3" placeholder="Escriba el desglose del hallazgo detectado..."></textarea>
+               </div>
+           </div>
+ 
+            <div class="queue-section">
+               <div class="queue-title">
+                   <span>⏳ Control Virtual de Turno e Información de Fila</span>
+               </div>
+               <div id="queueCardElement" class="queue-card">
+                   <div class="queue-grid">
+                       <div class="queue-info">
+                           <p><strong>Ticket ID:</strong> <span id="lblTicketQueue">-</span></p>
+                           <p><strong>Solicitud:</strong> <span id="lblTipoSolicitudQueue">-</span></p>
+                           <p><strong>Usuario:</strong> <span id="lblUsuarioQueue">Auditor Interno DGAJ</span></p>
+                       </div>
+                       <div class="queue-info">
+                           <p><strong>Puesto:</strong> <span id="lblPuestoQueue">Dictaminador</span></p>
+                           <p><strong>Área:</strong> <span id="lblAreaQueue">Legal e Infraestructura</span></p>
+                           <p><strong>Posición Fila:</strong> Turno Virtual Activo</p>
+                       </div>
+                   </div>
+                   <div class="status-container">
+                       <span id="badgeEstatus" class="status-badge">Procesando</span>
+                       <div id="timeEstimate" class="time-display">Calculando tiempo...</div>
+                   </div>
+               </div>
+           </div>
+ 
             <div class="btn-container">
-                <a href="index.html" class="btn-cancelar">Cancelar</a>
-                <button type="submit" class="btn-enviar">Registrar Ticket e Ir a Cédula</button>
-            </div>
+                <a href="solicitud.html" class="btn-cancelar">Regresar</a>
+                <button type="submit" class="btn-enviar">Subir Ticket e Información</button>
+           </div>
         </form>
     </div>
-    
+ 
     <script>
-        const SUPABASE_SOLICITUDES_URL = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/solicitudes";
-        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-        let globalIdeaCentral = "";
-        let ultimoPorcentajeProgreso = 0;
-
-        // FUNCIÓN NATIVA PARA GENERAR SONIDO LLAMATIVO (AudioContext)
-        function reproducirSonidoProgreso() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.type = 'sine';
-                // Tono alegre y corto tipo "pop/bloop" ascendente
-                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5
-                oscillator.frequency.exponentialRampToValueAtTime(880.00, audioCtx.currentTime + 0.1); // Nota A5
-                
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.15);
-            } catch (e) {
-                console.log("AudioContext no iniciado o bloqueado por interacción del navegador", e);
-            }
-        }
-
-        // FUNCIÓN PARA ACTUALIZAR LA BARRA DE PROGRESO DE FORMA VISUAL
-        function actualizarBarraProgreso() {
-            const camposRequeridos = [
-                'servicio_solicitado',
-                'asunto_solicitud',
-                'concepto_central',
-                'sustancia_tramite'
-            ];
-            
-            let completados = 0;
-            camposRequeridos.forEach(id => {
-                const elemento = document.getElementById(id);
-                if (elemento && elemento.value.trim() !== "") {
-                    completados++;
-                }
-            });
-            
-            const porcentaje = Math.round((completados / camposRequeridos.length) * 100);
-            
-            document.getElementById('barraProgresoForm').style.width = porcentaje + '%';
-            document.getElementById('textoProgresoForm').textContent = `Progreso del Formulario: ${porcentaje}%`;
-            
-            // Si el progreso creció, emitimos el efecto de sonido solicitado
-            if (porcentaje > ultimoPorcentajeProgreso) {
-                reproducirSonidoProgreso();
-            }
-            ultimoPorcentajeProgreso = porcentaje;
-        }
-
-        function recortarPorPalabras(texto, maxPalabras) {
-            let palabras = texto.trim().split(/\s+/).filter(p => p.length > 0);
-            if (palabras.length > maxPalabras) {
-                return palabras.slice(0, maxPalabras).join(" ");
-            }
-            return texto;
-        }
-
+        const URL_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4";
+ 
+        let folioTicketActivo = "";
+        let palabrasClaveExtraidas = [];
+ 
         window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
-                alert("Acceso denegado. Por favor, inicie sesión primero en el index.");
-                window.location.href = "index.html";
-                return;
-            }
-            document.getElementById('user_nombre').value = localStorage.getItem('last_user_name') || "No detectado";
-            document.getElementById('user_puesto').value = localStorage.getItem('last_user_puesto') || "No detectado";
-            document.getElementById('user_area').value = localStorage.getItem('last_user_area') || "No detectado";
+            // Asignar fecha del sistema automáticamente
+            const txtFecha = document.getElementById('fecha_recepcion');
             const hoy = new Date();
-            const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            document.getElementById('fecha_registro').value = hoy.toLocaleDateString('es-MX', opcionesFecha);
-            
-            // Escuchar cambios para actualizar la barra de progreso
-            document.getElementById('servicio_solicitado').addEventListener('change', actualizarBarraProgreso);
-            document.getElementById('asunto_solicitud').addEventListener('input', actualizarBarraProgreso);
-            document.getElementById('concepto_central').addEventListener('input', actualizarBarraProgreso);
-            document.getElementById('sustancia_tramite').addEventListener('input', actualizarBarraProgreso);
-            
-            actualizarBarraProgreso();
-        });
-
-        document.getElementById('servicio_solicitado').addEventListener('change', function() {
-            const servicio = this.value;
-            if (!servicio) return;
-            let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
-            let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
-            const numFormateado = String(numActual).padStart(4, '0');
-            const prefijoTicket = servicio.replace('_', '-');
-            const ticketFinal = `JURIX-DGAJ-${prefijoTicket}-${numFormateado}`;
-            document.getElementById('folio_calculado').value = ticketFinal;
-            document.getElementById('folioTicketPrevisualizacion').textContent = `Ticket Asignado: ${ticketFinal}`;
-        });
-
-        // 1. GESTIÓN DEL CAMPO ASUNTO HACIA CONCEPTO CENTRAL
-        document.getElementById('asunto_solicitud').addEventListener('input', function() {
-            const textoOriginal = this.value.trim();
-            const textoMinusculas = textoOriginal.toLowerCase();
-            const contenedor = document.getElementById('ia_opciones_flotantes');
-
-            if(textoOriginal.length < 10) {
-                contenedor.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando texto en el asunto para extraer esencias...</span>`;
-                return;
+            const yyyy = hoy.getFullYear();
+            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dd = String(hoy.getDate()).padStart(2, '0');
+            txtFecha.value = `${yyyy}-${mm}-${dd}`;
+ 
+            // Recuperación de Folio
+            const urlParams = new URLSearchParams(window.location.search);
+            folioTicketActivo = urlParams.get('folio');
+ 
+            if (!folioTicketActivo) {
+                folioTicketActivo = localStorage.getItem('last_generated_folio') || 
+                                   localStorage.getItem('jurix_folio_activo') || 
+                                   localStorage.getItem('folio_ticket') ||
+                                   localStorage.getItem('folio_user');
             }
-            let ideaCentral = textoOriginal;
-            const marcadoresInicio = ["se observa que", "se advierte que", "se detectó que", "se identificó que", "se determinó que"];
-            for (let marcador of marcadoresInicio) {
-                const idx = textoMinusculas.indexOf(marcador);
-                if (idx !== -1) {
-                    ideaCentral = textoOriginal.substring(idx + marcador.length).trim();
-                    break;
-                }
-            }
-            const marcadoresFin = ["referente a la obra", "en la obra", "relativo a la obra"];
-            for (let marcador of marcadoresFin) {
-                const idxFin = ideaCentral.toLowerCase().indexOf(marcador);
-                if (idxFin !== -1) {
-                    ideaCentral = ideaCentral.substring(0, idxFin + marcador.length).trim();
-                    break;
-                }
-            }
-            if (ideaCentral.toLowerCase().endsWith("obra")) {
-                ideaCentral += ":";
-            }
-            if (ideaCentral.length > 0) {
-                ideaCentral = ideaCentral.charAt(0).toUpperCase() + ideaCentral.slice(1);
-            }
-            globalIdeaCentral = ideaCentral;
-            
-            let sugerencias = [];
-            // LÓGICA DE REZONAMIENTO JURÍDICO DINÁMICO (EJEMPLO ENAJENACIÓN)
-            if (textoMinusculas.includes('desafectación') || textoMinusculas.includes('enajenación') || textoMinusculas.includes('particular') || textoMinusculas.includes('inmueble')) {
-                sugerencias = [
-                    "Municipio vendió inmueble público a particular.",
-                    "Municipio traspasó terreno municipal cobrando dinero.",
-                    "Municipio privatizó onerosamente propiedad mediante venta.",
-                    "Municipio vendió bien público a privado.",
-                    "Municipio enajenó propiedad pública con costo."
-                ];
-            } else if (textoMinusculas.includes('obra') || textoMinusculas.includes('precio') || textoMinusculas.includes('catálogo') || textoMinusculas.includes('estimacion') || textoMinusculas.includes('concepto')) {
-                sugerencias = [
-                    "Incumplimiento en Ejecución de Obra Pública",
-                    "Irregularidad en Estimaciones y Pagos Finiquitos",
-                    "Deficiencia Documental en Expediente Técnico de Obra",
-                    "Falta de Amortización de Anticipos Otorgados"
-                ];
-            } else if (textoMinusculas.includes('cuenta') || textoMinusculas.includes('pago') || textoMinusculas.includes('recurso') || textoMinusculas.includes('financiero')) {
-                sugerencias = [
-                    "Desvío de Recursos o Aplicación Incorrecta del Gasto",
-                    "Falta de Soporte Documental de Egresos",
-                    "Duplicidad en Registro de Operaciones Financieras",
-                    "Pagos Improcedentes o Excesivos a Proveedores"
-                ];
+ 
+            const subtitleFolio = document.getElementById('folioTicketSub');
+            const lblTicketQueue = document.getElementById('lblTicketQueue');
+ 
+            if (folioTicketActivo) {
+                if (subtitleFolio) subtitleFolio.innerText = "Folio del Ticket Vinculado: " + folioTicketActivo;
+                if (lblTicketQueue) lblTicketQueue.innerText = folioTicketActivo;
             } else {
-                sugerencias = [
-                    "Inconsistencia en Control Interno de la Entidad",
-                    "Incumplimiento Normativo de Disposiciones Legales",
-                    "Omisión de Actas de Entrega-Recepción Oficiales",
-                    "Falta de Resguardo y Custodia de Bienes Públicos"
-                ];
+                if (subtitleFolio) subtitleFolio.innerText = "⚠️ Advertencia: Sin Folio de Ticket Activo";
             }
-            
-            contenedor.innerHTML = '';
-            sugerencias.forEach((opcion) => {
-                const opcionFiltrada = recortarPorPalabras(opcion, 6);
-                const divOpcion = document.createElement('div');
-                divOpcion.className = 'ia-badge-opcion';
-                divOpcion.innerHTML = ` 💡  <strong>Clasificar como:</strong> ${opcionFiltrada}`;
-
-                divOpcion.onclick = function() {
-                    document.getElementById('concepto_central').value = opcionFiltrada;
-                    generarSustanciaIA(opcionFiltrada);
-                    actualizarBarraProgreso();
-                };
-                contenedor.appendChild(divOpcion);
-            });
-
-            const btnPersonalizadoCC = document.createElement('button');
-            btnPersonalizadoCC.type = 'button';
-            btnPersonalizadoCC.className = 'ia-btn-personalizado';
-            btnPersonalizadoCC.innerHTML = ' ➕  Agregar opción personalizada (Máx. 6 palabras)...';
-            btnPersonalizadoCC.onclick = function() {
-                let opcUsuario = prompt("Escribe tu opción de clasificación para el Asunto (Máximo 6 palabras):");
-                if (opcUsuario) {
-                    const verificado = recortarPorPalabras(opcUsuario, 6);
-                    document.getElementById('concepto_central').value = verificado;
-                    generarSustanciaIA(verificado);
-                    actualizarBarraProgreso();
-                }
-            };
-            contenedor.appendChild(btnPersonalizadoCC);
-        });
-
-        document.getElementById('concepto_central').addEventListener('input', function() {
-            generarSustanciaIA(this.value.trim());
-        });
-
-        // 2. LOGICA DEL SUBMENÚ DE SUSTANCIA
-        function generarSustanciaIA(textoConcepto) {
-            const contenedorSustancia = document.getElementById('ia_sustancia_flotantes');
-            const txtMin = textoConcepto.toLowerCase();
-            if (!textoConcepto || textoConcepto.length < 5) {
-                contenedorSustancia.innerHTML = `<span style="color: #7f8c8d; font-style: italic;">Esperando que se defina el Concepto Central para resumir...</span>`;
-                return;
-            }
-            
-            let opcionesSustancia = [];
-            // EVALUACIÓN DE SUSTANCIA PRECISA (MÁXIMO 4 PALABRAS)
-            if (txtMin.includes('vendió') || txtMin.includes('traspasó') || txtMin.includes('privatizó') || txtMin.includes('enajenó') || txtMin.includes('inmueble')) {
-                opcionesSustancia = [
-                    "Municipio vendió inmueble.",
-                    "Municipio traspasó terreno.",
-                    "Municipio privatizó propiedad.",
-                    "Municipio vendió incorrectamente bien.",
-                    "Municipio enajenó mal propiedad."
-                ];
-            } else if (txtMin.includes('precio') || txtMin.includes('catálogo') || txtMin.includes('fuera')) {
-                opcionesSustancia = [
-                    "Precios fuera catálogo.",
-                    "Pagos indebidos catálogo.",
-                    "Alteración precios unitarios."
-                ];
-            } else if (txtMin.includes('estimación') || txtMin.includes('finiquito') || txtMin.includes('obra')) {
-                opcionesSustancia = [
-                    "Irregularidad volumen estimado.",
-                    "Sobreestimación obra ejecutada.",
-                    "Pagos exceso finiquitados."
-                ];
-            } else {
-                opcionesSustancia = [
-                    "Deficiencia control interno.",
-                    "Incumplimiento normativa legal.",
-                    "Omisión expediente técnico."
-                ];
-            }
-            
-            contenedorSustancia.innerHTML = '';
-            opcionesSustancia.forEach((sust) => {
-                const sustanciaFiltrada = recortarPorPalabras(sust, 4);
-                const divSust = document.createElement('div');
-                divSust.className = 'ia-badge-sustancia';
-                divSust.innerHTML = ` 🧬  <strong>Sustancia sugerida:</strong> "${sustanciaFiltrada}"`;
-
-                divSust.onclick = function() {
-                    document.getElementById('sustancia_tramite').value = sustanciaFiltrada;
-                    actualizarBarraProgreso();
-                };
-                contenedorSustancia.appendChild(divSust);
-            });
-            
-            const btnPersonalizadoSust = document.createElement('button');
-            btnPersonalizadoSust.type = 'button';
-            btnPersonalizadoSust.className = 'ia-btn-personalizado';
-            btnPersonalizadoSust.innerHTML = ' ➕  Agregar sustancia personalizada (Máx. 4 palabras)...';
-            btnPersonalizadoSust.style.borderColor = '#3c763d';
-            btnPersonalizadoSust.style.color = '#3c763d';
-            btnPersonalizadoSust.onclick = function() {
-                let sustUsuario = prompt("Escribe la sustancia resumida (Máximo 4 palabras):");
-                if (sustUsuario) {
-                    const verificadoSust = recortarPorPalabras(sustUsuario, 4);
-                    document.getElementById('sustancia_tramite').value = verificadoSust;
-                    actualizarBarraProgreso();
-                }
-            };
-            contenedorSustancia.appendChild(btnPersonalizadoSust);
-        }
-
-        document.getElementById('sustancia_tramite').addEventListener('input', function() {
-            let textoAjustado = recortarPorPalabras(this.value, 4);
-            if (this.value !== textoAjustado) {
-                this.value = textoAjustado;
-            }
-        });
-
-        // ENVÍO DE DATOS SEGURO A SUPABASE
-        document.getElementById('solicitudForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const servicio = document.getElementById('servicio_solicitado').value;
-            const folioGenerado = document.getElementById('folio_calculado').value;
-            let valorConsecutivo = localStorage.getItem(`consecutivo_${servicio}`);
-            let numActual = valorConsecutivo ? parseInt(valorConsecutivo) : 1;
-            
-            const dataSolicitud = {
-                folio_ticket: folioGenerado,
-                nombre_solicitante: document.getElementById('user_nombre').value,
-                puesto_solicitante: document.getElementById('user_puesto').value,
-                area_solicitante: document.getElementById('user_area').value,
-                servicio: servicio,
-                prioridad: document.getElementById('prioridad_tramite').value,
-                asunto: document.getElementById('asunto_solicitud').value.trim(),
-                concepto_central: document.getElementById('concepto_central').value.trim(),
-                sustancia: document.getElementById('sustancia_tramite').value.trim(),
-                documento_respaldo: "Sin archivo adjunto",
-                fecha_creacion: new Date().toISOString()
-            };
-            
-            const misHeaders = {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-            };
-            
-            try {
-                const response = await fetch(SUPABASE_SOLICITUDES_URL, {
-                    method: 'POST',
-                    headers: misHeaders,
-                    body: JSON.stringify(dataSolicitud)
-                });
-                if (response.ok) {
-                    localStorage.setItem(`consecutivo_${servicio}`, numActual + 1);
-                    let urlTablaDestino = "";
-                    let objetoDestino = {};
-                    switch (servicio) {
-                        case "DCPL_B001":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/hallazgos";
-                            objetoDestino = {
-                                folio_user: folioGenerado,
-                                usuario_nombre: document.getElementById('user_nombre').value,
-                                puesto_usuario: document.getElementById('user_puesto').value,
-                                area_usuario: document.getElementById('user_area').value,
-                                tipo_solicitud: "Análisis de Hallazgo",
-                                sujeto_fiscalizado: "PENDIENTE",
-                                tipo_auditoria: "Por Asignar",
-                                tipo_hallazgo: "En Espera",
-                                comentarios_revision: "Tu solicitud ha sido recibida con éxito. Está en la fila virtual esperando asignación de un supervisor jurídico."
-                            };
-                            break;
-                        case "DCPL_B002":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/pliegos";
-                            objetoDestino = {
-                                folio_user: folioGenerado,
-                                estatus_revision: "Enviado a Pliegos"
-                            };
-                            break;
-                        case "DCPL_B003":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/informes";
-                            objetoDestino = {
-                                folio_user: folioGenerado,
-                                estatus_revision: "Enviado a Informes"
-                            };
-                            break;
-                        case "DCPL_C001":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/denuncias";
-                            objetoDestino = {
-                                folio_user: folioGenerado
-                            };
-                            break;
-                        case "DCPL_D001":
-                            urlTablaDestino = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tarjetas";
-                            objetoDestino = {
-                                folio_user: folioGenerado
-                            };
-                            break;
-                    }
-                    if (urlTablaDestino !== "") {
-                        const resDestino = await fetch(urlTablaDestino, {
-                            method: 'POST',
-                            headers: misHeaders,
-                            body: JSON.stringify(objetoDestino)
-                        });
-                        if (resDestino.ok) {
-                            console.log(" 🔗  Renglón relacional pre-registrado.");
-                        } else {
-                            console.warn(" ⚠ ️ Advertencia: Falló el pre-registro de enlace.");
-                        }
-                    }
-                    localStorage.setItem('last_generated_folio', folioGenerado);
-                    localStorage.setItem('jurix_folio_activo', folioGenerado);
-                    localStorage.setItem('folio_ticket', folioGenerado);
-                    localStorage.setItem('folio_user', folioGenerado);
-                    
-                    localStorage.setItem('usuario_nombre', document.getElementById('user_nombre').value);
-                    localStorage.setItem('puesto_usuario', document.getElementById('user_puesto').value);
-                    localStorage.setItem('area_usuario', document.getElementById('user_area').value);
-                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
-                    
-                    if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
-                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
+ 
+            // Cambios de Tipo de Auditoría y Rubro Automático
+            const cmbAuditoria = document.getElementById('tipo_auditoria');
+            const cmbRubro = document.getElementById('rubro_hallazgo');
+            const queueCard = document.getElementById('queueCardElement');
+            const badgeEstatus = document.getElementById('badgeEstatus');
+            const lblTipoSolicitudQueue = document.getElementById('lblTipoSolicitudQueue');
+            const timeEstimate = document.getElementById('timeEstimate');
+ 
+            if (cmbAuditoria) {
+                cmbAuditoria.addEventListener('change', () => {
+                    const valor = cmbAuditoria.value;
+                    queueCard.className = "queue-card";
+                    badgeEstatus.className = "status-badge";
+                     
+                    if (valor === "RCPF") {
+                        cmbRubro.value = "Financiero";
+                        queueCard.classList.add('card-RCPF');
+                        badgeEstatus.classList.add('badge-RCPF');
+                        badgeEstatus.innerText = "Financiero";
+                        if (lblTipoSolicitudQueue) lblTipoSolicitudQueue.innerText = "Revisión Cuenta Pública - Financiero";
+                        if (timeEstimate) timeEstimate.innerText = "Est. ~15 min";
+                    } else if (valor === "RCPI") {
+                        cmbRubro.value = "Infraestructura";
+                        queueCard.classList.add('card-RCPI');
+                        badgeEstatus.classList.add('badge-RCPI');
+                        badgeEstatus.innerText = "Infraestructura";
+                        if (lblTipoSolicitudQueue) lblTipoSolicitudQueue.innerText = "Revisión Cuenta Pública - Infraestructura";
+                        if (timeEstimate) timeEstimate.innerText = "Est. ~25 min";
                     } else {
-                        window.location.href = "estatus.html";
+                        cmbRubro.value = "";
+                        badgeEstatus.innerText = "Por Definir";
+                        if (timeEstimate) timeEstimate.innerText = "Calculando...";
                     }
-                } else {
-                    const err = await response.json();
-                    console.error(err);
-                    alert("Error en la respuesta del servidor de base de datos.");
-                }
-            } catch (error) {
-                console.error("Error de red:", error);
-                alert("Fallo crítico de conexión con la API de Supabase.");
+                });
             }
+ 
+            // Formatear el concepto numérico a 3 dígitos obligatorios ("000")
+            const txtConcepto = document.getElementById('num_concepto');
+            txtConcepto.addEventListener('blur', () => {
+                let valor = txtConcepto.value.trim();
+                if(valor && !isNaN(valor)) {
+                    txtConcepto.value = valor.padStart(3, '0');
+                }
+            });
+ 
+            // Máscara y formato de Pesos en tiempo real para el Importe
+            const txtImporte = document.getElementById('importe');
+            txtImporte.addEventListener('input', (e) => {
+                let valor = e.target.value.replace(/\D/g, "");
+                if(valor === "") { e.target.value = ""; return; }
+                let numero = (parseFloat(valor) / 100).toFixed(2);
+                e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(numero);
+            });
+ 
+            // Extractor IA Lógico Semántico del Campo Condición y Generador de Síntesis
+            const txtCondicion = document.getElementById('condicion_hallazgo');
+            const containerKeywords = document.getElementById('keywordsContainer');
+            const containerSynthesis = document.getElementById('synthesisOptions');
+            const txtSintesisFinal = document.getElementById('sintesis_condicion');
+            const cmbSujeto = document.getElementById('sujeto_fiscalizado');
+ 
+            txtCondicion.addEventListener('input', () => {
+                let texto = txtCondicion.value.toLowerCase().trim();
+                
+                // 1. ANÁLISIS DE PALABRAS CLAVE (MANTIENE TU LÓGICA)
+                const patronesAI = [
+                    /(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, 
+                    /al\s+[a-záéíóú]+ar|al\s+[a-záéíóú]+er|al\s+[a-záéíóú]+ir/gi, 
+                    /(?:application|autorización|omisión|incumplimiento|inexistencia|duplicidad)\s+de(?:\s+una)?\s+[a-záéíóú]+/gi, 
+                    /\b(?:autorizó|autorizo|comprobó|comprobo|omitió|omitio|incumplió|incumplio|detectó|detecto|validó|valido|carece|excede|ejecutó|ejecuto)\b/gi 
+                ];
+ 
+                palabrasClaveExtraidas = [];
+                patronesAI.forEach(regex => {
+                    let coincidencias = texto.match(regex);
+                    if (coincidencias) {
+                        palabrasClaveExtraidas = palabrasClaveExtraidas.concat(coincidencias);
+                    }
+                });
+ 
+                palabrasClaveExtraidas = [...new Set(palabrasClaveExtraidas)];
+ 
+                if (palabrasClaveExtraidas.length > 0) {
+                    containerKeywords.innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('');
+                } else {
+                    containerKeywords.innerHTML = "<span style='color: #999;'>Analizando... (No se detectan verbos rectores aún)</span>";
+                }
+                // 2. MOTOR DINÁMICO DE SÍNTESIS (NUEVO REGEX SEMÁNTICO)
+                if (texto.length < 15) {
+                    containerSynthesis.innerHTML = "<span style='color: #666; font-style: italic;'>Escribe una condición más extensa para estructurar las opciones...</span>";
+                    return;
+                }
+                // Obtener el nombre limpio del Sujeto Fiscalizado seleccionado
+                let sujetoNombre = "El sujeto";
+                if(cmbSujeto.value) {
+                    let optionText = cmbSujeto.options[cmbSujeto.selectedIndex].text;
+                    sujetoNombre = optionText.split('-')[0].split('_')[1] || optionText.split('-')[0] || "El municipio";
+                    sujetoNombre = sujetoNombre.trim();
+                }
+                // Búsqueda inteligente de conceptos jurídicos en el texto del usuario
+                let conceptoIncumplimiento = texto.includes("contrat") ? "incumplimiento contractual" : 
+                                             texto.includes("estimaci") ? "estimación tardía" : "sanción administrativa";
+                
+                let conceptoPena = texto.includes("multa") ? "multa" : 
+                                   texto.includes("sanci") ? "sanción" : "penalización";
+                // Modelos de síntesis estructurados de 5 a 8 palabras según tus ejemplos de diseño
+                let opcionesGeneradas = [
+                    `${sujetoNombre} no acreditó ${conceptoPena} por ${conceptoIncumplimiento}`,
+                    `Falta acreditación de ${conceptoPena} al contratista`,
+                    `Incumplimiento contractual sin ${conceptoPena} al contratista`
+                ];
+                // Ajustes contextuales finos si la condición habla de autorizaciones o retrasos
+                if (texto.includes("tard") || texto.includes("retras") || texto.includes("autoriz")) {
+                    opcionesGeneradas[1] = `Autorización tardía sin aplicación de ${conceptoPena} contractual`;
+                    opcionesGeneradas[2] = `No se acreditó ${conceptoPena} por estimación tardía`;
+                }
+                // Renderizar los botones interactivos
+                containerSynthesis.innerHTML = opcionesGeneradas.map((opcion, index) => {
+                    // Limpiar mayúscula inicial por estética uniforme
+                    let opcionFormateada = opcion.charAt(0).toUpperCase() + opcion.slice(1);
+                    let numPalabras = opcionFormateada.split(/\s+/).length;
+                    return `
+                        <button type="button" class="synthesis-btn-option" onclick="seleccionarSintesis('${opcionFormateada}')">
+                            ✨ "${opcionFormateada}" <span style="float: right; font-size: 0.75rem; color: #7f8c8d;">(${numPalabras} palabras)</span>
+                        </button>
+                    `;
+                }).join('');
+            });
         });
+        // Función global para capturar la opción seleccionada con el clic
+        function seleccionarSintesis(textoSeleccionado) {
+            const txtSintesisFinal = document.getElementById('sintesis_condicion');
+            if (txtSintesisFinal) {
+                txtSintesisFinal.value = textoSeleccionado;
+                // Breve efecto visual de confirmación en el input
+                txtSintesisFinal.style.backgroundColor = "#e8f8f5";
+                setTimeout(() => { txtSintesisFinal.style.backgroundColor = ""; }, 400);
+            }
+        }
+ 
+        // Evento Submit y Envío estructurado a Supabase
+        const form = document.getElementById('hallazgoForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+ 
+                if (!folioTicketActivo) {
+                    alert("❌ Error de interrelación: No se detecta un número de Ticket activo.");
+                    return;
+                }
+ 
+                // Limpiar el formato de moneda para convertirlo en Float Puro para la Base de Datos
+                const rawImporte = document.getElementById('importe').value.replace(/[^0-9.-]+/g, "");
+ 
+                const registroHallazgo = {
+                    fecha_recepcion: document.getElementById('fecha_recepcion').value,
+                    sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
+                    tipo_auditoria: document.getElementById('tipo_auditoria').value,
+                    rubro_hallazgo: document.getElementById('rubro_hallazgo').value, 
+                    tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
+                    num_concepto: document.getElementById('num_concepto').value,
+                    titulo_observacion: document.getElementById('titulo_observacion').value,
+                    rubro_especifico: document.getElementById('rubro_combobox').value,
+                    importe: parseFloat(rawImporte) || 0,
+                    link_soporte: document.getElementById('link_soporte').value || null,
+                    condicion: document.getElementById('condicion_hallazgo').value,
+                    palabras_clave_ia: palabrasClaveExtraidas.join(', '), 
+                    sintesis_condicion: document.getElementById('sintesis_condicion').value, // ENVIADO COMO CONCEPTO GENERAL
+                    sustancia_hallazgo: document.getElementById('sustancia_hallazgo').value, // NUEVO CAMPO ADICIONAL
+                    comentarios_revision: document.getElementById('comentarios_revision').value || "Sin comentarios"
+                };
+ 
+                try {
+                    const urlConFiltro = `${URL_HALLAZGOS}?folio_user=eq.${encodeURIComponent(folioTicketActivo)}`;
+ 
+                    const response = await fetch(urlConFiltro, {
+                        method: 'PATCH', 
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(registroHallazgo)
+                    });
+ 
+                    if (response.ok) {
+                        alert(`✅ Cédula de Hallazgo completada con éxito para el Folio: ${folioTicketActivo}`);
+                        form.reset();
+                        window.location.href = "estatus.html";
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        alert("❌ Error en Supabase al actualizar: " + (errData.message || response.statusText || response.status));
+                    }
+                }
+                catch (error) {
+                    console.error("Error en la petición HTTP:", error);
+                    alert("❌ Fallo de red al intentar registrar la cédula.");
+                }
+            });
+        }
     </script>
 </body>
 </html>
