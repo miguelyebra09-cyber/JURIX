@@ -59,7 +59,7 @@
 
         /* Contenedor del Formulario */
         .form-container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 40px auto;
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
@@ -118,7 +118,6 @@
             min-height: 100px;
         }
 
-        /* Botones */
         .btn-submit {
             background-color: var(--blanco);
             color: var(--gris-oscuro);
@@ -208,14 +207,44 @@
             </div>
 
             <div class="form-group">
-                <label for="cmbServicios">Tipo de Servicio Solicitado (Selecciona una opción):</label>
+                <label for="cmbServicios">Servicio Solicitado:</label>
                 <select id="cmbServicios" required>
-                    <option value="">-- Selecciona un Servicio --</option>
-                    <option value="Asesoría Jurídica Presencial u Online (_A001)">Asesoría Jurídica Presencial u Online (_A001)</option>
-                    <option value="Revisión Jurídica de Auditoría u Obra Pública (_B001)">Revisión Jurídica de Auditoría u Obra Pública (_B001)</option>
-                    <option value="Validación de Informes Financieros Municipales (_B002)">Validación de Informes Financieros Municipales (_B002)</option>
-                    <option value="Atención de Requerimientos Legales y Consultas de Autoridades (_B003)">Atención de Requerimientos Legales y Consultas de Autoridades (_B003)</option>
+                    <option value="" disabled selected>-- Seleccione Servicio --</option>
+                    <option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
+                    <option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
+                    <option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
+                    <option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
+                    <option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
+                    <option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="txtEnte">Ente Fiscalizado (Siglas, Ej. Celaya, Guanajuato):</label>
+                <input type="text" id="txtEnte" placeholder="Ingrese el Ente Fiscalizado..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="txtNumAuditoria">Número de Auditoría / Expediente:</label>
+                <input type="text" id="txtNumAuditoria" placeholder="Ej. AE-045-2024" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cmbEjercicio">Ejercicio Fiscal Auditado:</label>
+                <select id="cmbEjercicio" required>
+                    <option value="" disabled selected>-- Seleccione Ejercicio --</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="txtObservacion">Número de Observación / Hallazgo / Párrafo Específico:</label>
+                <input type="text" id="txtObservacion" placeholder="Ej. Observación 1, Hallazgo 4, Párrafo 2..." required>
             </div>
 
             <div class="form-group">
@@ -231,7 +260,7 @@
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
         const URL_REGISTRO_TICKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tickets_jurix";
 
-        // Carga de Sesión y Credenciales desde Index
+        // Validación y Carga de Sesión
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
         const rawRol = localStorage.getItem('jurix_perfil') || ""; 
         const userName = localStorage.getItem('last_user_name');
@@ -243,7 +272,7 @@
             window.location.href = "index.html";
         }
 
-        // Mostrar credenciales en la Top Bar y Autocompletar Formulario
+        // Establecer textos e inputs de lectura obligatorios
         document.getElementById('lblNombre').textContent = userName || "Desconocido";
         document.getElementById('lblRol').textContent = rawRol;
         
@@ -251,29 +280,40 @@
         document.getElementById('user_puesto').value = userPuesto || "";
         document.getElementById('user_area').value = userArea || "";
 
-        // Envío e Inserción en Supabase
+        // Procesamiento y Guardado
         document.getElementById('ticketForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const servicio = document.getElementById('cmbServicios').value;
+            const servicioSeleccionado = document.getElementById('cmbServicios').value;
+            const ente = document.getElementById('txtEnte').value;
+            const numAuditoria = document.getElementById('txtNumAuditoria').value;
+            const ejercicio = document.getElementById('cmbEjercicio').value;
+            const observacion = document.getElementById('txtObservacion').value;
             const descripcion = document.getElementById('txtDescripcion').value;
 
-            // Generación de Folio Aleatorio Inteligente en base al servicio seleccionado
-            const numeroAleatorio = Math.floor(1000 + Math.random() * 9000); 
-            let codigoServicio = "GEN";
-            if(servicio.includes('_A001')) codigoServicio = "A001";
-            if(servicio.includes('_B001')) codigoServicio = "B001";
-            if(servicio.includes('_B002')) codigoServicio = "B002";
-            if(servicio.includes('_B003')) codigoServicio = "B003";
+            // LÓGICA DE FOLIO FIEL: Cambia el formato final dependiendo del value del combobox
+            const numeroConsecutivo = Math.floor(1000 + Math.random() * 9000); 
+            let sufijoCodigo = "GEN";
 
-            const folioGenerado = `JURIX-DGAJ-DCPL-${codigoServicio}-${numeroAleatorio}`;
+            if (servicioSeleccionado === "DCPL_A001") sufijoCodigo = "A001";
+            else if (servicioSeleccionado === "DCPL_B001") sufijoCodigo = "B001";
+            else if (servicioSeleccionado === "DCPL_B002") sufijoCodigo = "B002";
+            else if (servicioSeleccionado === "DCPL_B003") sufijoCodigo = "B003";
+            else if (servicioSeleccionado === "DCPL_C001") sufijoCodigo = "C001";
+            else if (servicioSeleccionado === "DCPL_D001") sufijoCodigo = "D001";
+
+            const folioGenerado = `JURIX-DGAJ-DCPL-${sufijoCodigo}-${numeroConsecutivo}`;
 
             const payload = {
                 folio: folioGenerado,
                 solicitante: userName,
                 puesto: userPuesto,
                 area: userArea,
-                servicio_solicitado: servicio,
+                servicio_solicitado: servicioSeleccionado,
+                ente_fiscalizado: ente,
+                numero_auditoria: numAuditoria,
+                ejercicio_fiscal: ejercicio,
+                numero_observacion: observacion,
                 descripcion_asunto: descripcion,
                 estatus: "Pendiente de Asignar",
                 fecha_registro: new Date().toISOString()
@@ -292,25 +332,32 @@
                 });
 
                 if (response.ok) {
+                    // ADOPCIÓN FIEL de variables requeridas por páginas secundarias de tu sistema
                     localStorage.setItem('generated_folio', folioGenerado);
                     localStorage.setItem('jurix_folio_activo', folioGenerado);
                     localStorage.setItem('folio_ticket', folioGenerado);
+                    localStorage.setItem('folio_user', folioGenerado);
                     
-                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
+                    localStorage.setItem('usuario_nombre', userName);
+                    localStorage.setItem('puesto_usuario', userPuesto);
+                    localStorage.setItem('area_usuario', userArea);
                     
-                    if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
+                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial Generado: ${folioGenerado}`);
+                    
+                    // Condicionamiento nativo hacia hallazgo si pertenece al bloque B de auditorías
+                    if(servicioSeleccionado === 'DCPL_B001' || servicioSeleccionado === 'DCPL_B002' || servicioSeleccionado === 'DCPL_B003') {
                         window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
                     } else {
                         window.location.href = "menu.html";
                     }
                 } else {
                     const err = await response.json();
-                    console.error(err);
-                    alert("Error en la respuesta del servidor de base de datos.");
+                    console.error("Detalle de Base de Datos:", err);
+                    alert("Error al intentar insertar el registro en Supabase.");
                 }
             } catch (error) {
-                console.error("Error de red:", error);
-                alert("Fallo crítico de conexión con la API de Supabase.");
+                console.error("Fallo de Red:", error);
+                alert("Fallo crítico de comunicación con la API REST de Supabase.");
             }
         });
 
