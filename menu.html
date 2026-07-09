@@ -59,14 +59,14 @@
         /* Contenedor Principal en Dos Columnas */
         .main-container {
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 380px;
             gap: 30px;
             padding: 40px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 950px) {
             .main-container {
                 grid-template-columns: 1fr;
             }
@@ -116,15 +116,16 @@
 
         /* Estilos de botones Deshabilitados */
         .menu-btn.disabled {
-            background-color: #555555;
-            color: #888888;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-            opacity: 0.6;
+            background-color: #444444 !important;
+            color: #777777 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+            opacity: 0.5;
+            border-color: transparent !important;
         }
 
-        /* Panel Lateral de Notificaciones (Tablero Horizontal en Filas) */
+        /* Panel Lateral de Notificaciones */
         .notifications-panel {
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
@@ -215,7 +216,6 @@
 </head>
 <body>
 
-    <!-- Barra Superior -->
     <div class="top-bar">
         <div class="logo-section">
             <h1>JURIX</h1>
@@ -226,10 +226,8 @@
         </div>
     </div>
 
-    <!-- Contenedor de la interfaz -->
     <div class="main-container">
         
-        <!-- Grid de Opciones Interactivos -->
         <div class="menu-section">
             <h2>Panel de Acciones Directas</h2>
             <div class="menu-grid">
@@ -244,9 +242,8 @@
             </div>
         </div>
 
-        <!-- Tablero de Notificaciones Lateral -->
         <div class="notifications-panel" id="panelNotificaciones" style="display: none;">
-            <h3>Estatus Crítico (Solo Administrador)</h3>
+            <h3>Estatus Crítico (Panel)</h3>
             
             <div class="notif-row">
                 <div class="notif-label">
@@ -278,46 +275,44 @@
     </div>
 
     <script>
-        // Configuración de conexión de Supabase (Tomada de tu index.html)
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
         const URL_ESTATUS_TIKETS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tikets";
 
-        // 1. Obtener los datos almacenados en localStorage por el index.html
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
-        const userRol = localStorage.getItem('jurix_perfil'); // 'usuario', 'revisor', 'supervisor', 'administrador'
+        const rawRol = localStorage.getItem('jurix_perfil') || ""; 
         const userName = localStorage.getItem('last_user_name');
 
-        // Seguridad: Si no hay sesión válida, regresar al login
+        // CORRECCIÓN CLAVE: Convertimos el rol a minúsculas limpias para evitar fallos de Case-Sensitivity
+        const userRol = rawRol.trim().toLowerCase();
+
         if (sesionActiva !== 'true' || !userRol) {
             alert("No has iniciado sesión o tu sesión expiró.");
             window.location.href = "index.html";
         }
 
-        // 2. Desplegar los datos del usuario logueado en la interfaz
         document.getElementById('lblNombre').textContent = userName || "Desconocido";
-        document.getElementById('lblRol').textContent = userRol;
+        document.getElementById('lblRol').textContent = rawRol; // Muestra el rol original en la barra superior
 
-        // 3. Lógica de Enrutamiento Inteligente y Habilitación de Botones
         function configurarMenuPorRol() {
-            // Configurar enlace dinámico de consulta según el rol
             const btnConsultar = document.getElementById('btnConsultar');
+            
+            // Direccionar consulta según rol normalizado
             if (userRol === 'usuario') {
                 btnConsultar.href = "consultauser.html";
             } else if (userRol === 'revisor') {
                 btnConsultar.href = "consultarevi.html";
             } else if (userRol === 'administrador' || userRol === 'supervisor') {
-                // Se infiere que administrador usa este; mapeado para resguardar la lógica solicitada
                 btnConsultar.href = "consultaradmin.html";
             }
 
-            // --- Reglas de Validación de Botones ---
+            // --- REGLAS DE ACCESO CORREGIDAS ---
             
-            // Asignar Ticket: Solo Administrador
+            // Asignar Ticket: Bloqueado a cualquiera que NO sea administrador
             if (userRol !== 'administrador') {
                 deshabilitarBoton('btnAsignar');
             }
 
-            // Atender, Modificar, Métricas, Base de Datos: Administrador y/o Revisor (No para Usuario/Supervisor)
+            // Atender, Modificar, Métricas, Base de Datos: Habilitados para administrador y revisor
             if (userRol !== 'administrador' && userRol !== 'revisor') {
                 deshabilitarBoton('btnAtender');
                 deshabilitarBoton('btnModificar');
@@ -325,7 +320,7 @@
                 deshabilitarBoton('btnBaseDatos');
             }
 
-            // Mostrar el tablero horizontal de notificaciones si es administrador
+            // SI ES ADMINISTRADOR: Mostrar y forzar la carga del tablero lateral de estatus
             if (userRol === 'administrador') {
                 document.getElementById('panelNotificaciones').style.display = 'block';
                 cargarMetricasSupabase();
@@ -336,12 +331,11 @@
             const btn = document.getElementById(idBoton);
             if (btn) {
                 btn.classList.add('disabled');
-                btn.removeAttribute('href'); // Quita el hipervínculo
-                btn.onclick = function(e) { e.preventDefault(); }; // Previene cualquier acción
+                btn.removeAttribute('href');
+                btn.onclick = function(e) { e.preventDefault(); };
             }
         }
 
-        // 4. Conectar al Tablero de Estatus de Supabase (Tabla estatus_tikets)
         async function cargarMetricasSupabase() {
             try {
                 const response = await fetch(URL_ESTATUS_TIKETS, {
@@ -355,10 +349,7 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    
                     if (data && data.length > 0) {
-                        // Tomamos los registros/sumas de las columnas mapeadas
-                        // Modifica la lógica si manejas sumatorias o un registro único de contadores
                         let pAsignar = 0;
                         let pAtender = 0;
                         let pLiberar = 0;
@@ -372,15 +363,11 @@
                         document.getElementById('countAsignar').textContent = pAsignar;
                         document.getElementById('countAtender').textContent = pAtender;
                         document.getElementById('countLiberar').textContent = pLiberar;
-                        
-                        // Conteo total diferenciado solicitado
                         document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
                     }
-                } else {
-                    console.error("Error al leer la tabla estatus_tikets");
                 }
             } catch (error) {
-                console.error("Error de conexión con Supabase para métricas:", error);
+                console.error("Error cargando estatus_tikets:", error);
             }
         }
 
@@ -389,7 +376,6 @@
             window.location.href = "index.html";
         }
 
-        // Inicializar la configuración de la vista al cargar la página
         window.onload = configurarMenuPorRol;
     </script>
 </body>
