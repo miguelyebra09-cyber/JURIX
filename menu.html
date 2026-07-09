@@ -124,14 +124,18 @@
             border-color: transparent !important;
         }
 
-        /* Panel Lateral de Notificaciones */
+        /* Panel Lateral de Notificaciones con Efecto Tira Infinita */
         .notifications-panel {
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 25px;
             border-top: 5px solid var(--naranja-nitido);
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            height: fit-content;
+            height: 380px; /* Altura fija para contener el scroll */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
 
         .notifications-panel h3 {
@@ -140,6 +144,33 @@
             border-bottom: 1px solid #444;
             padding-bottom: 10px;
             font-size: 1.2rem;
+            z-index: 10;
+            background: #252527; /* Evita que el texto se sobreponga al subir */
+            margin-bottom: 5px;
+        }
+
+        /* Contenedor Máscara de la Animación */
+        .marquee-viewport {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Contenedor que se desplaza */
+        .marquee-content {
+            display: flex;
+            flex-direction: column;
+            animation: scrollVertical 12s linear infinite;
+        }
+
+        /* Detener la tira infinita cuando se hace Hover */
+        .notifications-panel:hover .marquee-content {
+            animation-play-state: paused;
+        }
+
+        @keyframes scrollVertical {
+            0% { transform: translateY(-30%); }
+            100% { transform: translateY(0%); }
         }
 
         .notif-row {
@@ -148,6 +179,7 @@
             justify-content: space-between;
             padding: 15px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(30, 30, 30, 0.2);
         }
 
         .notif-label {
@@ -167,7 +199,7 @@
         }
 
         .badge-circle:hover {
-            transform: scale(1.25);
+            transform: scale(1.4);
         }
 
         .bg-red { background-color: var(--rojo-alerta); box-shadow: 0 0 8px var(--rojo-alerta); }
@@ -184,12 +216,13 @@
         }
 
         .total-box {
-            margin-top: 20px;
+            margin-top: auto;
             background: rgba(255, 102, 0, 0.15);
             border: 1px dashed var(--naranja-nitido);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             text-align: center;
+            z-index: 10;
         }
 
         .total-box div {
@@ -235,7 +268,7 @@
     <div class="main-container">
         
         <div class="menu-section">
-            <h2>Panel de Acciones Directas</h2>
+            <h2>Panel de Acciones</h2>
             <div class="menu-grid">
                 <a id="btnRegistrar" href="solicitud.html" class="menu-btn">Registrar Ticket de Servicio</a>
                 <a id="btnConsultar" href="#" class="menu-btn">Consultar Ticket</a>
@@ -249,34 +282,38 @@
         </div>
 
         <div class="notifications-panel" id="panelNotificaciones" style="display: none;">
-            <h3>Estatus Crítico (Panel)</h3>
+            <h3>🎫 Estatus General Tickets</h3>
             
-            <div class="notif-row">
-                <div class="notif-label">
-                    <a href="tablero.html?filtro=asignar"><span class="badge-circle bg-red"></span></a> Tickets Pendientes de Asignar
-                </div>
-                <div class="notif-count" id="countAsignar">0</div>
-            </div>
+            <div class="marquee-viewport">
+                <div class="marquee-content">
+                    <div class="notif-row">
+                        <div class="notif-label">
+                            <a href="tablero.html?filtro=asignar"><span class="badge-circle bg-red"></span></a> Tickets Pendientes de Asignar
+                        </div>
+                        <div class="notif-count" id="countAsignar">0</div>
+                    </div>
 
-            <div class="notif-row">
-                <div class="notif-label">
-                    <a href="tablero.html?filtro=atender"><span class="badge-circle bg-yellow"></span></a> Tickets Pendientes de Atender
-                </div>
-                <div class="notif-count" id="countAtender">0</div>
-            </div>
+                    <div class="notif-row">
+                        <div class="notif-label">
+                            <a href="tablero.html?filtro=atender"><span class="badge-circle bg-yellow"></span></a> Tickets Pendientes de Atender
+                        </div>
+                        <div class="notif-count" id="countAtender">0</div>
+                    </div>
 
-            <div class="notif-row">
-                <div class="notif-label">
-                    <a href="tablero.html?filtro=liberar"><span class="badge-circle bg-orange"></span></a> Tickets Pendientes de Liberar
-                </div>
-                <div class="notif-count" id="countLiberar">0</div>
-            </div>
+                    <div class="notif-row">
+                        <div class="notif-label">
+                            <a href="tablero.html?filtro=liberar"><span class="badge-circle bg-orange"></span></a> Tickets Pendientes de Liberar
+                        </div>
+                        <div class="notif-count" id="countLiberar">0</div>
+                    </div>
 
-            <div class="notif-row">
-                <div class="notif-label">
-                    <span class="badge-circle bg-gray"></span> Tickets Cancelados
+                    <div class="notif-row">
+                        <div class="notif-label">
+                            <span class="badge-circle bg-gray"></span> Tickets Cancelados
+                        </div>
+                        <div class="notif-count" id="countCancelados">0</div>
+                    </div>
                 </div>
-                <div class="notif-count" id="countCancelados">0</div>
             </div>
 
             <div class="total-box">
@@ -288,8 +325,9 @@
     </div>
 
     <script>
+        // CORRECCIÓN DE URL AÑADIENDO EL PARÁMETRO EXPLICITO SELECT DE SUPABASE REST API
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-        const URL_ESTATUS_TIKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tiket";
+        const URL_ESTATUS_TIKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tiket?select=*";
 
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
         const rawRol = localStorage.getItem('jurix_perfil') || ""; 
@@ -328,7 +366,7 @@
             }
 
             if (userRol === 'administrador') {
-                document.getElementById('panelNotificaciones').style.display = 'block';
+                document.getElementById('panelNotificaciones').style.display = 'flex';
                 cargarMetricasSupabase();
             }
         }
@@ -355,32 +393,31 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Datos crudos leídos:", data);
+                    console.log("Datos crudos leídos exitosamente:", data);
 
                     let pAsignar = 0;
                     let pAtender = 0;
                     let pLiberar = 0;
                     let pCancelados = 0;
 
-                    // Lógica segura: solo cuenta celdas que traigan texto real y contengan "JURIX"
                     if (Array.isArray(data)) {
                         data.forEach(fila => {
-                            if (fila.tiketpendienteasignar && String(fila.tiketpendienteasignar).toUpperCase().includes("JURIX")) {
+                            // Limpieza estricta contra vacíos, NULL o cadenas 'EMPTY' de Supabase
+                            if (fila.tiketpendienteasignar && String(fila.tiketpendienteasignar).trim() !== "" && String(fila.tiketpendienteasignar).toUpperCase() !== "EMPTY") {
                                 pAsignar++;
                             }
-                            if (fila.tiketpendienteatender && String(fila.tiketpendienteatender).toUpperCase().includes("JURIX")) {
+                            if (fila.tiketpendienteatender && String(fila.tiketpendienteatender).trim() !== "" && String(fila.tiketpendienteatender).toUpperCase() !== "EMPTY") {
                                 pAtender++;
                             }
-                            if (fila.tiketpendienteliberar && String(fila.tiketpendienteliberar).toUpperCase().includes("JURIX")) {
+                            if (fila.tiketpendienteliberar && String(fila.tiketpendienteliberar).trim() !== "" && String(fila.tiketpendienteliberar).toUpperCase() !== "EMPTY") {
                                 pLiberar++;
                             }
-                            if (fila.tiketcancelado && String(fila.tiketcancelado).toUpperCase().includes("JURIX")) {
+                            if (fila.tiketcancelado && String(fila.tiketcancelado).trim() !== "" && String(fila.tiketcancelado).toUpperCase() !== "EMPTY") {
                                 pCancelados++;
                             }
                         });
                     }
 
-                    // Envío directo a los elementos del DOM
                     document.getElementById('countAsignar').textContent = pAsignar;
                     document.getElementById('countAtender').textContent = pAtender;
                     document.getElementById('countLiberar').textContent = pLiberar;
