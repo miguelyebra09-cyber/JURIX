@@ -105,7 +105,6 @@
             cursor: pointer;
         }
 
-        /* Efecto de Luz Neón Naranja al Pasar el Mouse */
         .menu-btn:hover:not(.disabled) {
             background-color: var(--gris-oscuro);
             color: var(--blanco);
@@ -114,7 +113,6 @@
             box-shadow: 0 0 15px var(--naranja-nitido), 0 0 25px var(--naranja-neon);
         }
 
-        /* Estilos de botones Deshabilitados */
         .menu-btn.disabled {
             background-color: #444444 !important;
             color: #777777 !important;
@@ -356,7 +354,7 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Datos recibidos de Supabase:", data); // Esto te permitirá ver la estructura real en la consola F12
+                    console.log("Registros devueltos:", data);
 
                     if (data && data.length > 0) {
                         let pAsignar = 0;
@@ -364,27 +362,18 @@
                         let pLiberar = 0;
                         let pCancelados = 0;
 
-                        // Condición robusta e insensible a mayúsculas o variaciones de texto nulo
                         const tieneFolioValido = (valor) => {
-                            if (valor === null || valor === undefined) return false;
+                            if (!valor) return false;
                             const texto = String(valor).trim().toUpperCase();
                             if (texto === "" || texto === "NULL" || texto === "EMPTY") return false;
                             return texto.includes("JURIX");
                         };
 
                         data.forEach(fila => {
-                            // Extracción por coincidencia parcial de claves por si Supabase cambia el orden o formato
-                            Object.keys(fila).forEach(key => {
-                                const lowerKey = key.toLowerCase().trim();
-                                const valorCelda = fila[key];
-
-                                if (tieneFolioValido(valorCelda)) {
-                                    if (lowerKey.includes("asignar")) pAsignar++;
-                                    else if (lowerKey.includes("atender")) pAtender++;
-                                    else if (lowerKey.includes("liberar")) pLiberar++;
-                                    else if (lowerKey.includes("cancelado")) pCancelados++;
-                                }
-                            });
+                            if (tieneFolioValido(fila.tiketpendienteasignar)) pAsignar++;
+                            if (tieneFolioValido(fila.tiketpendienteatender)) pAtender++;
+                            if (tieneFolioValido(fila.tiketpendienteliberar)) pLiberar++;
+                            if (tieneFolioValido(fila.tiketcancelado)) pCancelados++;
                         });
 
                         document.getElementById('countAsignar').textContent = pAsignar;
@@ -394,8 +383,6 @@
                         
                         document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
                     }
-                } else {
-                    console.error("Error en respuesta de servidor:", response.statusText);
                 }
             } catch (error) {
                 console.error("Error cargando estatus_tiket:", error);
