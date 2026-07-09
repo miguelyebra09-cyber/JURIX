@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Menú Principal</title>
+    <title>JURIX - Menú Principal</title>
     <style>
         :root {
             --naranja-nitido: #FF6600;
@@ -11,7 +11,8 @@
             --gris-oscuro: #333333;
             --gris-fondo: #1e1e1e;
             --blanco: #ffffff;
-            --deshabilitado: #555555;
+            --rojo-alerta: #ff3333;
+            --amarillo-alerta: #ffcc00;
         }
 
         body {
@@ -21,245 +22,375 @@
             padding: 0;
             min-height: 100vh;
             color: var(--blanco);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         /* Barra Superior de Usuario */
-        .navbar {
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-bottom: 3px solid var(--naranja-nitido);
+        .top-bar {
+            background-color: rgba(51, 51, 51, 0.9);
+            border-bottom: 4px solid var(--naranja-nitido);
             padding: 15px 30px;
-            box-sizing: border-box;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .navbar .logo-part h1 {
-            margin: 0;
+        .logo-section h1 {
             color: var(--naranja-nitido);
-            font-size: 1.8rem;
+            margin: 0;
+            font-size: 2rem;
             letter-spacing: 1px;
         }
 
-        .navbar .user-info {
+        .user-info-section {
             background: rgba(255, 102, 0, 0.1);
-            border: 1px solid var(--naranja-nitido);
-            padding: 8px 15px;
+            padding: 8px 20px;
             border-radius: 20px;
+            border: 1px solid var(--naranja-nitido);
             font-size: 0.95rem;
         }
 
-        .user-info span {
+        .user-info-section span {
             font-weight: bold;
             color: var(--naranja-nitido);
-        }
-
-        /* Contenedor del Menú */
-        .menu-container {
-            width: 100%;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .menu-title {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
-        .menu-subtitle {
-            color: #aaa;
-            margin-bottom: 40px;
-            font-size: 1.1rem;
+        /* Contenedor Principal en Dos Columnas */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        /* Cuadrícula de Opciones */
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sección del Menú Interactivo */
+        .menu-section h2 {
+            border-left: 5px solid var(--naranja-nitido);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
         }
 
-        /* Estilo Base de los Botones del Menú */
         .menu-btn {
-            background-color: transparent;
-            color: var(--blanco);
-            border: 2px solid var(--blanco);
-            padding: 25px 20px;
-            font-size: 1.15rem;
-            font-weight: 600;
+            background-color: var(--blanco);
+            color: var(--gris-oscuro);
+            padding: 20px;
             border-radius: 10px;
-            cursor: pointer;
+            text-align: center;
             text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            transition: all 0.4s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-
-        /* Efecto Luz Neón Naranja al Pasar el Mouse */
-        .menu-btn:not(.disabled):hover {
-            border-color: var(--naranja-nitido);
-            color: var(--naranja-nitido);
-            background-color: rgba(255, 102, 0, 0.05);
-            transform: translateY(-5px);
-            box-shadow: 0 0 15px var(--naranja-nitido), 0 0 5px var(--naranja-neon);
-            text-shadow: 0 0 8px rgba(255, 102, 0, 0.6);
-        }
-
-        /* Estado Deshabilitado */
-        .menu-btn.disabled {
-            border-color: var(--deshabilitado);
-            color: #777777;
-            background-color: rgba(0, 0, 0, 0.2);
-            cursor: not-allowed;
-            opacity: 0.6;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-logout {
-            margin-top: 40px;
-            background-color: transparent;
-            color: #ff3333;
-            border: 1px solid #ff3333;
-            padding: 10px 20px;
-            border-radius: 5px;
+            min-height: 60px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
         }
 
+        /* Efecto de Luz Neón Naranja al Pasar el Mouse */
+        .menu-btn:hover:not(.disabled) {
+            background-color: var(--gris-oscuro);
+            color: var(--blanco);
+            border-color: var(--naranja-nitido);
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px var(--naranja-nitido), 0 0 25px var(--naranja-neon);
+        }
+
+        /* Estilos de botones Deshabilitados */
+        .menu-btn.disabled {
+            background-color: #555555;
+            color: #888888;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        /* Panel Lateral de Notificaciones (Tablero Horizontal en Filas) */
+        .notifications-panel {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            border-top: 5px solid var(--naranja-nitido);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        .notifications-panel h3 {
+            margin-top: 0;
+            color: var(--blanco);
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .notif-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .notif-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .badge-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: inline-block;
+        }
+
+        .bg-red { background-color: var(--rojo-alerta); box-shadow: 0 0 8px var(--rojo-alerta); }
+        .bg-yellow { background-color: var(--amarillo-alerta); box-shadow: 0 0 8px var(--amarillo-alerta); }
+        .bg-orange { background-color: var(--naranja-nitido); box-shadow: 0 0 8px var(--naranja-nitido); }
+
+        .notif-count {
+            font-weight: bold;
+            font-size: 1.2rem;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+
+        .total-box {
+            margin-top: 20px;
+            background: rgba(255, 102, 0, 0.15);
+            border: 1px dashed var(--naranja-nitido);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .total-box div {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #bbb;
+        }
+
+        .total-box strong {
+            font-size: 1.4rem;
+            color: var(--naranja-nitido);
+        }
+        
+        .btn-logout {
+            background: none;
+            border: 1px solid #777;
+            color: #ccc;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 0.8rem;
+        }
         .btn-logout:hover {
-            background-color: #ff3333;
-            color: #fff;
-            box-shadow: 0 0 10px #ff3333;
+            background: var(--rojo-alerta);
+            color: white;
+            border-color: var(--rojo-alerta);
         }
     </style>
 </head>
 <body>
 
-    <!-- Barra de Estado e Información del Usuario -->
-    <div class="navbar">
-        <div class="logo-part">
+    <!-- Barra Superior -->
+    <div class="top-bar">
+        <div class="logo-section">
             <h1>JURIX</h1>
         </div>
-        <div class="user-info" id="sessionBadge">
-            Cargando sesión...
+        <div class="user-info-section">
+            Usuario: <span id="lblNombre">Cargando...</span> | Rol: <span id="lblRol">-</span>
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
     </div>
 
-    <!-- Contenedor Principal del Menú -->
-    <div class="menu-container">
-        <div class="menu-title">Panel Operativo</div>
-        <div class="menu-subtitle">Selecciona una opción de acuerdo a tus facultades en el sistema</div>
-
-        <div class="menu-grid">
-            <!-- 1. Registrar Ticket -->
-            <a href="solicitud.html" id="btn-registrar" class="menu-btn">Registrar Ticket de Servicio</a>
-
-            <!-- 2. Consultar Ticket (Redirección dinámica por JS) -->
-            <a href="#" id="btn-consultar" class="menu-btn">Consultar Ticket</a>
-
-            <!-- 3. Asignar Ticket (Solo Administrador) -->
-            <a href="asignartiket.html" id="btn-asignar" class="menu-btn">Asignar Ticket</a>
-
-            <!-- 4. Atender Ticket (Admin y Revisor/Supervisor) -->
-            <a href="atendertiket.html" id="btn-atender" class="menu-btn">Atender Ticket</a>
-
-            <!-- 5. Modificar Ticket (Admin y Revisor/Supervisor) -->
-            <a href="modficartiket.html" id="btn-modificar" class="menu-btn">Modificar Ticket</a>
-
-            <!-- 6. Métricas (Admin y Revisor/Supervisor) -->
-            <a href="metricas.html" id="btn-metricas" class="menu-btn">Métricas</a>
-
-            <!-- 7. Base de Datos (Admin y Revisor/Supervisor) -->
-            <a href="basedatos.html" id="btn-database" class="menu-btn">Base de Datos</a>
-
-            <!-- 8. Utilerías (Todos) -->
-            <a href="utilerías.html" id="btn-utilerias" class="menu-btn">Utilerías</a>
+    <!-- Contenedor de la interfaz -->
+    <div class="main-container">
+        
+        <!-- Grid de Opciones Interactivos -->
+        <div class="menu-section">
+            <h2>Panel de Acciones Directas</h2>
+            <div class="menu-grid">
+                <a id="btnRegistrar" href="solicitud.html" class="menu-btn">Registrar Ticket de Servicio</a>
+                <a id="btnConsultar" href="#" class="menu-btn">Consultar Ticket</a>
+                <a id="btnAsignar" href="asignartiket.html" class="menu-btn">Asignar Ticket</a>
+                <a id="btnAtender" href="atendertiket.html" class="menu-btn">Atender Ticket</a>
+                <a id="btnModificar" href="modficartiket.html" class="menu-btn">Modificar Ticket</a>
+                <a id="btnMetricas" href="metricas.html" class="menu-btn">Métricas</a>
+                <a id="btnBaseDatos" href="basedatos.html" class="menu-btn">Base de Datos</a>
+                <a id="btnUtilerias" href="utilerías.html" class="menu-btn">Utilerías</a>
+            </div>
         </div>
 
-        <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <!-- Tablero de Notificaciones Lateral -->
+        <div class="notifications-panel" id="panelNotificaciones" style="display: none;">
+            <h3>Estatus Crítico (Solo Administrador)</h3>
+            
+            <div class="notif-row">
+                <div class="notif-label">
+                    <span class="badge-circle bg-red"></span> Tickets Pendientes de Asignar
+                </div>
+                <div class="notif-count" id="countAsignar">0</div>
+            </div>
+
+            <div class="notif-row">
+                <div class="notif-label">
+                    <span class="badge-circle bg-yellow"></span> Tickets Pendientes de Atender
+                </div>
+                <div class="notif-count" id="countAtender">0</div>
+            </div>
+
+            <div class="notif-row">
+                <div class="notif-label">
+                    <span class="badge-circle bg-orange"></span> Tickets Pendientes de Liberar
+                </div>
+                <div class="notif-count" id="countLiberar">0</div>
+            </div>
+
+            <div class="total-box">
+                <div>Total General de Tickets Activos</div>
+                <strong id="countTotal">0</strong>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. Validar que la sesión esté activa, de lo contrario regresar al index.html
-            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
-                alert("No has iniciado sesión o tu sesión ha expirado.");
-                window.location.href = "index.html";
-                return;
-            }
+        // Configuración de conexión de Supabase (Tomada de tu index.html)
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+        const URL_ESTATUS_TIKETS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tikets";
 
-            // 2. Recuperar el rol y el nombre guardados en el login
-            // Convertimos a minúsculas para evitar discrepancias de escritura (ej. "Usuario" vs "usuario")
-            const perfil = (localStorage.getItem('jurix_perfil') || '').toLowerCase().trim();
-            const nombre = localStorage.getItem('last_user_name') || 'Usuario del Sistema';
+        // 1. Obtener los datos almacenados en localStorage por el index.html
+        const sesionActiva = localStorage.getItem('jurix_sesion_activa');
+        const userRol = localStorage.getItem('jurix_perfil'); // 'usuario', 'revisor', 'supervisor', 'administrador'
+        const userName = localStorage.getItem('last_user_name');
 
-            // Mostrar la información en la barra superior
-            const sessionBadge = document.getElementById('sessionBadge');
-            sessionBadge.innerHTML = `Usuario: <span>${nombre}</span> | Rol: <span style="text-transform: uppercase;">${perfil}</span>`;
+        // Seguridad: Si no hay sesión válida, regresar al login
+        if (sesionActiva !== 'true' || !userRol) {
+            alert("No has iniciado sesión o tu sesión expiró.");
+            window.location.href = "index.html";
+        }
 
-            // 3. Configurar la redirección dinámica de "Consultar Ticket"
-            const btnConsultar = document.getElementById('btn-consultar');
-            if (perfil === 'usuario') {
+        // 2. Desplegar los datos del usuario logueado en la interfaz
+        document.getElementById('lblNombre').textContent = userName || "Desconocido";
+        document.getElementById('lblRol').textContent = userRol;
+
+        // 3. Lógica de Enrutamiento Inteligente y Habilitación de Botones
+        function configurarMenuPorRol() {
+            // Configurar enlace dinámico de consulta según el rol
+            const btnConsultar = document.getElementById('btnConsultar');
+            if (userRol === 'usuario') {
                 btnConsultar.href = "consultauser.html";
-            } else if (perfil === 'revisor' || perfil === 'supervisor') {
+            } else if (userRol === 'revisor') {
                 btnConsultar.href = "consultarevi.html";
-            } else if (perfil === 'administrador' || perfil === 'admin') {
+            } else if (userRol === 'administrador' || userRol === 'supervisor') {
+                // Se infiere que administrador usa este; mapeado para resguardar la lógica solicitada
                 btnConsultar.href = "consultaradmin.html";
-            } else {
-                // Fallback por defecto si hay un rol imprevisto
-                btnConsultar.href = "consultauser.html"; 
             }
 
-            // 4. Control de Restricciones y Deshabilitación de Opciones
-
-            // Regla: Asignar Ticket -> Solo Administrador
-            const esAdmin = (perfil === 'administrador' || perfil === 'admin');
-            // Regla: Atender, Modificar, Métricas, Base de Datos -> Administrador, Revisor o Supervisor
-            const esStaff = (perfil === 'administrador' || perfil === 'admin' || perfil === 'revisor' || perfil === 'supervisor');
-
-            if (!esAdmin) {
-                deshabilitarEnlace('btn-asignar');
+            // --- Reglas de Validación de Botones ---
+            
+            // Asignar Ticket: Solo Administrador
+            if (userRol !== 'administrador') {
+                deshabilitarBoton('btnAsignar');
             }
 
-            if (!esStaff) {
-                deshabilitarEnlace('btn-atender');
-                deshabilitarEnlace('btn-modificar');
-                deshabilitarEnlace('btn-metricas');
-                deshabilitarEnlace('btn-database');
+            // Atender, Modificar, Métricas, Base de Datos: Administrador y/o Revisor (No para Usuario/Supervisor)
+            if (userRol !== 'administrador' && userRol !== 'revisor') {
+                deshabilitarBoton('btnAtender');
+                deshabilitarBoton('btnModificar');
+                deshabilitarBoton('btnMetricas');
+                deshabilitarBoton('btnBaseDatos');
             }
-        });
 
-        // Función auxiliar para deshabilitar visual y funcionalmente los botones/enlaces
-        function deshabilitarEnlace(idElemento) {
-            const elemento = document.getElementById(idElemento);
-            if (elemento) {
-                elemento.classList.add('disabled');
-                elemento.removeAttribute('href'); // Quita el enlace de navegación
-                elemento.addEventListener('click', function(e) {
-                    e.preventDefault(); // Bloquea cualquier acción de click incidental
-                });
+            // Mostrar el tablero horizontal de notificaciones si es administrador
+            if (userRol === 'administrador') {
+                document.getElementById('panelNotificaciones').style.display = 'block';
+                cargarMetricasSupabase();
             }
         }
 
-        // Función para salir de forma segura
+        function deshabilitarBoton(idBoton) {
+            const btn = document.getElementById(idBoton);
+            if (btn) {
+                btn.classList.add('disabled');
+                btn.removeAttribute('href'); // Quita el hipervínculo
+                btn.onclick = function(e) { e.preventDefault(); }; // Previene cualquier acción
+            }
+        }
+
+        // 4. Conectar al Tablero de Estatus de Supabase (Tabla estatus_tikets)
+        async function cargarMetricasSupabase() {
+            try {
+                const response = await fetch(URL_ESTATUS_TIKETS, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data && data.length > 0) {
+                        // Tomamos los registros/sumas de las columnas mapeadas
+                        // Modifica la lógica si manejas sumatorias o un registro único de contadores
+                        let pAsignar = 0;
+                        let pAtender = 0;
+                        let pLiberar = 0;
+
+                        data.forEach(fila => {
+                            pAsignar += parseInt(fila.tiketpendienteasignar || 0);
+                            pAtender += parseInt(fila.tiketpendienteatender || 0);
+                            pLiberar += parseInt(fila.tiketpendienteliberar || 0);
+                        });
+
+                        document.getElementById('countAsignar').textContent = pAsignar;
+                        document.getElementById('countAtender').textContent = pAtender;
+                        document.getElementById('countLiberar').textContent = pLiberar;
+                        
+                        // Conteo total diferenciado solicitado
+                        document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
+                    }
+                } else {
+                    console.error("Error al leer la tabla estatus_tikets");
+                }
+            } catch (error) {
+                console.error("Error de conexión con Supabase para métricas:", error);
+            }
+        }
+
         function cerrarSesion() {
             localStorage.clear();
             window.location.href = "index.html";
         }
+
+        // Inicializar la configuración de la vista al cargar la página
+        window.onload = configurarMenuPorRol;
     </script>
 </body>
 </html>
