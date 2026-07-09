@@ -12,6 +12,7 @@
             --gris-fondo: #1e1e1e;
             --blanco: #ffffff;
             --rojo-alerta: #ff3333;
+            --amarillo-alerta: #ffcc00;
             --gris-input: #2a2a2a;
             --gris-borde: #444444;
         }
@@ -68,6 +69,25 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
+        /* Bloques de Secciones Solicitadas */
+        .form-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 102, 0, 0.15);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            color: var(--naranja-nitido);
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         h2 {
             border-left: 5px solid var(--naranja-nitido);
             padding-left: 15px;
@@ -78,6 +98,7 @@
 
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
 
         label {
@@ -113,6 +134,18 @@
             cursor: not-allowed;
         }
 
+        /* Indicador visual de color para Prioridad */
+        .priority-indicator {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: none;
+            box-shadow: 0 0 8px transparent;
+        }
+
         textarea {
             resize: vertical;
             min-height: 120px;
@@ -129,7 +162,6 @@
             cursor: pointer;
             width: 100%;
             transition: all 0.3s ease;
-            margin-top: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
@@ -191,47 +223,67 @@
         <h2>Registrar Ticket de Servicio</h2>
         
         <form id="ticketForm">
-            <div class="form-group">
-                <label for="txtFolio">Folio del Ticket (Generado Automáticamente):</label>
-                <input type="text" id="txtFolio" placeholder="Seleccione un servicio para calcular..." readonly required>
+            
+            <div class="form-section">
+                <h3>1. Datos del Solicitante</h3>
+                
+                <div class="form-group">
+                    <label for="user_nombre">Nombre Solicitante:</label>
+                    <input type="text" id="user_nombre" readonly required>
+                </div>
+
+                <div class="form-group">
+                    <label for="user_puesto">Puesto:</label>
+                    <input type="text" id="user_puesto" readonly required>
+                </div>
+
+                <div class="form-group">
+                    <label for="user_area">Área de Adscripción:</label>
+                    <input type="text" id="user_area" readonly required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="txtFecha">Fecha de Registro:</label>
-                <input type="text" id="txtFecha" readonly required>
-            </div>
+            <div class="form-section">
+                <h3>2. Detalles del Trámite o Ticket</h3>
 
-            <div class="form-group">
-                <label for="user_nombre">Nombre del Servidor Público Solicitante:</label>
-                <input type="text" id="user_nombre" readonly required>
-            </div>
+                <div class="form-group">
+                    <label for="cmbServicios">Tipo de Servicio Solicitado (Selecciona una opción):</label>
+                    <select id="cmbServicios" onchange="calcularFolioDinamico()" required>
+                        <option value="" disabled selected>-- Seleccione Servicio --</option>
+                        <option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
+                        <option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
+                        <option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
+                        <option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
+                        <option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
+                        <option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="user_puesto">Puesto:</label>
-                <input type="text" id="user_puesto" readonly required>
-            </div>
+                <div class="form-group">
+                    <label for="txtFolio">Número Tiket:</label>
+                    <input type="text" id="txtFolio" placeholder="Seleccione un servicio para calcular..." readonly required>
+                </div>
 
-            <div class="form-group">
-                <label for="user_area">Área de Adscripción:</label>
-                <input type="text" id="user_area" readonly required>
-            </div>
+                <div class="form-group">
+                    <label for="txtFecha">Fecha de Registro:</label>
+                    <input type="text" id="txtFecha" readonly required>
+                </div>
 
-            <div class="form-group">
-                <label for="cmbServicios">Tipo de Servicio Solicitado (Selecciona una opción):</label>
-                <select id="cmbServicios" onchange="calcularFolioDinamico()" required>
-                    <option value="" disabled selected>-- Seleccione Servicio --</option>
-                    <option value="DCPL_A001">DCPL-A001 | Consulta Jurídica</option>
-                    <option value="DCPL_B001">DCPL-B001 | Análisis de Hallazgo de Auditoría</option>
-                    <option value="DCPL_B002">DCPL-B002 | Análisis de Pliego de Observaciones</option>
-                    <option value="DCPL_B003">DCPL-B003 | Análisis de Informe de Presunta Responsabilidad</option>
-                    <option value="DCPL_C001">DCPL-C001 | Formulación de Denuncia</option>
-                    <option value="DCPL_D001">DCPL-D001 | Emisión de Tarjeta Informativa</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="cmbPrioridad">Prioridad del Asunto:</label>
+                    <select id="cmbPrioridad" onchange="actualizarCirculoPrioridad()" required>
+                        <option value="" disabled selected>-- Seleccione Prioridad --</option>
+                        <option value="Urgente">🔴 Urgente (100%)</option>
+                        <option value="Prioritario">🟠 Prioritario (50%)</option>
+                        <option value="Normal">🟡 Normal (25%)</option>
+                    </select>
+                    <div id="priorityDot" class="priority-indicator"></div>
+                </div>
 
-            <div class="form-group">
-                <label for="txtDescripcion">Descripción Breve o Justificación del Asunto:</label>
-                <textarea id="txtDescripcion" placeholder="Escriba los detalles generales y la justificación técnica de su solicitud..." required></textarea>
+                <div class="form-group">
+                    <label for="txtDescripcion">Descripción Breve o Justificación del Asunto:</label>
+                    <textarea id="txtDescripcion" placeholder="Escriba los detalles generales y la justificación técnica de su solicitud..." required></textarea>
+                </div>
             </div>
 
             <button type="submit" class="btn-submit">Generar y Registrar Ticket</button>
@@ -239,8 +291,9 @@
     </div>
 
     <script>
+        // APUNTANDO DIRECTO A TU NUEVA TABLA REGISTRAR_SERVICIO
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-        const URL_REGISTRO_TICKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tickets_jurix";
+        const URL_REGISTRO_TICKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/registrar_servicio";
 
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
         const rawRol = localStorage.getItem('jurix_perfil') || ""; 
@@ -263,7 +316,30 @@
         const hoy = new Date();
         document.getElementById('txtFecha').value = hoy.toLocaleDateString('es-MX') + ' ' + hoy.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'});
 
-        // CORRECCIÓN DEFINITIVA DE LA SINTAXIS URL DE CONSULTA (ILIKE)
+        // Manejo dinámico de color en el combobox de prioridad
+        function actualizarCirculoPrioridad() {
+            const prioridad = document.getElementById('cmbPrioridad').value;
+            const dot = document.getElementById('priorityDot');
+            
+            if(!prioridad) {
+                dot.style.display = 'none';
+                return;
+            }
+            
+            dot.style.display = 'block';
+            if (prioridad === 'Urgente') {
+                dot.style.backgroundColor = 'var(--rojo-alerta)';
+                dot.style.boxShadow = '0 0 10px var(--rojo-alerta)';
+            } else if (prioridad === 'Prioritario') {
+                dot.style.backgroundColor = 'var(--naranja-nitido)';
+                dot.style.boxShadow = '0 0 10px var(--naranja-nitido)';
+            } else if (prioridad === 'Normal') {
+                dot.style.backgroundColor = 'var(--amarillo-alerta)';
+                dot.style.boxShadow = '0 0 10px var(--amarillo-alerta)';
+            }
+        }
+
+        // Cálculo automático e inteligente del Consecutivo
         async function calcularFolioDinamico() {
             const servicioSeleccionado = document.getElementById('cmbServicios').value;
             if (!servicioSeleccionado) return;
@@ -271,8 +347,7 @@
             const sufijoServicio = servicioSeleccionado.replace("_", "-");
 
             try {
-                // Sintaxis PostgREST de Supabase corregida: se usa % en lugar de .*
-                const queryUrl = `${URL_REGISTRO_TICKET}?folio=ilike.%25${sufijoServicio}%25&select=folio`;
+                const queryUrl = `${URL_REGISTRO_TICKET}?numero_tiket=ilike.%25${sufijoServicio}%25&select=numero_tiket`;
                 
                 const response = await fetch(queryUrl, {
                     method: 'GET',
@@ -290,8 +365,8 @@
                     if (registros && registros.length > 0) {
                         let maxNum = 0;
                         registros.forEach(r => {
-                            if (r.folio) {
-                                const partes = r.folio.split('-');
+                            if (r.numero_tiket) {
+                                const partes = r.numero_tiket.split('-');
                                 if (partes.length >= 5) {
                                     const ultimoSegmento = parseInt(partes[4], 10);
                                     if (!isNaN(ultimoSegmento) && ultimoSegmento > maxNum) {
@@ -302,8 +377,6 @@
                         });
                         siguienteConsecutivo = maxNum + 1;
                     }
-                } else {
-                    console.error("Error en respuesta HTTP al calcular folio:", response.status);
                 }
 
                 const consecutivoPad = String(siguienteConsecutivo).padStart(4, '0');
@@ -313,7 +386,7 @@
                 document.getElementById('txtFolio').value = folioOficial;
 
             } catch (error) {
-                console.error("Error crítico calculando el folio automático:", error);
+                console.error("Error calculando el folio:", error);
                 const randomFallback = String(Math.floor(1000 + Math.random() * 9000));
                 document.getElementById('txtFolio').value = `JURIX-DGAJ-${sufijoServicio}-${randomFallback}`;
             }
@@ -322,21 +395,24 @@
         document.getElementById('ticketForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const folio = document.getElementById('txtFolio').value;
+            const numeroTiket = document.getElementById('txtFolio').value;
             const servicio = document.getElementById('cmbServicios').value;
+            const prioridad = document.getElementById('cmbPrioridad').value;
             const descripcion = document.getElementById('txtDescripcion').value;
 
-            if(!folio || folio.includes('Seleccione')) {
-                alert("Por favor seleccione un servicio válido para calcular el folio.");
-                return;
-            }
+            // Determinar ponderación matemática para guardar en Supabase
+            let ponderacion = 0.25;
+            if (prioridad === 'Urgente') ponderacion = 1.00;
+            if (prioridad === 'Prioritario') ponderacion = 0.50;
 
             const payload = {
-                folio: folio,
-                solicitante: userName,
+                numero_tiket: numeroTiket,
+                nombre_solicitante: userName,
                 puesto: userPuesto,
-                area: userArea,
+                area_adscripcion: userArea,
                 servicio_solicitado: servicio,
+                prioridad: prioridad,
+                ponderacion_prioridad: ponderacion,
                 descripcion_asunto: descripcion,
                 estatus: "Pendiente de Asignar",
                 fecha_registro: new Date().toISOString()
@@ -355,30 +431,25 @@
                 });
 
                 if (response.ok) {
-                    localStorage.setItem('generated_folio', folio);
-                    localStorage.setItem('jurix_folio_activo', folio);
-                    localStorage.setItem('folio_ticket', folio);
-                    localStorage.setItem('folio_user', folio);
+                    localStorage.setItem('generated_folio', numeroTiket);
+                    localStorage.setItem('jurix_folio_activo', numeroTiket);
+                    localStorage.setItem('folio_ticket', numeroTiket);
                     
-                    localStorage.setItem('usuario_nombre', userName);
-                    localStorage.setItem('puesto_usuario', userPuesto);
-                    localStorage.setItem('area_usuario', userArea);
-
-                    alert(`¡Ticket Registrado de Forma Exitosa!\nFolio Oficial: ${folio}`);
+                    alert(`¡Ticket Registrado con Éxito!\nNúmero de Ticket Oficial: ${numeroTiket}`);
                     
                     if(servicio.includes('B001') || servicio.includes('B002') || servicio.includes('B003')) {
-                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(folio)}`;
+                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(numeroTiket)}`;
                     } else {
                         window.location.href = "menu.html";
                     }
                 } else {
                     const err = await response.json();
-                    console.error("Error al insertar:", err);
-                    alert("Error en el guardado: No se pudo registrar en la base de datos.");
+                    console.error("Error devuelto:", err);
+                    alert("Error: No se pudo almacenar el registro en la base de datos.");
                 }
             } catch (error) {
-                console.error("Fallo crítico de red:", error);
-                alert("Error crítico de comunicación con el servidor de Supabase.");
+                console.error("Error crítico de red:", error);
+                alert("Fallo de comunicación con la API de Supabase.");
             }
         });
 
