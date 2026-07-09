@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurix - Captura de Hallazgos PGF</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <div class="max-w-5xl mx-auto py-10 px-4">
+        <!-- Encabezado Ejecutivo -->
+        <div class="bg-slate-900 text-white p-6 rounded-t-xl shadow-md flex justify-between items-center border-b-4 border-amber-500">
+            <div>
+                <h1 class="text-2xl font-bold tracking-wide text-amber-400">JURIX</h1>
+                <p class="text-sm text-slate-300">Sistema de Control de Hallazgos PGF - DGAJ</p>
+            </div>
+            <div class="text-right">
+                <span class="bg-slate-800 px-3 py-1 rounded text-xs text-slate-400 font-mono">v2026.1</span>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form class="bg-white p-8 rounded-b-xl shadow-lg space-y-8">
+            
+            <!-- SECCIÓN 1: Control y Origen -->
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center">
+                    <span class="bg-slate-900 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">1</span>
+                    Datos de Recepción y Control General
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Fecha de Recepción</label>
+                        <input type="date" class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Sujeto Fiscalizado</label>
+                        <select class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                            <option value="">Selecciona una entidad...</option>
+                            <option>FGEG- Fiscalía General del Estado de Guanajuato</option>
+                            <option>Municipio de Guanajuato</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Tipo de Auditoría</label>
+                        <select class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                            <option value="">Selecciona tipo...</option>
+                            <option>👷🏼 1.2 RCPI- Revisión Cuenta Pública-Infraestructura</option>
+                            <option>💰 1.1 RCPF- Revisión Cuenta Pública-Financiera</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Tipo de Hallazgo</label>
+                        <div class="flex gap-4 mt-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="tipo_hallazgo" class="text-slate-900 focus:ring-slate-900" checked>
+                                <span class="ml-2 text-sm">🔎 Observación</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="tipo_hallazgo" class="text-slate-900 focus:ring-slate-900">
+                                <span class="ml-2 text-sm">📢 Recomendación</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: Detalle Técnico del Hallazgo -->
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center">
+                    <span class="bg-slate-900 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">2</span>
+                    Análisis Técnico del Hallazgo
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Núm / Concepto de Hallazgo Cédula</label>
+                        <input type="text" placeholder="Ej: Observación Núm. 001: Periodicidad de estimaciones..." class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">💲 Importe (MXN)</label>
+                        <input type="number" step="0.01" placeholder="0.00" class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-xs font-medium text-gray-500 uppercase mb-1">🌐 Link al Expediente Digital</label>
+                    <input type="url" placeholder="https://..." class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 uppercase mb-1">🗣️ Comentarios de Revisión (Condición, Marco Normativo, etc.)</label>
+                    <textarea rows="5" placeholder="Escriba los hallazgos detallados, normativas aplicables y sugerencias de la DGAJ..." class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition font-mono text-sm"></textarea>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: Fase Jurídica y Dictaminación -->
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center">
+                    <span class="bg-slate-900 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">3</span>
+                    Validación y Dictamen DGAJ
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">🚨 Revisor</label>
+                        <select class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                            <option>MY-Miguel Yebra</option>
+                            <option>Otros Revisores...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">✅ Validación</label>
+                        <select class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                            <option>IC- Iller Cerca</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">🔏 Fase</label>
+                        <select class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-emerald-600 focus:outline-none transition">
+                            <option>En Proceso</option>
+                            <option selected>Finalizado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">✅ Criterio que determina</label>
+                        <input type="text" value="Se determina por criterio establecido" class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase mb-1">📅 Fecha de Liberación</label>
+                        <input type="date" class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 uppercase mb-1">💬 Comentario Final / Observaciones de Cierre</label>
+                    <textarea rows="3" placeholder="Comentarios finales sobre la validación del criterio..." class="w-full rounded-md border border-gray-300 p-2.5 bg-gray-50 focus:bg-white focus:border-slate-900 focus:outline-none transition text-sm"></textarea>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex justify-end gap-4 pt-4 border-t border-gray-100">
+                <button type="button" class="px-6 py-2.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 transition cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-6 py-2.5 rounded-md text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 shadow-md transition cursor-pointer">
+                    Guardar Registro Jurídico
+                </button>
+            </div>
+
+        </</form>
+    </div>
+
+</body>
+</html>
