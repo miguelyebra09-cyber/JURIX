@@ -13,6 +13,7 @@
             --blanco: #ffffff;
             --rojo-alerta: #ff3333;
             --amarillo-alerta: #ffcc00;
+            --gris-cancelado: #888888;
         }
 
         body {
@@ -172,7 +173,7 @@
         .bg-red { background-color: var(--rojo-alerta); box-shadow: 0 0 8px var(--rojo-alerta); }
         .bg-yellow { background-color: var(--amarillo-alerta); box-shadow: 0 0 8px var(--amarillo-alerta); }
         .bg-orange { background-color: var(--naranja-nitido); box-shadow: 0 0 8px var(--naranja-nitido); }
-        .bg-gray { background-color: #888888; box-shadow: 0 0 8px #888888; }
+        .bg-gray { background-color: var(--gris-cancelado); box-shadow: 0 0 8px var(--gris-cancelado); }
 
         .notif-count {
             font-weight: bold;
@@ -288,7 +289,6 @@
 
     <script>
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-        // CORRECCIÓN DE LA URL: Cambiado "estatus_tikets" a "estatus_tiket" para solucionar el error 404
         const URL_ESTATUS_TIKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tiket";
 
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
@@ -355,15 +355,16 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Registros devueltos:", data);
+                    console.log("Datos crudos de Supabase recibidos:", data);
 
                     let pAsignar = 0;
                     let pAtender = 0;
                     let pLiberar = 0;
                     let pCancelados = 0;
 
-                    const tieneFolioValido = (valor) => {
-                        if (!valor) return false;
+                    // Función de validación mejorada para celdas individuales
+                    const esCeldaValida = (valor) => {
+                        if (valor === null || valor === undefined) return false;
                         const texto = String(valor).trim().toUpperCase();
                         if (texto === "" || texto === "NULL" || texto === "EMPTY") return false;
                         return texto.includes("JURIX");
@@ -371,18 +372,20 @@
 
                     if (Array.isArray(data)) {
                         data.forEach(fila => {
-                            if (tieneFolioValido(fila.tiketpendienteasignar)) pAsignar++;
-                            if (tieneFolioValido(fila.tiketpendienteatender)) pAtender++;
-                            if (tieneFolioValido(fila.tiketpendienteliberar)) pLiberar++;
-                            if (tieneFolioValido(fila.tiketcancelado)) pCancelados++;
+                            if (esCeldaValida(fila.tiketpendienteasignar)) pAsignar++;
+                            if (esCeldaValida(fila.tiketpendienteatender)) pAtender++;
+                            if (esCeldaValida(fila.tiketpendienteliberar)) pLiberar++;
+                            if (esCeldaValida(fila.tiketcancelado)) pCancelados++;
                         });
                     }
 
+                    // Inyección directa en el HTML
                     document.getElementById('countAsignar').textContent = pAsignar;
                     document.getElementById('countAtender').textContent = pAtender;
                     document.getElementById('countLiberar').textContent = pLiberar;
                     document.getElementById('countCancelados').textContent = pCancelados;
                     
+                    // Sumamos activos (Asignar + Atender + Liberar)
                     document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
                 } else {
                     console.error("Error en la respuesta de Supabase:", response.statusText);
