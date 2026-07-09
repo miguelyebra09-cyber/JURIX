@@ -3,344 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JURIX-DGAJ - Registro de Servicio de Hallazgos</title>
+    <title>JURIX-DGAJ - Cédula de Análisis de Hallazgos</title>
     <style>
         :root {
-           --naranja-nitido: #FF6600;
-           --gris-oscuro: #333333;
-           --gris-claro: #f4f4f9;
-           --blanco: #ffffff;
-           --azul-info: #0066cc;
-           --verde-exito: #2ecc71;
-           --rojo-urgente: #e74c3c;
-           --amarillo-normal: #f1c40f;
+            --naranja-corporativo: #FF6600;
+            --naranja-hover: #E05500;
+            --gris-institucional: #2C3E50;
+            --gris-fondo: #F5F7FA;
+            --blanco: #FFFFFF;
+            --texto-oscuro: #34495E;
+            --lineas-suaves: #E2E8F0;
+            
+            /* Colores de Prioridad */
+            --prioridad-urgente: #E74C3C;
+            --prioridad-prioritario: #E67E22;
+            --prioridad-normal: #3498DB;
         }
- 
+
         body {
-           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-           background-color: var(--gris-claro);
-           margin: 0;
-           padding: 0;
-           color: var(--gris-oscuro);
-        }
- 
-        header {
-           background-color: var(--blanco);
-           padding: 20px;
-           text-align: center;
-           border-bottom: 3px solid var(--naranja-nitido);
-           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
- 
-        h1 {
-            color: var(--naranja-nitido);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gris-fondo);
             margin: 0;
-            font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 1px;
+            padding: 0;
+            color: var(--texto-oscuro);
         }
- 
+
+        /* --- ENCABEZADO PREMIUM JURIX --- */
+        header {
+            background: linear-gradient(135deg, var(--gris-institucional) 0%, #1A252F 100%);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--naranja-corporativo);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            color: var(--blanco);
+            margin: 0;
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        header h1 span {
+            color: var(--naranja-corporativo);
+        }
+
+        /* --- MENÚ DE NAVEGACIÓN --- */
         nav {
-           background-color: var(--gris-oscuro);
-           padding: 12px;
-           text-align: center;
+            background-color: #1F2A38;
+            padding: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
         }
- 
+
         nav a {
-           color: var(--blanco);
-           text-decoration: none;
-           margin: 0 15px;
-           font-weight: 500;
-           transition: color 0.3s;
+            color: #95A5A6;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
         }
- 
-        nav a:hover {
-            color: var(--naranja-nitido);
+
+        nav a:hover, nav a.active {
+            color: var(--blanco);
+            background-color: rgba(255,102,0,0.1);
+            border-bottom: 3px solid var(--naranja-corporativo);
         }
- 
+
+        /* --- CONTENEDOR PRINCIPAL --- */
         .container {
-            max-width: 800px;
-            margin: 30px auto;
+            max-width: 900px;
+            margin: 40px auto;
             background: var(--blanco);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid var(--lineas-suaves);
         }
- 
+
         h2 {
-           text-align: center;
-           color: var(--gris-oscuro);
-           margin-bottom: 5px;
-           font-size: 1.6rem;
+            text-align: center;
+            color: var(--gris-institucional);
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            font-weight: 700;
         }
- 
-       .subtitle-folio {
-           text-align: center;
-           color: var(--azul-info);
-           font-size: 1.2rem;
-           font-weight: bold;
-           background-color: #eef7ff;
-           padding: 10px;
-           border-radius: 5px;
-           margin-bottom: 30px;
-           border: 1px dashed var(--azul-info);
+
+        .subtitle-folio {
+            text-align: center;
+            color: #2980B9;
+            font-size: 1.15rem;
+            font-weight: 700;
+            background-color: #EBF5FB;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 35px;
+            border: 1px dashed #AED6F1;
         }
- 
+
+        /* --- DISEÑO DE FORMULARIO --- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
         }
- 
+
         .form-group {
-           margin-bottom: 15px;
+            margin-bottom: 5px;
         }
- 
-       .form-group.full-width {
-           grid-column: span 2;
+
+        .form-group.full-width {
+            grid-column: span 2;
         }
- 
+
         label {
-           display: block;
-           margin-bottom: 8px;
-           font-weight: 600;
-           font-size: 0.9rem;
+            display: block;
+            margin-bottom: 9px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--gris-institucional);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
- 
+
         input[type="text"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
             width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 2px solid var(--lineas-suaves);
+            border-radius: 6px;
             box-sizing: border-box;
             font-size: 0.95rem;
-            font-family: inherit;
+            color: var(--texto-oscuro);
+            background-color: #FCFDFE;
+            transition: all 0.3s ease;
         }
- 
+
         input:focus, select:focus, textarea:focus {
-            border-color: var(--naranja-nitido);
+            border-color: var(--naranja-corporativo);
             outline: none;
-            box-shadow: 0 0 5px rgba(255, 102, 0, 0.2);
+            background-color: var(--blanco);
+            box-shadow: 0 0 8px rgba(255, 102, 0, 0.15);
         }
- 
-       input[readonly] {
-            background-color: #eaeded;
-            color: #7f8c8d;
+
+        input[readonly] {
+            background-color: #EAECEE;
+            color: #7F8C8D;
+            border-color: var(--lineas-suaves);
             cursor: not-allowed;
         }
- 
-       .ai-keywords-box {
-            margin-top: 8px;
-            background-color: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
+
+        /* --- CUADROS DE ASISTENCIA IA --- */
+        .ai-keywords-box {
+            margin-top: 10px;
+            background-color: #F4FBF7;
+            border: 1px solid #C2EAD3;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.88rem;
         }
- 
+
         .keyword-tag {
             display: inline-block;
-            background: #dcfce7;
-            color: #166534;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin: 2px;
-            font-weight: bold;
+            background: #E8F8F0;
+            color: #1E8449;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin: 3px;
+            font-weight: 700;
+            border: 1px solid #A2E1BA;
         }
 
         .ai-synthesis-box {
-            margin-top: 10px;
-            background-color: #f0f7ff;
-            border: 1px solid #bae6fd;
-            padding: 12px;
-            border-radius: 4px;
+            margin-top: 12px;
+            background-color: #F4F9FD;
+            border: 1px solid #CBE2F3;
+            padding: 14px;
+            border-radius: 6px;
             font-size: 0.88rem;
         }
+
         .synthesis-options-container {
-            margin-top: 8px;
+            margin-top: 10px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
+
         .synthesis-btn-option {
             background-color: var(--blanco);
-            border: 1px solid #7dd3fc;
-            padding: 8px 12px;
-            border-radius: 4px;
+            border: 1px solid #A9CCE3;
+            padding: 10px 14px;
+            border-radius: 6px;
             text-align: left;
             cursor: pointer;
             font-size: 0.9rem;
-            color: #0369a1;
+            color: #2471A3;
             transition: all 0.2s ease;
-            width: 100%;
             font-family: inherit;
         }
+
         .synthesis-btn-option:hover {
-            background-color: #e0f2fe;
-            border-color: #0284c7;
-            color: #0369a1;
-            transform: translateX(3px);
-        }
- 
-        /* --- TICKET DE SERVICIO VIRTUAL AVANZADO --- */
-        .queue-section {
-            margin-top: 35px;
-            background: #fff;
-            border: 1px solid #e1e1e1;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
- 
-        .queue-title {
-            font-size: 1.15rem;
-            color: var(--gris-oscuro);
-            border-bottom: 2px solid var(--gris-claro);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
- 
-        .queue-card {
-            border-left: 6px solid #9b59b6;
-            padding: 20px;
-            border-radius: 6px;
-            background: #fffcf4;
-            transition: all 0.4s ease;
-        }
- 
-        .ticket-wrapper {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-        }
- 
-        .ticket-data-column p {
-            margin: 6px 0;
-            font-size: 0.9rem;
-            color: #444;
-            line-height: 1.4;
-        }
- 
-        .ticket-data-column strong {
-            color: var(--gris-oscuro);
-        }
- 
-        .status-container {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            justify-content: flex-start;
-            gap: 12px;
-        }
- 
-        .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background-color: #e8f8f5; 
-            color: #117a65;
+            background-color: #EBF5FB;
+            border-color: #2980B9;
+            transform: translateX(4px);
         }
 
+        /* --- CONTROL DE PRIORIDAD HEADER --- */
         .priority-indicator {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-weight: bold;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #F2F4F4;
         }
 
         .priority-dot {
-            width: 12px;
-            height: 12px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
             display: inline-block;
-            background-color: #ccc;
+            box-shadow: 0 0 6px rgba(0,0,0,0.2);
         }
- 
-        .time-display {
+
+        /* =======================================================
+           💥 SECCIÓN INTERACTIVA TRIDIMENSIONAL ESTILO TICKET FÍSICO
+           ======================================================= */
+        .queue-section {
+            margin-top: 45px;
+            perspective: 1000px; /* Brinda profundidad 3D */
+        }
+
+        .queue-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gris-institucional);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* El contenedor exterior simula la ranura de la ticketera */
+        .ticket-printer-slot {
+            background: #E2E8F0;
+            padding: 6px;
+            border-radius: 8px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* El ticket simulado con textura y bordes dentados */
+        .interactive-ticket {
+            background: #FFFDF3; /* Color papel continuo antiguo/recibo */
+            border-left: 2px dashed #BDC3C7;
+            border-right: 2px dashed #BDC3C7;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transform: rotateX(2deg);
+            transform-origin: top center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .interactive-ticket:hover {
+            transform: rotateX(0deg) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Línea de corte perforada superior e inferior */
+        .interactive-ticket::before, .interactive-ticket::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background-size: 16px 6px;
+        }
+        .interactive-ticket::before {
+            top: -6px;
+            background-image: linear-gradient(45deg, transparent 33.333%, #FFFDF3 33.333%, #FFFDF3 66.666%, transparent 66.666%), linear-gradient(-45deg, transparent 33.333%, #FFFDF3 33.333%, #FFFDF3 66.666%, transparent 66.666%);
+        }
+        .interactive-ticket::after {
+            bottom: -6px;
+            background-image: linear-gradient(45deg, transparent 33.333%, #FFFDF3 33.333%, #FFFDF3 66.666%, transparent 66.666%), linear-gradient(-45deg, transparent 33.333%, #FFFDF3 33.333%, #FFFDF3 66.666%, transparent 66.666%);
+        }
+
+        .ticket-header-brand {
+            text-align: center;
+            border-bottom: 2px dashed #D5D8DC;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-header-brand .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #2C3E50;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .ticket-header-brand .brand-subtitle {
+            font-size: 0.75rem;
+            color: #7F8C8D;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 3px 0 0 0;
+        }
+
+        .ticket-body-grid {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 25px;
+        }
+
+        .ticket-data-list p {
+            margin: 8px 0;
             font-size: 0.9rem;
-            font-weight: bold;
-            color: #444;
-            background: rgba(255,255,255,0.9);
-            padding: 6px 12px;
+            color: #4A5568;
+            line-height: 1.5;
+            padding: 4px 6px;
             border-radius: 4px;
-            border: 1px dashed #ccc;
+            transition: background-color 0.2s ease;
+        }
+
+        /* Resaltado dinámico cuando cambie un dato */
+        .ticket-data-list p.updated-flash {
+            background-color: #FEF9E7;
+        }
+
+        .ticket-data-list strong {
+            color: #2D3748;
+            font-weight: 700;
+            display: inline-block;
+            width: 180px;
+        }
+
+        .ticket-data-list span {
+            color: #1A202C;
+        }
+
+        /* Panel Lateral de Estatus Interno en el Ticket */
+        .ticket-side-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+            border-left: 1px dashed #D5D8DC;
+            padding-left: 20px;
+        }
+
+        .ticket-badge-status {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: #E8F8F5; 
+            color: #117A65;
+            border: 1px solid #A3E4D7;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
             text-align: center;
             width: 100%;
             box-sizing: border-box;
         }
- 
-        /* --- BOTONERA --- */
+
+        .ticket-time-box {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #566573;
+            background: #FFFFFF;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #E5E8E8;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .ticket-time-box div {
+            font-size: 1.1rem;
+            color: var(--naranja-corporativo);
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .ticket-barcode {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: #7F8C8D;
+            text-align: center;
+            margin-top: auto;
+            border-top: 1px dashed #D5D8DC;
+            padding-top: 15px;
+            width: 100%;
+        }
+
+        /* --- CONTENEDOR DE BOTONES --- */
         .btn-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 35px;
+            margin-top: 40px;
+            border-top: 2px solid var(--lineas-suaves);
+            padding-top: 25px;
         }
- 
+
         button, .btn-cancelar {
-            padding: 12px 30px;
+            padding: 14px 35px;
             font-size: 1rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
             text-decoration: none;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
- 
+
         .btn-enviar {
-            background-color: var(--naranja-nitido);
+            background-color: var(--naranja-corporativo);
             color: var(--blanco);
-            box-shadow: 0 3px 6px rgba(255,102,0,0.2);
+            box-shadow: 0 4px 12px rgba(255,102,0,0.3);
         }
- 
+
         .btn-enviar:hover {
-            background-color: #e05500;
-            transform: translateY(-1px);
+            background-color: var(--naranja-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255,102,0,0.4);
         }
- 
+
         .btn-cancelar {
-            background-color: #999999;
-            color: var(--blanco);
+            background-color: #BDC3C7;
+            color: var(--gris-institucional);
         }
- 
-       .btn-cancelar:hover {
-            background-color: #777777;
+
+        .btn-cancelar:hover {
+            background-color: #95A5A6;
+            color: var(--blanco);
         }
     </style>
 </head>
 <body>
  
     <header>
-       <h1>JURIX-DGAJ</h1>
+       <h1>JURIX-<span>DGAJ</span></h1>
     </header>
  
     <nav>
         <a href="solicitud.html">Nueva Solicitud</a>
-        <a href="tablero.html">Tablero</a>
-        <a href="hojatrabajo.html">Hoja de Trabajo</a>
-        <a href="metricas.html">Métricas</a>
+        <a href="tablero.html">Tablero de Control</a>
+        <a href="hojatrabajo.html" class="active">Hoja de Trabajo</a>
+        <a href="metricas.html">Métricas de Rendimiento</a>
         <a href="index.html">Salir</a>
     </nav>
  
     <div class="container">
        <h2>Cédula de Análisis de Hallazgos</h2>
-        <div id="folioTicketSub" class="subtitle-folio">Cargando Folio del Ticket...</div>
+        <div id="folioTicketSub" class="subtitle-folio">Identificando Folio del Ticket Asignado...</div>
         
         <form id="hallazgoForm">
             <div class="form-grid">
                
                <div class="form-group">
                    <label for="fecha_recepcion">Fecha de Recepción:</label>
-                   <div style="display: flex; align-items: center; gap: 10px;">
+                   <div style="display: flex; align-items: center; gap: 12px;">
                        <input type="date" id="fecha_recepcion" readonly required>
                        <span id="containerPrioridadHeader" class="priority-indicator"></span>
                    </div>
@@ -439,132 +580,150 @@
                    <input type="text" id="num_concepto" required placeholder="Ej. 001">
                </div>
  
-               <div class="form-group">
-                   <label for="titulo_observacion">📋 Título de la Observación:</label>
-                   <input type="text" id="titulo_observacion" placeholder="Escriba el título del hallazgo..." required>
+               <div class="form-group full-width">
+                   <label for="titulo_observacion">📋 Título de la Observación o Hallazgo:</label>
+                   <input type="text" id="titulo_observacion" placeholder="Escriba el nombre técnico o descriptivo del hallazgo..." required>
                </div>
  
-            <div class="form-group">
-    <label for="rubro_combobox">🗂️ Rubro Específico:</label>
-    <select id="rubro_combobox" required>
-        <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
-        <optgroup label="1 ACTIVO">
-            <option value="1.1">1.1 ACTIVO CIRCULANTE</option>
-            <option value="1.1.1">&nbsp;&nbsp;1.1.1 Efectivo y Equivalentes</option>
-            <option value="1.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.1 Efectivo</option>
-            <option value="1.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.2 Bancos/Tesorería</option>
-            <option value="1.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.3 Bancos/Dependencias y Otros</option>
-            <option value="1.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.4 Inversiones Temporales (Hasta 3 meses)</option>
-            <option value="1.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.5 Fondos con Afectación Específica</option>
-            <option value="1.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.6 Depósitos de Fondos de Terceros en Garantía y/o Administración</option>
-            <option value="1.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.9 Otros Efectivos y Equivalentes</option>
-            <option value="1.1.2">&nbsp;&nbsp;1.1.2 Derechos a Recibir Efectivo o Equivalentes</option>
-            <option value="1.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.1 Inversiones Financieras de Corto Plazo</option>
-            <option value="1.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.2 Cuentas por Cobrar a Corto Plazo</option>
-            <option value="1.1.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.3 Deudores Diversos por Cobrar a Corto Plazo</option>
-            <option value="1.1.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.4 Ingresos por Recuperar a Corto Plazo</option>
-            <option value="1.1.2.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.5 Deudores por Anticipos de la Tesorería a Corto Plazo</option>
-            <option value="1.1.2.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.6 Préstamos Otorgados a Corto Plazo</option>
-            <option value="1.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Corto Plazo</option>
-            <option value="1.1.3">&nbsp;&nbsp;1.1.3 Derechos a Recibir Bienes o Servicios</option>
-            <option value="1.1.3.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.1 Anticipo a Proveedores por Adquisición de Bienes y Prestación de Servicios a Corto Plazo</option>
-            <option value="1.1.3.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.2 Anticipo a Proveedores por Adquisición de Bienes Inmuebles y Muebles a Corto Plazo</option>
-            <option value="1.1.3.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.3 Anticipo a Proveedores por Adquisición de Bienes Intangibles a Corto Plazo</option>
-            <option value="1.1.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.4 Anticipo a Contratistas por Obras Públicas a Corto Plazo</option>
-            <option value="1.1.3.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.9 Otros Derechos a Recibir Bienes o Servicios a Corto Plazo</option>
-            <option value="1.1.4">&nbsp;&nbsp;1.1.4 Inventarios</option>
-            <option value="1.1.4.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.1 Inventario de Mercancías para Venta</option>
-            <option value="1.1.4.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.2 Inventario de Mercancías para Transformación</option>
-            <option value="1.1.4.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.3 Inventario de Materias Primas, Materiales y Suministros para Production</option>
-            <option value="1.1.4.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.4 Inventario de Materias Primas, Materiales y Suministros de Consumo</option>
-            <option value="1.1.4.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.5 Inventario de Bienes en Tránsito</option>
-            <option value="1.1.5">&nbsp;&nbsp;1.1.5 Almacenes</option>
-            <option value="1.1.5.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.5.1 Almacén de Materiales y Suministros de Consumo</option>
-            <option value="1.1.6">&nbsp;&nbsp;1.1.6 Estimación por Pérdida o Deterioro de Activos Circulantes</option>
-            <option value="1.1.6.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.1 Estimaciones para Cuentas Incobrables por Derechos a Recibir Efectivo o Equivalentes</option>
-            <option value="1.1.6.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.2 Estimación por Deterioro de Inventarios</option>
-            <option value="1.1.9">&nbsp;&nbsp;1.1.9 Otros Activos Circulantes</option>
-            <option value="1.1.9.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.1 Valores en Garantía</option>
-            <option value="1.1.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.2 Bienes Enajenados de Corto Plazo</option>
-            <option value="1.1.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.3 Bienes en Custodia (Bienes decomisados, retenidos y en depósito)</option>
-            <option value="1.1.9.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.9 Otros Activos Derivados de Operaciones Financieras</option>
-            <option value="1.2">1.2 ACTIVO NO CIRCULANTE</option>
-            <option value="1.2.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.4 Infraestructura</option>
-        </optgroup>
-        <optgroup label="2 PASIVO">
-            <option value="2.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.3 Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
-        </optgroup>
-    </select>
-</div>
+               <div class="form-group full-width">
+                   <label for="rubro_combobox">🗂️ Rubro Específico CoNaC:</label>
+                   <select id="rubro_combobox" required>
+                       <option value="" disabled selected>-- Seleccione Clasificación Específica --</option>
+                       <optgroup label="1 ACTIVO">
+                           <option value="1.1">1.1 ACTIVO CIRCULANTE</option>
+                           <option value="1.1.1">&nbsp;&nbsp;1.1.1 Efectivo y Equivalentes</option>
+                           <option value="1.1.1.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.1 Efectivo</option>
+                           <option value="1.1.1.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.2 Bancos/Tesorería</option>
+                           <option value="1.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.3 Bancos/Dependencias y Otros</option>
+                           <option value="1.1.1.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.4 Inversiones Temporales (Hasta 3 meses)</option>
+                           <option value="1.1.1.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.5 Fondos con Afectación Específica</option>
+                           <option value="1.1.1.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.6 Depósitos de Fondos de Terceros en Garantía y/o Administración</option>
+                           <option value="1.1.1.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.1.9 Otros Efectivos y Equivalentes</option>
+                           <option value="1.1.2">&nbsp;&nbsp;1.1.2 Derechos a Recibir Efectivo o Equivalentes</option>
+                           <option value="1.1.2.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.1 Inversiones Financieras de Corto Plazo</option>
+                           <option value="1.1.2.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.2 Cuentas por Cobrar a Corto Plazo</option>
+                           <option value="1.1.2.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.3 Deudores Diversos por Cobrar a Corto Plazo</option>
+                           <option value="1.1.2.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.4 Ingresos por Recuperar a Corto Plazo</option>
+                           <option value="1.1.2.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.5 Deudores por Anticipos de la Tesorería a Corto Plazo</option>
+                           <option value="1.1.2.6">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.6 Préstamos Otorgados a Corto Plazo</option>
+                           <option value="1.1.2.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Corto Plazo</option>
+                           <option value="1.1.3">&nbsp;&nbsp;1.1.3 Derechos a Recibir Bienes o Servicios</option>
+                           <option value="1.1.3.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.1 Anticipo a Proveedores por Adquisición de Bienes y Prestación de Servicios a Corto Plazo</option>
+                           <option value="1.1.3.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.2 Anticipo a Proveedores por Adquisición de Bienes Inmuebles y Muebles a Corto Plazo</option>
+                           <option value="1.1.3.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.3 Anticipo a Proveedores por Adquisición de Bienes Intangibles a Corto Plazo</option>
+                           <option value="1.1.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.4 Anticipo a Contratistas por Obras Públicas a Corto Plazo</option>
+                           <option value="1.1.3.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.3.9 Otros Derechos a Recibir Bienes o Servicios a Corto Plazo</option>
+                           <option value="1.1.4">&nbsp;&nbsp;1.1.4 Inventarios</option>
+                           <option value="1.1.4.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.1 Inventario de Mercancías para Venta</option>
+                           <option value="1.1.4.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.2 Inventario de Mercancías para Transformación</option>
+                           <option value="1.1.4.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.3 Inventario de Materias Primas, Materiales y Suministros para Producción</option>
+                           <option value="1.1.4.4">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.4 Inventario de Materias Primas, Materiales y Suministros de Consumo</option>
+                           <option value="1.1.4.5">&nbsp;&nbsp;&nbsp;&nbsp;1.1.4.5 Bienes en Tránsito</option>
+                           <option value="1.1.5">&nbsp;&nbsp;1.1.5 Almacenes</option>
+                           <option value="1.1.5.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.5.1 Almacén de Materiales y Suministros de Consumo</option>
+                           <option value="1.1.6">&nbsp;&nbsp;1.1.6 Estimación por Pérdida o Deterioro de Activos Circulantes</option>
+                           <option value="1.1.6.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.1 Estimaciones para Cuentas Incobrables por Derechos a Recibir Efectivo o Equivalentes</option>
+                           <option value="1.1.6.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.6.2 Estimación por Deterioro de Inventarios</option>
+                           <option value="1.1.9">&nbsp;&nbsp;1.1.9 Otros Activos Circulantes</option>
+                           <option value="1.1.9.1">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.1 Valores en Garantía</option>
+                           <option value="1.1.9.2">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.2 Bienes Enajenados de Corto Plazo</option>
+                           <option value="1.1.9.3">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.3 Bienes en Custodia (Bienes decomisados, retenidos y en depósito)</option>
+                           <option value="1.1.9.9">&nbsp;&nbsp;&nbsp;&nbsp;1.1.9.9 Otros Activos Derivados de Operaciones Financieras</option>
+                           <option value="1.2">1.2 ACTIVO NO CIRCULANTE</option>
+                           <option value="1.2.3.4">&nbsp;&nbsp;&nbsp;&nbsp;1.2.3.4 Infraestructura</option>
+                       </optgroup>
+                       <optgroup label="2 PASIVO">
+                           <option value="2.1.1.3">&nbsp;&nbsp;&nbsp;&nbsp;2.1.1.3 Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
+                       </optgroup>
+                   </select>
+               </div>
  
                <div class="form-group">
-                   <label for="importe">💲 Importe ($):</label>
+                   <label for="importe">💲 Importe Observado ($):</label>
                    <input type="text" id="importe" placeholder="$0.00" required>
                </div>
  
                <div class="form-group">
-                   <label for="link_soporte">🌐 Link de Soporte Documental:</label>
-                   <input type="url" id="link_soporte" placeholder="https://ejemplo.com/archivo">
+                   <label for="link_soporte">🌐 Link de Evidencia Documental (Expediente):</label>
+                   <input type="url" id="link_soporte" placeholder="https://drive.google.com/...">
                </div>
  
                <div class="form-group full-width">
-                   <label for="condicion_hallazgo">⚖️ Asunto/Condición:</label>
-                   <textarea id="condicion_hallazgo" rows="4" placeholder="Escribe la condición del hallazgo..." required></textarea>
+                   <label for="condicion_hallazgo">⚖️ Hechos Detectados / Asunto / Condición:</label>
+                   <textarea id="condicion_hallazgo" rows="4" placeholder="Describa explícitamente los hallazgos u omisiones detectadas..." required></textarea>
                    
                    <div class="ai-keywords-box">
-                       <strong>🤖 Palabras Clave de la Condición (Análisis Logix):</strong>
-                       <div id="keywordsContainer" style="margin-top: 5px; color: #666;">Esperando texto...</div>
+                       <strong>🤖 Palabras Clave Detectadas (Procesamiento Logix IA):</strong>
+                       <div id="keywordsContainer" style="margin-top: 5px; color: #7F8C8D; font-style: italic;">Esperando ingreso de texto...</div>
                    </div>
                    <div class="ai-synthesis-box">
-                       <strong>🤖 Sugerencias de Síntesis de IA (Haz clic en una opción para elegirla):</strong>
+                       <strong>🤖 Alternativas de Síntesis Automatizadas (Haz clic para seleccionar):</strong>
                        <div id="synthesisOptions" class="synthesis-options-container">
-                           <span style="color: #666; font-style: italic;">Esperando texto en la condición para generar síntesis breves...</span>
+                           <span style="color: #7F8C8D; font-style: italic;">Sin texto suficiente en la condición jurídica...</span>
                        </div>
                    </div>
                </div>
                
                <div class="form-group full-width">
-                   <label for="sustancia_hallazgo">📌 Sustancia del Hallazgo / Asunto (Máx 5 palabras):</label>
-                   <input type="text" id="sustancia_hallazgo" placeholder="Ej: Falta de aplicación de penas" required>
+                   <label for="sustancia_hallazgo">📌 Sustancia Sintética del Hallazgo (Máx 5 palabras):</label>
+                   <input type="text" id="sustancia_hallazgo" placeholder="Ej: Omisión de penas convencionales" required>
                </div>
 
                <div class="form-group full-width">
-                   <label for="sintesis_condicion">📝 Concepto General:</label>
-                   <input type="text" id="sintesis_condicion" placeholder="Selecciona una opción de arriba o escribe una síntesis breve..." required>
+                   <label for="sintesis_condicion">📝 Concepto General / Resumen Corto:</label>
+                   <input type="text" id="sintesis_condicion" placeholder="Selecciona una opción sugerida por la IA o escribe el extracto..." required>
                </div>
  
                <div class="form-group full-width">
-                   <label for="comentarios_revision">💬 Comentarios de Revisión:</label>
-                   <textarea id="comentarios_revision" rows="3" placeholder="Escriba el desglose del hallazgo detectado..."></textarea>
+                   <label for="comentarios_revision">💬 Desglose de Observaciones y Notas de Revisión:</label>
+                   <textarea id="comentarios_revision" rows="3" placeholder="Anotaciones de control interno o aclaraciones adicionales..."></textarea>
                </div>
            </div>
  
+            <!-- =======================================================
+               💥 SECCIÓN INTERACTIVA: TICKET VIRTUAL DE CONTROL DE TURNO
+               ======================================================= -->
             <div class="queue-section">
-               <div class="queue-title">
-                   <span>⏳ Control Virtual de Turno e Información de Fila</span>
+               <div class="queue-section-title">
+                   <span>📊 Control Virtual de Fila y Ticket de Procesamiento</span>
                </div>
-               <div id="queueCardElement" class="queue-card">
-                   <div class="ticket-wrapper">
-                       <div class="ticket-data-column">
-                           <p><strong>Número Ticket:</strong> <span id="t_num_ticket">-</span></p>
-                           <p><strong>Fecha de Registro:</strong> <span id="t_fecha_reg">-</span></p>
-                           <p><strong>Prioridad del Asunto:</strong> <span id="t_prioridad">-</span></p>
-                           <p><strong>Tipo de Servicio Solicitado:</strong> <span id="t_tipo_servicio">-</span></p>
-                           <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
-                           <p><strong>Sujeto Fiscalizado:</strong> <span id="t_sujeto">-</span></p>
-                           <p><strong>Tipo de Auditoría:</strong> <span id="t_auditoria">-</span></p>
-                           <p><strong>Rubro de Hallazgo:</strong> <span id="t_rubro">-</span></p>
-                           <p><strong>Tipo de Hallazgo:</strong> <span id="t_tipo_h">-</span></p>
-                           <p><strong>🔢 Núm / Concepto en Cédula:</strong> <span id="t_num_con">-</span></p>
-                           <p><strong>Título de la Observación:</strong> <span id="t_titulo_obs">-</span></p>
-                           <p><strong>Rubro Específico:</strong> <span id="t_rubro_esp">-</span></p>
-                           <p><strong>Importe ($):</strong> <span id="t_importe_val">-</span></p>
-                           <p><strong>Sustancia del Hallazgo:</strong> <span id="t_sustancia">-</span></p>
-                           <p><strong>Concepto General:</strong> <span id="t_concepto_gen">-</span></p>
+               <div class="ticket-printer-slot">
+                   <div id="queueCardElement" class="interactive-ticket">
+                       <div class="ticket-header-brand">
+                           <div class="brand-title">TICKET DE TURNO JURIX</div>
+                           <div class="brand-subtitle">Dirección General de Asuntos Jurídicos</div>
                        </div>
-                       <div class="status-container">
-                           <span id="badgeEstatus" class="status-badge">PROCESANDO</span>
-                           <div id="timeEstimate" class="time-display">Calculando tiempo...</div>
+                       
+                       <div class="ticket-body-grid">
+                           <div class="ticket-data-list">
+                               <p id="p_folio"><strong>Número de Ticket:</strong> <span id="t_num_ticket">-</span></p>
+                               <p id="p_fecha"><strong>Fecha Registro:</strong> <span id="t_fecha_reg">-</span></p>
+                               <p id="p_prioridad"><strong>Nivel Prioridad:</strong> <span id="t_prioridad">-</span></p>
+                               <p id="p_servicio"><strong>Tipo de Servicio:</strong> <span id="t_tipo_servicio">-</span></p>
+                               <hr style="border: 0; border-top: 1px dashed #BDC3C7; margin: 12px 0;">
+                               <p id="p_sujeto"><strong>Sujeto Fiscalizado:</strong> <span id="t_sujeto">-</span></p>
+                               <p id="p_auditoria"><strong>Auditoría:</strong> <span id="t_auditoria">-</span></p>
+                               <p id="p_rubro"><strong>Rubro General:</strong> <span id="t_rubro">-</span></p>
+                               <p id="p_tipo_h"><strong>Tipo Hallazgo:</strong> <span id="t_tipo_h">-</span></p>
+                               <p id="p_num_con"><strong>No. Concepto Cédula:</strong> <span id="t_num_con">-</span></p>
+                               <p id="p_titulo"><strong>Título Observación:</strong> <span id="t_titulo_obs">-</span></p>
+                               <p id="p_rubro_esp"><strong>Rubro Específico:</strong> <span id="t_rubro_esp">-</span></p>
+                               <p id="p_importe"><strong>Monto Observado:</strong> <span id="t_importe_val">-</span></p>
+                               <p id="p_sustancia"><strong>Sustancia Hallazgo:</strong> <span id="t_sustancia">-</span></p>
+                               <p id="p_concepto"><strong>Concepto General:</strong> <span id="t_concepto_gen">-</span></p>
+                           </div>
+                           
+                           <div class="ticket-side-panel">
+                               <span id="badgeEstatus" class="ticket-badge-status">EN ANÁLISIS</span>
+                               <div class="ticket-time-box">
+                                   Tiempo Est. Fila
+                                   <div id="timeEstimate">Calculando...</div>
+                               </div>
+                               <div class="ticket-barcode">
+                                   ||||| | |||| |||| ||| <br>
+                                   DGAJ-CONTROL-SYSTEM
+                               </div>
+                           </div>
                        </div>
                    </div>
                </div>
@@ -572,7 +731,7 @@
  
             <div class="btn-container">
                 <a href="solicitud.html" class="btn-cancelar">Regresar</a>
-                <button type="submit" class="btn-enviar">Subir Ticket e Información</button>
+                <button type="submit" class="btn-enviar">Guardar Hallazgo y Validar Ticket</button>
            </div>
         </form>
     </div>
@@ -586,12 +745,10 @@
         let palabrasClaveExtraidas = [];
  
         window.addEventListener('DOMContentLoaded', async () => {
-            // Asignación de fecha por defecto
             const txtFecha = document.getElementById('fecha_recepcion');
             const hoy = new Date().toISOString().split('T')[0];
             txtFecha.value = hoy;
  
-            // Recuperar folio URL
             const urlParams = new URLSearchParams(window.location.search);
             folioTicketActivo = urlParams.get('folio') || localStorage.getItem('jurix_folio_activo') || "JURIX-DGAJ-DCPL-B001-0001";
  
@@ -599,10 +756,7 @@
             document.getElementById('t_num_ticket').innerText = folioTicketActivo;
             document.getElementById('t_fecha_reg').innerText = hoy;
 
-            // Consultar datos de 'registrar_servicio' de Supabase
             await cargarDatosRegistroPrevio(folioTicketActivo);
- 
-            // Listeners para actualizar espejo del Ticket en tiempo real
             vincularEspejoFila();
         });
 
@@ -619,11 +773,11 @@
                         document.getElementById('t_tipo_servicio').innerText = reg.tipo_servicio || 'No definido';
                         evaluarPrioridad(reg.prioridad);
                     } else {
-                        evaluarPrioridad("Normal"); // Fallback
+                        evaluarPrioridad("Normal");
                     }
                 }
             } catch (error) {
-                console.error("Error cargando el ticket previo:", error);
+                console.error("Error al obtener ticket de control:", error);
                 evaluarPrioridad("Normal");
             }
         }
@@ -631,11 +785,10 @@
         function evaluarPrioridad(prioridad) {
             const containerHeader = document.getElementById('containerPrioridadHeader');
             const txtPrioridadTicket = document.getElementById('t_prioridad');
-            let color = var(--amarillo-normal);
+            let color = "var(--prioridad-normal)";
             
-            if (prioridad === "Urgente") color = "#e74c3c";
-            else if (prioridad === "Prioritario") color = "#ff6600";
-            else color = "#f1c40f";
+            if (prioridad === "Urgente") color = "var(--prioridad-urgente)";
+            else if (prioridad === "Prioritario") color = "var(--prioridad-prioritario)";
 
             const plantillaDot = `<span class="priority-dot" style="background-color: ${color}"></span> ${prioridad}`;
             containerHeader.innerHTML = plantillaDot;
@@ -644,49 +797,53 @@
 
         function vincularEspejoFila() {
             const inputsMap = {
-                'sujeto_fiscalizado': 't_sujeto',
-                'tipo_auditoria': 't_auditoria',
-                'tipo_hallazgo': 't_tipo_h',
-                'num_concepto': 't_num_con',
-                'titulo_observacion': 't_titulo_obs',
-                'rubro_combobox': 't_rubro_esp',
-                'importe': 't_importe_val',
-                'sustancia_hallazgo': 't_sustancia',
-                'sintesis_condicion': 't_concepto_gen'
+                'sujeto_fiscalizado': { tId: 't_sujeto', pId: 'p_sujeto' },
+                'tipo_auditoria': { tId: 't_auditoria', pId: 'p_auditoria' },
+                'tipo_hallazgo': { tId: 't_tipo_h', pId: 'p_tipo_h' },
+                'num_concepto': { tId: 't_num_con', pId: 'p_num_con' },
+                'titulo_observacion': { tId: 't_titulo_obs', pId: 'p_titulo' },
+                'rubro_combobox': { tId: 't_rubro_esp', pId: 'p_rubro_esp' },
+                'importe': { tId: 't_importe_val', pId: 'p_importe' },
+                'sustancia_hallazgo': { tId: 't_sustancia', pId: 'p_sustancia' },
+                'sintesis_condicion': { tId: 't_concepto_gen', pId: 'p_concepto' }
             };
 
             Object.keys(inputsMap).forEach(idInput => {
-                const el = document.getElementById(idInput);
-                if(el) {
-                    el.addEventListener('change', () => { actualizarTextoEspejo(el, inputsMap[idInput]); });
-                    el.addEventListener('input', () => { actualizarTextoEspejo(el, inputsMap[idInput]); });
+                const inputEl = document.getElementById(idInput);
+                if(inputEl) {
+                    const handler = () => {
+                        let texto = inputEl.value;
+                        if(inputEl.tagName === "SELECT") {
+                            texto = inputEl.options[inputEl.selectedIndex].text;
+                        }
+                        document.getElementById(inputsMap[idInput].tId).innerText = texto || "-";
+                        
+                        // Efecto visual interactivo de parpadeo temporal al cambiar información
+                        const contP = document.getElementById(inputsMap[idInput].pId);
+                        if(contP) {
+                            contP.classList.add('updated-flash');
+                            setTimeout(() => contP.classList.remove('updated-flash'), 600);
+                        }
+                    };
+                    inputEl.addEventListener('change', handler);
+                    inputEl.addEventListener('input', handler);
                 }
             });
 
-            // Especial auditoria/rubro
             const cmbAuditoria = document.getElementById('tipo_auditoria');
             const cmbRubro = document.getElementById('rubro_hallazgo');
             cmbAuditoria.addEventListener('change', () => {
                 if (cmbAuditoria.value === "RCPF") {
                     cmbRubro.value = "Financiero";
-                    document.getElementById('timeEstimate').innerText = "Est. ~15 min";
+                    document.getElementById('timeEstimate').innerText = "15 minutos";
                 } else if (cmbAuditoria.value === "RCPI") {
                     cmbRubro.value = "Infraestructura";
-                    document.getElementById('timeEstimate').innerText = "Est. ~25 min";
+                    document.getElementById('timeEstimate').innerText = "25 minutos";
                 }
                 document.getElementById('t_rubro').innerText = cmbRubro.value;
             });
         }
 
-        function actualizarTextoEspejo(elemento, idDestino) {
-            let texto = elemento.value;
-            if(elemento.tagName === "SELECT") {
-                texto = elemento.options[elemento.selectedIndex].text;
-            }
-            document.getElementById(idDestino).innerText = texto || "-";
-        }
-
-        // Lógica de validación, formateo de importes y autocompletado IA igual a 2hallazgo.html...
         const txtImporte = document.getElementById('importe');
         txtImporte.addEventListener('input', (e) => {
             let valor = e.target.value.replace(/\D/g, "");
@@ -695,17 +852,17 @@
             e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(numero);
         });
 
-        // Motor de palabras clave y síntesis
         const txtCondicion = document.getElementById('condicion_hallazgo');
         txtCondicion.addEventListener('input', () => {
             let texto = txtCondicion.value.toLowerCase().trim();
-            const patronesAI = [/(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, /(?:autorización|omisión|incumplimiento)\s+de/gi];
+            const patronesAI = [/(?:no|nunca|jamás)\s+[a-záéíóú]+/gi, /(?:autorización|omisión|incumplimiento|deficiencia)\s+de/gi];
             palabrasClaveExtraidas = texto.match(patronesAI) || [];
-            document.getElementById('keywordsContainer').innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('') || "Analizando...";
+            document.getElementById('keywordsContainer').innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('') || "Procesando texto legal...";
             
             if(texto.length > 15) {
                 document.getElementById('synthesisOptions').innerHTML = `
-                    <button type="button" class="synthesis-btn-option" onclick="seleccionarSintesis('Incumplimiento detectado en la revisión')">✨ Incumplimiento detectado en la revisión</button>
+                    <button type="button" class="synthesis-btn-option" onclick="seleccionarSintesis('Incumplimiento normativo y documental detectado')">✨ Incumplimiento normativo y documental detectado</button>
+                    <button type="button" class="synthesis-btn-option" onclick="seleccionarSintesis('Deficiencia crítica en la aplicación de recursos')">✨ Deficiencia crítica en la aplicación de recursos</button>
                 `;
             }
         });
@@ -713,9 +870,11 @@
         function seleccionarSintesis(texto) {
             document.getElementById('sintesis_condicion').value = texto;
             document.getElementById('t_concepto_gen').innerText = texto;
+            const pConcepto = document.getElementById('p_concepto');
+            pConcepto.classList.add('updated-flash');
+            setTimeout(() => pConcepto.classList.remove('updated-flash'), 600);
         }
  
-        // Envío del formulario a Supabase
         document.getElementById('hallazgoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const rawImporte = document.getElementById('importe').value.replace(/[^0-9.-]+/g, "");
@@ -740,6 +899,7 @@
             };
  
             try {
+                document.getElementById('badgeEstatus').innerText = "GUARDANDO...";
                 const response = await fetch(URL_SUPABASE_HALLAZGOS, {
                     method: 'POST', 
                     headers: {
@@ -752,13 +912,15 @@
                 });
  
                 if (response.ok) {
-                    alert(`✅ Cédula de Hallazgo guardada exitosamente.`);
+                    alert(`✅ Registro insertado exitosamente bajo el folio del ticket original.`);
                     window.location.href = "tablero.html";
                 } else {
-                    alert("❌ Error crítico en inserción.");
+                    alert("❌ Ocurrió un error al procesar el guardado en base de datos.");
+                    document.getElementById('badgeEstatus').innerText = "ERROR";
                 }
             } catch (error) {
-                alert("❌ Fallo de comunicación de red con Supabase.");
+                alert("❌ Error de red al intentar conectar con el servidor JURIX.");
+                document.getElementById('badgeEstatus').innerText = "ERROR RETRY";
             }
         });
     </script>
