@@ -163,11 +163,18 @@
             border-radius: 50%;
             margin-right: 12px;
             display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .badge-circle:hover {
+            transform: scale(1.3);
         }
 
         .bg-red { background-color: var(--rojo-alerta); box-shadow: 0 0 8px var(--rojo-alerta); }
         .bg-yellow { background-color: var(--amarillo-alerta); box-shadow: 0 0 8px var(--amarillo-alerta); }
         .bg-orange { background-color: var(--naranja-nitido); box-shadow: 0 0 8px var(--naranja-nitido); }
+        .bg-gray { background-color: #888888; box-shadow: 0 0 8px #888888; }
 
         .notif-count {
             font-weight: bold;
@@ -247,23 +254,30 @@
             
             <div class="notif-row">
                 <div class="notif-label">
-                    <span class="badge-circle bg-red"></span> Tickets Pendientes de Asignar
+                    <a href="tablero.html?filtro=asignar" title="Filtrar pendientes de asignar"><span class="badge-circle bg-red"></span></a> Tickets Pendientes de Asignar
                 </div>
                 <div class="notif-count" id="countAsignar">0</div>
             </div>
 
             <div class="notif-row">
                 <div class="notif-label">
-                    <span class="badge-circle bg-yellow"></span> Tickets Pendientes de Atender
+                    <a href="tablero.html?filtro=atender" title="Filtrar pendientes de atender"><span class="badge-circle bg-yellow"></span></a> Tickets Pendientes de Atender
                 </div>
                 <div class="notif-count" id="countAtender">0</div>
             </div>
 
             <div class="notif-row">
                 <div class="notif-label">
-                    <span class="badge-circle bg-orange"></span> Tickets Pendientes de Liberar
+                    <a href="tablero.html?filtro=liberar" title="Filtrar pendientes de liberar"><span class="badge-circle bg-orange"></span></a> Tickets Pendientes de Liberar
                 </div>
                 <div class="notif-count" id="countLiberar">0</div>
+            </div>
+
+            <div class="notif-row">
+                <div class="notif-label">
+                    <span class="badge-circle bg-gray"></span> Tickets Cancelados
+                </div>
+                <div class="notif-count" id="countCancelados">0</div>
             </div>
 
             <div class="total-box">
@@ -282,7 +296,6 @@
         const rawRol = localStorage.getItem('jurix_perfil') || ""; 
         const userName = localStorage.getItem('last_user_name');
 
-        // CORRECCIÓN CLAVE: Convertimos el rol a minúsculas limpias para evitar fallos de Case-Sensitivity
         const userRol = rawRol.trim().toLowerCase();
 
         if (sesionActiva !== 'true' || !userRol) {
@@ -291,12 +304,11 @@
         }
 
         document.getElementById('lblNombre').textContent = userName || "Desconocido";
-        document.getElementById('lblRol').textContent = rawRol; // Muestra el rol original en la barra superior
+        document.getElementById('lblRol').textContent = rawRol;
 
         function configurarMenuPorRol() {
             const btnConsultar = document.getElementById('btnConsultar');
             
-            // Direccionar consulta según rol normalizado
             if (userRol === 'usuario') {
                 btnConsultar.href = "consultauser.html";
             } else if (userRol === 'revisor') {
@@ -304,15 +316,11 @@
             } else if (userRol === 'administrador' || userRol === 'supervisor') {
                 btnConsultar.href = "consultaradmin.html";
             }
-
-            // --- REGLAS DE ACCESO CORREGIDAS ---
             
-            // Asignar Ticket: Bloqueado a cualquiera que NO sea administrador
             if (userRol !== 'administrador') {
                 deshabilitarBoton('btnAsignar');
             }
 
-            // Atender, Modificar, Métricas, Base de Datos: Habilitados para administrador y revisor
             if (userRol !== 'administrador' && userRol !== 'revisor') {
                 deshabilitarBoton('btnAtender');
                 deshabilitarBoton('btnModificar');
@@ -320,7 +328,6 @@
                 deshabilitarBoton('btnBaseDatos');
             }
 
-            // SI ES ADMINISTRADOR: Mostrar y forzar la carga del tablero lateral de estatus
             if (userRol === 'administrador') {
                 document.getElementById('panelNotificaciones').style.display = 'block';
                 cargarMetricasSupabase();
@@ -353,8 +360,8 @@
                         let pAsignar = 0;
                         let pAtender = 0;
                         let pLiberar = 0;
+                        let pCancelados = 0;
 
-                        // Función de control para filtrar cadenas NULL, vacías o "EMPTY" de los folios de texto
                         const tieneFolioValido = (valor) => {
                             if (!valor) return false;
                             const texto = String(valor).trim().toUpperCase();
@@ -365,11 +372,13 @@
                             if (tieneFolioValido(fila.tiketpendienteasignar)) pAsignar++;
                             if (tieneFolioValido(fila.tiketpendienteatender)) pAtender++;
                             if (tieneFolioValido(fila.tiketpendienteliberar)) pLiberar++;
+                            if (tieneFolioValido(fila.tiketcancelado)) pCancelados++;
                         });
 
                         document.getElementById('countAsignar').textContent = pAsignar;
                         document.getElementById('countAtender').textContent = pAtender;
                         document.getElementById('countLiberar').textContent = pLiberar;
+                        document.getElementById('countCancelados').textContent = pCancelados;
                         document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
                     }
                 }
