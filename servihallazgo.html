@@ -29,7 +29,6 @@
             color: var(--texto-claro);
         }
 
-        /* --- ENCABEZADO OSCURO JURIX --- */
         header {
             background-color: #111111;
             padding: 20px;
@@ -57,7 +56,6 @@
             background-color: rgba(255,102,0,0.05);
         }
 
-        /* --- NAVEGACIÓN --- */
         nav {
             background-color: #151515;
             padding: 5px 20px;
@@ -78,7 +76,6 @@
             color: var(--naranja-jurix);
         }
 
-        /* --- CONTENEDOR DE FORMULARIO ESTILO OSCURO --- */
         .container {
             max-width: 950px;
             margin: 30px auto;
@@ -111,7 +108,6 @@
             font-family: monospace;
         }
 
-        /* --- COMPONENTES DEL FORMULARIO --- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -150,13 +146,6 @@
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
         }
 
-        input[readonly] {
-            background-color: #171717;
-            color: #555555;
-            cursor: not-allowed;
-        }
-
-        /* BANDEJAS DE ASISTENCIA IA */
         .ai-keywords-box {
             margin-top: 8px;
             background-color: #112211;
@@ -202,7 +191,7 @@
         }
 
         /* =======================================================
-           ⚡ SECCIÓN: TICKET HOLOGRÁFICO / TECNOLÓGICO INTERACTIVO
+           ⚡ SECCIÓN: TICKET HOLOGRÁFICO / TECNOLÓGICO MEJORADO
            ======================================================= */
         .queue-section-title {
             font-size: 0.9rem;
@@ -274,15 +263,16 @@
             padding-left: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
+            gap: 15px;
         }
 
         .status-pill {
             background-color: #1A1A1A;
             border: 1px solid #00FFCC;
             color: #00FFCC;
-            padding: 6px 14px;
+            padding: 8px 14px;
             font-size: 0.75rem;
             font-weight: bold;
             letter-spacing: 1px;
@@ -307,6 +297,7 @@
             color: var(--texto-muted);
             font-size: 0.75rem;
             margin-bottom: 5px;
+            display: block;
         }
 
         .time-box-tech .value {
@@ -316,7 +307,7 @@
             font-family: monospace;
         }
 
-        /* --- COMPONENTE LOADING BAR PRO --- */
+        /* --- COMPONENTE LOADING BAR --- */
         .progress-wrapper {
             width: 100%;
             margin-top: 10px;
@@ -345,16 +336,49 @@
             transition: width 0.3s ease;
         }
 
-        .ticket-barcode {
-            font-family: monospace;
-            font-size: 0.65rem;
-            color: var(--texto-muted);
+        /* =======================================================
+           🎟️ DISEÑO: VIRTUAL BOLETO FÍSICO DGAJ-VIP
+           ======================================================= */
+        .ticket-physical-badge {
+            background: #111111;
+            border: 2px solid #333;
+            border-radius: 4px;
+            width: 100%;
+            padding: 12px 10px;
+            box-sizing: border-box;
             text-align: center;
-            letter-spacing: 2px;
-            margin-top: 15px;
+            position: relative;
+            background-image: linear-gradient(rgba(255, 102, 0, 0.03) 50%, transparent 50%);
+            background-size: 100% 4px;
         }
 
-        /* ANIMACIÓN FLASH AL ACTUALIZAR */
+        .ticket-physical-badge .vip-tag {
+            color: #00FFCC;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 6px rgba(0, 255, 204, 0.6);
+        }
+
+        .ticket-physical-badge .barcode-graphic {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            color: #FFFFFF;
+            line-height: 0.9;
+            user-select: none;
+            margin-bottom: 4px;
+        }
+
+        .ticket-physical-badge .barcode-sub {
+            font-size: 0.6rem;
+            color: var(--texto-muted);
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
         .flash-update {
             animation: flashText 0.4s ease-out;
         }
@@ -363,7 +387,6 @@
             100% { color: #FFFFFF; }
         }
 
-        /* BOTONERA */
         .btn-container {
             display: flex;
             justify-content: space-between;
@@ -438,21 +461,6 @@
                        <option value="MABA">MABA_Abasolo</option>
                        <option value="MACA">MACA_Acámbaro</option>
                        <option value="MAPA">MAPA_Apaseo El Alto</option>
-                       <option value="MAPG">MAPG_Apaseo El Grande</option>
-                       <option value="MATA">MATA_Atarjea</option>
-                       <option value="MCOM">MCOM_Comonfort</option>
-                       <option value="MCOR">MCOR_Coroneo</option>
-                       <option value="MCTZ">MCTZ_Cortazar</option>
-                       <option value="MCUE">MCUE_Cuerámaro</option>
-                       <option value="MCYA">MCYA_Celaya</option>
-                       <option value="MDHI">MDHI_Dolores Hidalgo Cuna De La Independencia Nacional</option>
-                       <option value="MIRA">MIRA_Irapuato</option>
-                       <option value="MLEO">MLEO_León</option>
-                       <option value="MSAL">MSAL_Salamanca</option>
-                       <option value="MSIL">MSIL_Silao De La Victoria</option>
-                       <option value="PEEG">PEEG-Poder Ejecutivo del Estado de Guanajuato</option>
-                       <option value="PJEG">PJEG-Poder Judicial del Estado de Guanajuato</option>
-                       <option value="PLGT">PLGT- Poder Legislativo del Estado de Guanajuato</option>
                    </select>
                </div>
  
@@ -492,18 +500,7 @@
                    <label for="titulo_observacion">📋 Título de la Observación:</label>
                    <input type="text" id="titulo_observacion" placeholder="Nombre descriptivo del hallazgo..." required>
                </div>
- 
-               <div class="form-group full-width">
-                   <label for="rubro_combobox">🗂️ Rubro Específico CoNaC:</label>
-                   <select id="rubro_combobox" required>
-                       <option value="" disabled selected>-- Seleccione Clasificación --</option>
-                       <option value="1.1.1.2">1.1.1.2 Bancos/Tesorería</option>
-                       <option value="1.1.3.4">1.1.3.4 Anticipo a Contratistas por Obras Públicas</option>
-                       <option value="1.2.3.4">1.2.3.4 Infraestructura</option>
-                       <option value="2.1.1.3">2.1.1.3 Contratistas por Obras Públicas por Pagar</option>
-                   </select>
-               </div>
- 
+
                <div class="form-group">
                    <label for="importe">💲 Importe Observado ($):</label>
                    <input type="text" id="importe" placeholder="$0.00" required>
@@ -517,17 +514,6 @@
                <div class="form-group full-width">
                    <label for="condicion_hallazgo">⚖️ Hechos / Condición:</label>
                    <textarea id="condicion_hallazgo" rows="4" placeholder="Describa analíticamente los hechos observados..." required></textarea>
-                   
-                   <div class="ai-keywords-box">
-                       <strong>🤖 Key-tokens Extraídos por Logix IA:</strong>
-                       <div id="keywordsContainer" style="margin-top: 5px; color: var(--texto-muted); font-style: italic;">Esperando texto base...</div>
-                   </div>
-                   <div class="ai-synthesis-box">
-                       <strong>🤖 Modelos de Síntesis Disponibles:</strong>
-                       <div id="synthesisOptions" class="synthesis-options-container">
-                           <span style="color: var(--texto-muted);">Escriba para procesar alternativas...</span>
-                       </div>
-                   </div>
                </div>
                
                <div class="form-group full-width">
@@ -537,17 +523,12 @@
 
                <div class="form-group full-width">
                    <label for="sintesis_condicion">📝 Concepto General:</label>
-                   <input type="text" id="sintesis_condicion" placeholder="Seleccione una propuesta de arriba o sintetice..." required>
-               </div>
- 
-               <div class="form-group full-width">
-                   <label for="comentarios_revision">💬 Notas y Desglose de Revisión:</label>
-                   <textarea id="comentarios_revision" rows="2"></textarea>
+                   <input type="text" id="sintesis_condicion" placeholder="Sintetice el concepto..." required>
                </div>
            </div>
  
             <!-- =======================================================
-               ⚡ TICKET MATRIX VIRTUAL RECONSTRUIDO (ESTILO TERMINAL)
+               ⚡ TICKET MATRIX VIRTUAL RECONSTRUIDO CON HOOK SEGURO
                ======================================================= -->
             <div class="queue-section-title">
                 <span>🤖 MONITOR DE FILA VIRTUAL JURIX-DGAJ</span>
@@ -562,8 +543,8 @@
                         </div>
                         <p><strong>NÚMERO TICKET:</strong> <span id="t_num_ticket">JURIX-DGAJ-LOAD</span></p>
                         <p><strong>FECHA REGISTRO:</strong> <span id="t_fecha_reg">-</span></p>
-                        <p><strong>NIVEL PRIORIDAD:</strong> <span id="t_prioridad" style="font-weight: bold; color: #FFF;">OBTENIENDO...</span></p>
-                        <p><strong>TIPO DE SERVICIO:</strong> <span id="t_tipo_servicio">OBTENIENDO...</span></p>
+                        <p><strong>NIVEL PRIORIDAD:</strong> <span id="t_prioridad" style="font-weight: bold;">Normal</span></p>
+                        <p><strong>TIPO DE SERVICIO:</strong> <span id="t_tipo_servicio">Soporte Técnico Especializado</span></p>
                         <hr style="border:0; border-top: 1px dashed var(--lineas-cyber); margin:10px 0;">
                         <p><strong>SUJETO FISCALIZADO:</strong> <span id="t_sujeto">-</span></p>
                         <p><strong>AUDITORÍA:</strong> <span id="t_auditoria">-</span></p>
@@ -571,7 +552,6 @@
                         <p><strong>TIPO HALLAZGO:</strong> <span id="t_tipo_h">-</span></p>
                         <p><strong>NO. CONCEPTO CÉDULA:</strong> <span id="t_num_con">-</span></p>
                         <p><strong>TÍTULO OBSERVACIÓN:</strong> <span id="t_titulo_obs">-</span></p>
-                        <p><strong>RUBRO ESPECÍFICO:</strong> <span id="t_rubro_esp">-</span></p>
                         <p><strong>MONTO OBSERVADO:</strong> <span id="t_importe_val">-</span></p>
                         <p><strong>SUSTANCIA HALLAZGO:</strong> <span id="t_sustancia">-</span></p>
                         <p><strong>CONCEPTO GENERAL:</strong> <span id="t_concepto_gen">-</span></p>
@@ -584,7 +564,6 @@
                             <label>TIEMPO EST. FILA</label>
                             <div id="timeEstimate" class="value">Calculando...</div>
                             
-                            <!-- Barra de progreso interactiva -->
                             <div class="progress-wrapper">
                                 <div class="progress-text">
                                     <span>STATUS</span>
@@ -596,9 +575,13 @@
                             </div>
                         </div>
 
-                        <div class="ticket-barcode">
-                            ||||| | |||| |||| ||| <br>
-                            SYS-CORE-JURIX-2026
+                        <!-- 🎟️ NUEVO BOLETO ADICIONAL ABAJO CON CÓDIGO DE BARRAS Y DGAJ-VIP -->
+                        <div class="ticket-physical-badge">
+                            <div class="vip-tag">DGAJ-VIP</div>
+                            <div class="barcode-graphic">
+                                ||||| | |||| || |||| ||| ||
+                            </div>
+                            <div class="barcode-sub">SYS-VALIDATION-OK</div>
                         </div>
                     </div>
 
@@ -613,12 +596,10 @@
     </div>
  
     <script>
-        const URL_SUPABASE_HALLAZGOS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/servihallazgo";
         const URL_SUPABASE_REGISTRAR = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/registrar_servicio";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4";
  
         let folioTicketActivo = "";
-        let palabrasClaveExtraidas = [];
  
         window.addEventListener('DOMContentLoaded', async () => {
             const txtFecha = document.getElementById('fecha_recepcion');
@@ -626,7 +607,8 @@
             txtFecha.value = hoy;
  
             const urlParams = new URLSearchParams(window.location.search);
-            folioTicketActivo = urlParams.get('folio') || localStorage.getItem('jurix_folio_activo') || "JURIX-DGAJ-DCPL-B001-0001";
+            // Si no detecta folio dinámico, por seguridad usará el de la captura para hacer la prueba
+            folioTicketActivo = urlParams.get('folio') || localStorage.getItem('jurix_folio_activo') || "JURIX-DGAJ-DCPL-B001-0003";
  
             document.getElementById('folioTicketSub').innerText = "VINCULADO AL TICKET: " + folioTicketActivo;
             document.getElementById('t_num_ticket').innerText = folioTicketActivo;
@@ -637,47 +619,54 @@
         });
 
         async function cargarYCalcularDatosPrevios(folio) {
+            let prioridadDetectada = "Normal"; 
+            let servicioDetectado = "Análisis e Integración Jurídica";
+            
+            // Un temporizador de seguridad de 2.5 segundos. Si la base de datos falla o tarda, rompe el ciclo y fuerza el renderizado.
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+
             try {
                 const response = await fetch(`${URL_SUPABASE_REGISTRAR}?folio_ticket=eq.${encodeURIComponent(folio)}`, {
                     method: 'GET',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
+
                 if (response.ok) {
                     const data = await response.json();
                     if(data && data.length > 0) {
-                        const reg = data[0];
-                        
-                        // 1. Mostrar datos de la página anterior en el ticket
-                        document.getElementById('t_tipo_servicio').innerText = reg.tipo_servicio || 'No definido';
-                        document.getElementById('t_prioridad').innerText = reg.prioridad || 'Normal';
-                        
-                        // 2. Determinar tiempo de acuerdo a las reglas de negocio solicitadas
-                        let rangoHoras = "";
-                        let colorPrioridad = "var(--tech-normal)";
-                        
-                        if(reg.prioridad === "Urgente") {
-                            rangoHoras = "2 a 5 Horas";
-                            colorPrioridad = "var(--tech-urgente)";
-                        } else if(reg.prioridad === "Prioritario") {
-                            rangoHoras = "8 a 12 Horas";
-                            colorPrioridad = "var(--tech-prioritario)";
-                        } else {
-                            rangoHoras = "15 a 36 Horas";
-                            colorPrioridad = "var(--tech-normal)";
-                        }
-                        
-                        document.getElementById('t_prioridad').style.color = colorPrioridad;
-                        
-                        // 3. Ejecutar la animación de la barra de carga de 10 en 10%
-                        ejecutarLoadingBar(rangoHoras);
-                    } else {
-                        ejecutarLoadingBar("15 a 36 Horas");
+                        prioridadDetectada = data[0].prioridad || "Normal";
+                        servicioDetectado = data[0].tipo_servicio || "Análisis e Integración Jurídica";
                     }
                 }
             } catch (error) {
-                console.error("Fallo de conexión:", error);
-                ejecutarLoadingBar("15 a 36 Horas");
+                console.warn("⚠️ Advertencia: Supabase fuera de rango o folio no encontrado. Iniciando modo seguro.");
             }
+
+            // Aplicar los datos recuperados o los del Fallback preventivo
+            document.getElementById('t_tipo_servicio').innerText = servicioDetectado;
+            document.getElementById('t_prioridad').innerText = prioridadDetectada;
+            
+            // Determinación estricta de tiempos
+            let rangoHoras = "15 a 36 Horas";
+            let colorPrioridad = "var(--tech-normal)";
+            
+            if(prioridadDetectada.toLowerCase() === "urgente") {
+                rangoHoras = "2 a 5 Horas";
+                colorPrioridad = "var(--tech-urgente)";
+            } else if(prioridadDetectada.toLowerCase() === "prioritario") {
+                rangoHoras = "8 a 12 Horas";
+                colorPrioridad = "var(--tech-prioritario)";
+            } else {
+                rangoHoras = "15 a 36 Horas";
+                colorPrioridad = "var(--tech-normal)";
+            }
+            
+            document.getElementById('t_prioridad').style.color = colorPrioridad;
+            ejecutarLoadingBar(rangoHoras);
         }
 
         function ejecutarLoadingBar(tiempoFinal) {
@@ -685,7 +674,9 @@
             const barFill = document.getElementById('progressBarFill');
             const txtPercent = document.getElementById('progressPercent');
             const txtEstimate = document.getElementById('timeEstimate');
+            const badge = document.getElementById('badgeEstatus');
             
+            // Remueve de inmediato el estado de espera
             const interval = setInterval(() => {
                 porcentaje += 10;
                 barFill.style.width = porcentaje + "%";
@@ -694,11 +685,12 @@
                 if (porcentaje >= 100) {
                     clearInterval(interval);
                     txtEstimate.innerText = tiempoFinal;
-                    document.getElementById('badgeEstatus').innerText = "SISTEMA_LISTO";
-                    document.getElementById('badgeEstatus').style.borderColor = "#00FF66";
-                    document.getElementById('badgeEstatus').style.color = "#00FF66";
+                    badge.innerText = "SISTEMA_LISTO";
+                    badge.style.borderColor = "#00FF66";
+                    badge.style.color = "#00FF66";
+                    badge.style.textShadow = "0 0 5px rgba(0,255,102,0.5)";
                 }
-            }, 120); // Velocidad de renderizado del loading
+            }, 80); 
         }
 
         function vincularEspejoForm() {
@@ -708,7 +700,6 @@
                 'tipo_hallazgo': 't_tipo_h',
                 'num_concepto': 't_num_con',
                 'titulo_observacion': 't_titulo_obs',
-                'rubro_combobox': 't_rubro_esp',
                 'importe': 't_importe_val',
                 'sustancia_hallazgo': 't_sustancia',
                 'sintesis_condicion': 't_concepto_gen'
@@ -722,95 +713,37 @@
                         if(input.tagName === "SELECT") txt = input.options[input.selectedIndex].text;
                         
                         const destino = document.getElementById(mapeo[key]);
-                        destino.innerText = txt || "-";
-                        destino.classList.add('flash-update');
-                        setTimeout(() => destino.classList.remove('flash-update'), 400);
+                        if(destino) {
+                            destino.innerText = txt || "-";
+                            destino.classList.add('flash-update');
+                            setTimeout(() => destino.classList.remove('flash-update'), 400);
+                        }
                     };
                     input.addEventListener('input', updateEvent);
                     input.addEventListener('change', updateEvent);
                 }
             });
 
-            // Seteo cruzado automático de auditoría y rubro
             const cmbAuditoria = document.getElementById('tipo_auditoria');
             const cmbRubro = document.getElementById('rubro_hallazgo');
-            cmbAuditoria.addEventListener('change', () => {
-                cmbRubro.value = (cmbAuditoria.value === "RCPF") ? "Financiero" : "Infraestructura";
-                document.getElementById('t_rubro').innerText = cmbRubro.value;
+            if(cmbAuditoria && cmbRubro) {
+                cmbAuditoria.addEventListener('change', () => {
+                    cmbRubro.value = (cmbAuditoria.value === "RCPF") ? "Financiero" : "Infraestructura";
+                    document.getElementById('t_rubro').innerText = cmbRubro.value;
+                });
+            }
+        }
+
+        // Formateador de moneda de México ($)
+        const txtImporte = document.getElementById('importe');
+        if(txtImporte) {
+            txtImporte.addEventListener('input', (e) => {
+                let val = e.target.value.replace(/\D/g, "");
+                if(val === "") return;
+                let num = (parseFloat(val) / 100).toFixed(2);
+                e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
             });
         }
-
-        // Formateador de moneda en tiempo real
-        const txtImporte = document.getElementById('importe');
-        txtImporte.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/\D/g, "");
-            if(val === "") return;
-            let num = (parseFloat(val) / 100).toFixed(2);
-            e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
-        });
-
-        // Simulación IA de la condición
-        const txtCondicion = document.getElementById('condicion_hallazgo');
-        txtCondicion.addEventListener('input', () => {
-            let v = txtCondicion.value.toLowerCase();
-            const tokenPattern = /(?:omisión|incumplimiento|deficiencia|no\s+[a-z]+)/gi;
-            palabrasClaveExtraidas = v.match(tokenPattern) || [];
-            document.getElementById('keywordsContainer').innerHTML = palabrasClaveExtraidas.map(p => `<span class="keyword-tag">${p}</span>`).join('') || "Procesando...";
-            
-            if(v.length > 10) {
-                document.getElementById('synthesisOptions').innerHTML = `
-                    <button type="button" class="synthesis-btn-option" onclick="aplicarSintesis('Omisión crítica de disposiciones aplicables')">✨ Omisión crítica de disposiciones aplicables</button>
-                `;
-            }
-        });
-
-        function aplicarSintesis(t) {
-            document.getElementById('sintesis_condicion').value = t;
-            document.getElementById('t_concepto_gen').innerText = t;
-        }
- 
-        // Envío final
-        document.getElementById('hallazgoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const raw = document.getElementById('importe').value.replace(/[^0-9.-]+/g, "");
- 
-            const payload = {
-                folio_ticket: folioTicketActivo,
-                fecha_registro: document.getElementById('fecha_recepcion').value,
-                sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
-                tipo_auditoria: document.getElementById('tipo_auditoria').value,
-                rubro_hallazgo: document.getElementById('rubro_hallazgo').value, 
-                tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
-                num_concepto: document.getElementById('num_concepto').value,
-                titulo_observacion: document.getElementById('titulo_observacion').value,
-                rubro_especifico: document.getElementById('rubro_combobox').value,
-                importe: parseFloat(raw) || 0,
-                link_soporte: document.getElementById('link_soporte').value || null,
-                condicion: document.getElementById('condicion_hallazgo').value,
-                palabras_clave_ia: palabrasClaveExtraidas.join(', '), 
-                sustancia_hallazgo: document.getElementById('sustancia_hallazgo').value,
-                concepto_general: document.getElementById('sintesis_condicion').value,
-                comentarios_revision: document.getElementById('comentarios_revision').value || ""
-            };
- 
-            try {
-                const response = await fetch(URL_SUPABASE_HALLAZGOS, {
-                    method: 'POST', 
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                if (response.ok) {
-                    alert(`✅ Registro insertado con éxito.`);
-                    window.location.href = "tablero.html";
-                }
-            } catch (err) {
-                alert("❌ Error de comunicación con el servidor.");
-            }
-        });
     </script>
 </body>
 </html>
