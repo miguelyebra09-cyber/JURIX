@@ -644,10 +644,12 @@
                    <input type="url" id="link_soporte" placeholder="https://drive.google.com/...">
                </div>
  
+               <!-- ⚖️ CAMPO HECHOS / CONDICIÓN -->
                <div class="form-group full-width">
                    <label for="condicion_hallazgo">⚖️ Hechos / Condición:</label>
                    <textarea id="condicion_hallazgo" rows="4" placeholder="Describa analíticamente los hechos observados..." required></textarea>
                    
+                   <!-- 🤖 SUBMENÚ INTELIGENTE 1: SUSTANCIA DEL ASUNTO -->
                    <div id="aiSubmenuSustancia" class="ai-menu-container">
                        <div class="ai-title">🤖 ANÁLISIS JURÍDICO DE IA: SELECCIONE SUSTANCIA DEL ASUNTO (MÁX 12 PALABRAS)</div>
                        <div id="aiSustanciaOptions"></div>
@@ -658,15 +660,18 @@
                    </div>
                </div>
                
+               <!-- 📌 CAMPO SUSTANCIA DEL ASUNTO -->
                <div class="form-group full-width">
                    <label for="sustancia_hallazgo">📌 Sustancia del Asunto (Transcribirá Selección IA):</label>
                    <input type="text" id="sustancia_hallazgo" placeholder="Seleccione del menú de IA superior..." required readonly>
                </div>
 
+               <!-- 📝 CAMPO CONCEPTO GENERAL -->
                <div class="form-group full-width">
                    <label for="sintesis_condicion">📝 Concepto General (Acción Determinativa):</label>
                    <input type="text" id="sintesis_condicion" placeholder="Seleccione de las micro-opciones de IA inferiores..." required readonly>
                    
+                   <!-- 🤖 SUBMENÚ INTELIGENTE 2: CONCEPTO GENERAL -->
                    <div id="aiSubmenuConcepto" class="ai-menu-container">
                        <div class="ai-title">🤖 ACCIÓN DETERMINATIVA IA: SELECCIONE CONCEPTO GENERAL (MÁX 6 PALABRAS)</div>
                        <div id="aiConceptoOptions"></div>
@@ -742,6 +747,7 @@
         </form>
     </div>
 
+    <!-- 💻 VENTANA EMERGENTE DE ENVÍO ANIMADA (MODAL JURIX) -->
     <div id="jurixAnimModal" class="modal-overlay">
         <div class="modal-box">
             <h3>ENVIADO TICKET DE SERVICIO</h3>
@@ -756,7 +762,7 @@
  
     <script>
         const URL_SUPABASE_REGISTRAR = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/registrar_servicio";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZmVodGx5YWh0aW1ybXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoYmxuZefehtlyahtimrmve.wicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMjgwMTAsImV4cCI6MjA5NjgwNDAxMH0.FOobuUenvdDfxAc3lgqwruFE2AmcnnTdZhXzWPDrSd4";
  
         let folioTicketActivo = "";
  
@@ -841,11 +847,11 @@
                     badge.style.borderColor = "#00FF66";
                     badge.style.color = "#00FF66";
                 }
-            }, 170); // 17 Segundos fluidos
+            }, 170);
         }
 
         // =======================================================
-        // 🤖 MOTORES DE IA JURÍDICA: CONCEPCIÓN Y ACCIÓN
+        // 🤖 MOTORES DE IA JURÍDICA COMPLETAMENTE DINÁMICOS
         // =======================================================
         function inicializarMotoresIA() {
             const txtHechos = document.getElementById('condicion_hallazgo');
@@ -857,34 +863,63 @@
             const containerConceptoOpts = document.getElementById('aiConceptoOptions');
             const txtConcepto = document.getElementById('sintesis_condicion');
 
-            // 1. Evento cuando sale de Hechos / Condición
             txtHechos.addEventListener('blur', () => {
                 const texto = txtHechos.value.trim();
                 if (texto.length < 15) return;
 
-                // Extraemos el año del texto o usamos el actual
+                // 1. Extraer año dinámicamente si existe (p. ej. 2024, 2025, 2026...)
                 const anioMatch = texto.match(/\b(202\d)\b/);
-                const anio = anioMatch ? anioMatch[1] : "2025";
+                const anio = anioMatch ? anioMatch[1] : new Date().getFullYear();
                 
-                // Mapeo Inteligente basado en palabras clave detectadas
-                let conceptoBase = "programa anual de adquisiciones";
-                if(texto.toLowerCase().includes("bancos") || texto.toLowerCase().includes("cuenta")) conceptoBase = "conciliaciones bancarias y cuentas";
-                if(texto.toLowerCase().includes("obra") || texto.toLowerCase().includes("estimación")) conceptoBase = "estimaciones de obra pública";
+                // 2. Motor Heurístico de Contexto (Detecta el núcleo del problema capturado)
+                let nucleoProblema = "omisión identificada en la documentación";
+                let accionBase = "Omitieron documentar";
+                let sinonimos = ["Falta de evidencia", "No se localizó"];
 
-                // Generación de 4 Opciones Dinámicas (Máximo 12 palabras)
+                const rawLower = texto.toLowerCase();
+
+                if (rawLower.includes("catálogo") || rawLower.includes("precio unitario") || rawLower.includes("sobreprecio")) {
+                    nucleoProblema = `autorización de precios unitarios fuera de catálogo en ejercicio ${anio}`;
+                    accionBase = "Pagaron precios fuera de catálogo";
+                    sinonimos = ["Pagos en exceso detectados", "Precios extraordinarios no autorizados"];
+                } else if (rawLower.includes("obra") || rawLower.includes("estimación") || rawLower.includes("finiquito")) {
+                    nucleoProblema = `irregularidades en estimaciones de obra pública del ejercicio ${anio}`;
+                    accionBase = "Incumplieron ejecución de obra";
+                    sinonimos = ["Deficiencias técnicas en obra", "Estimaciones pagadas no ejecutadas"];
+                } else if (rawLower.includes("bancos") || rawLower.includes("conciliación") || rawLower.includes("cuenta")) {
+                    nucleoProblema = `falta de conciliaciones bancarias correspondientes al ejercicio ${anio}`;
+                    accionBase = "Incumplieron conciliación de cuentas";
+                    sinonimos = ["Diferencias financieras no aclaradas", "Deficiencias en control de tesorería"];
+                } else if (rawLower.includes("adquisiciones") || rawLower.includes("compras") || rawLower.includes("programa anual")) {
+                    nucleoProblema = `falta del programa anual de adquisiciones y servicios de ${anio}`;
+                    accionBase = "Omitieron programa anual adquisiciones";
+                    sinonimos = ["Incumplieron planeación de compras", "No acreditaron programa anual"];
+                } else {
+                    // Generador genérico adaptativo si es un caso totalmente imprevisto
+                    const palabras = texto.split(/\s+/).slice(0, 4).join(" ").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+                    nucleoProblema = `${palabras.toLowerCase()} sin soporte regularizado en ${anio}`;
+                    accionBase = "Inobservancia de normativa detectada";
+                }
+
+                // Generación Algorítmica de 4 Opciones de Sustancia (MÁXIMO 12 PALABRAS)
                 const opcionesSustancia = [
-                    `Municipio no presentó el programa anual de adquisiciones y servicios para ${anio}.`,
-                    `El municipio omitió elaborar su programa anual de compras y contrataciones ${anio}.`,
-                    `Falta programa anual de adquisiciones, arrendamientos y servicios municipales para el ${anio}.`,
-                    `Municipio no acreditó su programa anual de adquisiciones y bienes para ${anio}.`
+                    `Municipio presentó ${nucleoProblema}.`,
+                    `Se detectó ${nucleoProblema} por la entidad fiscalizada.`,
+                    `El sujeto fiscalizado incurrió en ${nucleoProblema}.`,
+                    `Derivado de la revisión se observó ${nucleoProblema}.`
                 ];
 
+                // Limpieza y renderizado de Sustancia
                 containerSustanciaOpts.innerHTML = "";
                 opcionesSustancia.forEach((opt, idx) => {
+                    // Forzar truncado seguro a 12 palabras por si el núcleo fue largo
+                    const palabrasArreglo = opt.split(/\s+/);
+                    if(palabrasArreglo.length > 12) opt = palabrasArreglo.slice(0, 12).join(" ");
+
                     const card = document.createElement('div');
                     card.className = "ai-option-card";
                     card.innerText = `Opción ${idx + 1}: ${opt}`;
-                    card.addEventListener('click', () => seleccionarSustancia(opt));
+                    card.addEventListener('click', () => seleccionarSustancia(opt, accionBase, sinonimos, anio));
                     containerSustanciaOpts.appendChild(card);
                 });
 
@@ -897,32 +932,36 @@
                 if(val) {
                     const palabras = val.split(/\s+/).length;
                     if(palabras > 12) { alert("❌ La opción personalizada no debe exceder las 12 palabras."); return; }
-                    seleccionarSustancia(val);
+                    
+                    // Al ser manual, generamos el Concepto basándonos en sus primeras palabras
+                    const primerasPalabras = val.split(/\s+/).slice(0, 3).join(" ");
+                    seleccionarSustancia(val, primerasPalabras, ["Falta regularizar", "Inobservancia"], new Date().getFullYear());
                 }
             });
 
-            function seleccionarSustancia(texto) {
-                txtSustancia.value = texto;
+            function seleccionarSustancia(textoSustancia, accionBase, sinonimos, anio) {
+                txtSustancia.value = textoSustancia;
                 txtSustancia.dispatchEvent(new Event('change'));
                 
-                // Disparar el segundo análisis lógico de IA para Concepto General (Acción)
-                ejecutarAnalisisConcepto(texto);
+                // Disparar inmediatamente el segundo menú dinámico con micro-opciones de Acción
+                ejecutarAnalisisConcepto(accionBase, sinonimos, anio);
             }
 
-            // 2. Segundo análisis para Concepto General (Máximo 6 palabras - Resaltando la acción)
-            function ejecutarAnalisisConcepto(sustanciaTexto) {
-                const anioMatch = sustanciaTexto.match(/\b(202\d)\b/);
-                const anio = anioMatch ? anioMatch[1] : "2025";
-
+            // Generación Dinámica de Concepto General / Acción Determinativa (MÁXIMO 6 PALABRAS)
+            function ejecutarAnalisisConcepto(accionBase, sinonimos, anio) {
                 const opcionesConcepto = [
-                    `Omitieron programa anual de adquisiciones ${anio}.`,
-                    `Incumplieron planeación de compras para ${anio}.`,
-                    `No acreditaron programa de compras ${anio}.`,
-                    `Faltó elaborar programa de adquisiciones ${anio}.`
+                    `${accionBase} ${anio}.`,
+                    `${sinonimos[0]} ${anio}.`,
+                    `${sinonimos[1]} ${anio}.`,
+                    `Inobservancia normativa ejercicio ${anio}.`
                 ];
 
                 containerConceptoOpts.innerHTML = "";
                 opcionesConcepto.forEach((opt, idx) => {
+                    // Forzar truncado estricto a 6 palabras
+                    const palabrasArreglo = opt.split(/\s+/);
+                    if(palabrasArreglo.length > 6) opt = palabrasArreglo.slice(0, 6).join(" ");
+
                     const card = document.createElement('div');
                     card.className = "ai-option-card";
                     card.innerText = `Opción ${idx + 1}: ${opt}`;
@@ -953,7 +992,6 @@
             const cmbRubro = document.getElementById('rubro_hallazgo');
             const txtRubroMirror = document.getElementById('t_rubro');
 
-            // 🛠️ ASIGNACIÓN AUTOMÁTICA DEL RUBRO DE HALLAZGO DESDE TIPO DE AUDITORÍA
             if(cmbAuditoria && cmbRubro) {
                 cmbAuditoria.addEventListener('change', () => {
                     if (cmbAuditoria.value === "RCPF") {
@@ -996,17 +1034,14 @@
             });
         }
 
-        // 💻 INTERCEPCIÓN DEL SUBMIT PARA DISPARAR VENTANA EMERGENTE Y REDIRECCIÓN EN 5s
         function configurarEnvioAnimado() {
             const form = document.getElementById('hallazgoForm');
             const modal = document.getElementById('jurixAnimModal');
 
             if(form && modal) {
                 form.addEventListener('submit', (e) => {
-                    e.preventDefault(); // Detiene envío para mostrar animación
-                    
+                    e.preventDefault();
                     modal.classList.add('active');
-
                     setTimeout(() => {
                         window.location.href = "menu.html";
                     }, 5000);
