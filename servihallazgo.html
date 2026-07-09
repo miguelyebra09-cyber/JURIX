@@ -146,53 +146,6 @@
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
         }
 
-        .ai-keywords-box {
-            margin-top: 8px;
-            background-color: #112211;
-            border: 1px solid #225522;
-            padding: 12px;
-            border-radius: 4px;
-        }
-
-        .keyword-tag {
-            display: inline-block;
-            background: #1a3a1a;
-            color: #44ff44;
-            padding: 3px 8px;
-            border-radius: 3px;
-            margin: 2px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .ai-synthesis-box {
-            margin-top: 10px;
-            background-color: #111a2e;
-            border: 1px solid #1f3a60;
-            padding: 12px;
-            border-radius: 4px;
-        }
-
-        .synthesis-btn-option {
-            background-color: #162238;
-            border: 1px solid #294a7c;
-            padding: 8px 12px;
-            border-radius: 4px;
-            text-align: left;
-            cursor: pointer;
-            color: #33a3ff;
-            width: 100%;
-            margin-top: 6px;
-        }
-
-        .synthesis-btn-option:hover {
-            background-color: #1f355a;
-            border-color: var(--tech-normal);
-        }
-
-        /* =======================================================
-           ⚡ SECCIÓN: TICKET HOLOGRÁFICO / TECNOLÓGICO MEJORADO
-           ======================================================= */
         .queue-section-title {
             font-size: 0.9rem;
             font-weight: bold;
@@ -307,7 +260,6 @@
             font-family: monospace;
         }
 
-        /* --- COMPONENTE LOADING BAR --- */
         .progress-wrapper {
             width: 100%;
             margin-top: 10px;
@@ -336,9 +288,6 @@
             transition: width 0.3s ease;
         }
 
-        /* =======================================================
-           🎟️ DISEÑO: VIRTUAL BOLETO FÍSICO DGAJ-VIP
-           ======================================================= */
         .ticket-physical-badge {
             background: #111111;
             border: 2px solid #333;
@@ -455,12 +404,52 @@
                <div class="form-group">
                    <label for="sujeto_fiscalizado">Sujeto Fiscalizado:</label>
                    <select id="sujeto_fiscalizado" required>
-                       <option value="" disabled selected>-- Seleccione --</option>
-                       <option value="AIAI">AIAI- Instituto de Acceso a la Información Pública para el Estado de Guanajuato</option>
-                       <option value="FGEG">FGEG- Fiscalía General del Estado de Guanajuato</option>
-                       <option value="MABA">MABA_Abasolo</option>
-                       <option value="MACA">MACA_Acámbaro</option>
-                       <option value="MAPA">MAPA_Apaseo El Alto</option>
+                       <option value="" disabled selected>-- Seleccione Municipio --</option>
+                       <option value="Abasolo">Abasolo</option>
+                       <option value="Acámbaro">Acámbaro</option>
+                       <option value="Apaseo el Alto">Apaseo el Alto</option>
+                       <option value="Apaseo el Grande">Apaseo el Grande</option>
+                       <option value="Atarjea">Atarjea</option>
+                       <option value="Celaya">Celaya</option>
+                       <option value="Comonfort">Comonfort</option>
+                       <option value="Coroneo">Coroneo</option>
+                       <option value="Cortazar">Cortazar</option>
+                       <option value="Cuerámaro">Cuerámaro</option>
+                       <option value="Doctor Mora">Doctor Mora</option>
+                       <option value="Dolores Hidalgo">Dolores Hidalgo C.I.N.</option>
+                       <option value="Guanajuato">Guanajuato</option>
+                       <option value="Huanímaro">Huanímaro</option>
+                       <option value="Irapuato">Irapuato</option>
+                       <option value="Jaral del Progreso">Jaral del Progreso</option>
+                       <option value="Jerécuaro">Jerécuaro</option>
+                       <option value="León">León</option>
+                       <option value="Manuel Doblado">Manuel Doblado</option>
+                       <option value="Moroleón">Moroleón</option>
+                       <option value="Ocampo">Ocampo</option>
+                       <option value="Pénjamo">Pénjamo</option>
+                       <option value="Purísima del Rincón">Purísima del Rincón</option>
+                       <option value="Romita">Romita</option>
+                       <option value="Salamanca">Salamanca</option>
+                       <option value="Salvatierra">Salvatierra</option>
+                       <option value="San Diego de la Unión">San Diego de la Unión</option>
+                       <option value="San Felipe">San Felipe</option>
+                       <option value="San Francisco del Rincón">San Francisco del Rincón</option>
+                       <option value="San José Iturbide">San José Iturbide</option>
+                       <option value="San Luis de la Paz">San Luis de la Paz</option>
+                       <option value="San Miguel de Allende">San Miguel de Allende</option>
+                       <option value="Santa Catarina">Santa Catarina</option>
+                       <option value="Santa Cruz de Juventino Rosas">Santa Cruz de Juventino Rosas</option>
+                       <option value="Santiago Maravatío">Santiago Maravatío</option>
+                       <option value="Silao de la Victoria">Silao de la Victoria</option>
+                       <option value="Tarandacuao">Tarandacuao</option>
+                       <option value="Tarimoro">Tarimoro</option>
+                       <option value="Tierra Blanca">Tierra Blanca</option>
+                       <option value="Uriangato">Uriangato</option>
+                       <option value="Valle de Santiago">Valle de Santiago</option>
+                       <option value="Victoria">Victoria</option>
+                       <option value="Villagrán">Villagrán</option>
+                       <option value="Xichú">Xichú</option>
+                       <option value="Yuriria">Yuriria</option>
                    </select>
                </div>
  
@@ -495,7 +484,227 @@
                    <label for="num_concepto">🔢 Núm / Concepto Cédula:</label>
                    <input type="text" id="num_concepto" required placeholder="Ej. 024">
                </div>
- 
+
+               <!-- 📁 NUEVO CAMPO: RUBRO EXTENSO (Mapeado a rubro_1 en Supabase) -->
+               <div class="form-group full-width">
+                   <label for="rubro_1">📂 Rubro Extenso:</label>
+                   <select id="rubro_1" required>
+                       <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
+                       <optgroup label="1 ACTIVO">
+                           <option value="1.1">1.1 ACTIVO CIRCULANTE</option>
+                           <option value="1.1.1">1.1.1 Efectivo y Equivalentes</option>
+                           <option value="1.1.1.1">1.1.1.1 Efectivo</option>
+                           <option value="1.1.1.2">1.1.1.2 Bancos/Tesorería</option>
+                           <option value="1.1.1.3">1.1.1.3 Bancos/Dependencias y Otros</option>
+                           <option value="1.1.1.4">1.1.1.4 Inversiones Temporales (Hasta 3 meses)</option>
+                           <option value="1.1.1.5">1.1.1.5 Fondos con Afectación Específica</option>
+                           <option value="1.1.1.6">1.1.1.6 Depósitos de Fondos de Terceros en Garantía y/o Administración</option>
+                           <option value="1.1.1.9">1.1.1.9 Otros Efectivos y Equivalentes</option>
+                           <option value="1.1.2">1.1.2 Derechos a Recibir Efectivo o Equivalentes</option>
+                           <option value="1.1.2.1">1.1.2.1 Inversiones Financieras de Corto Plazo</option>
+                           <option value="1.1.2.2">1.1.2.2 Cuentas por Cobrar a Corto Plazo</option>
+                           <option value="1.1.2.3">1.1.2.3 Deudores Diversos por Cobrar a Corto Plazo</option>
+                           <option value="1.1.2.4">1.1.2.4 Ingresos por Recuperar a Corto Plazo</option>
+                           <option value="1.1.2.5">1.1.2.5 Deudores por Anticipos de la Tesorería a Corto Plazo</option>
+                           <option value="1.1.2.6">1.1.2.6 Préstamos Otorgados a Corto Plazo</option>
+                           <option value="1.1.2.9">1.1.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Corto Plazo</option>
+                           <option value="1.1.3">1.1.3 Derechos a Recibir Bienes o Servicios</option>
+                           <option value="1.1.3.1">1.1.3.1 Anticipo a Proveedores por Adquisición de Bienes y Prestación de Servicios a Corto Plazo</option>
+                           <option value="1.1.3.2">1.1.3.2 Anticipo a Proveedores por Adquisición de Bienes Inmuebles y Muebles a Corto Plazo</option>
+                           <option value="1.1.3.3">1.1.3.3 Anticipo a Proveedores por Adquisición de Bienes Intangibles a Corto Plazo</option>
+                           <option value="1.1.3.4">1.1.3.4 Anticipo a Contratistas por Obras Públicas a Corto Plazo</option>
+                           <option value="1.1.3.9">1.1.3.9 Otros Derechos a Recibir Bienes o Servicios a Corto Plazo</option>
+                           <option value="1.1.4">1.1.4 Inventarios</option>
+                           <option value="1.1.4.1">1.1.4.1 Inventario de Mercancías para Venta</option>
+                           <option value="1.1.4.2">1.1.4.2 Inventario de Mercancías para Transformación</option>
+                           <option value="1.1.4.3">1.1.4.3 Inventario de Materias Primas, Materiales y Suministros para Production</option>
+                           <option value="1.1.4.4">1.1.4.4 Inventario de Materias Primas, Materiales y Suministros de Consumo</option>
+                           <option value="1.1.4.5">1.1.4.5 Inventario de Bienes en Tránsito</option>
+                           <option value="1.1.5">1.1.5 Almacenes</option>
+                           <option value="1.1.5.1">1.1.5.1 Almacén de Materiales y Suministros de Consumo</option>
+                           <option value="1.1.6">1.1.6 Estimación por Pérdida o Deterioro de Activos Circulantes</option>
+                           <option value="1.1.6.1">1.1.6.1 Estimaciones para Cuentas Incobrables por Derechos a Recibir Efectivo o Equivalentes</option>
+                           <option value="1.1.6.2">1.1.6.2 Estimación por Deterioro de Inventarios</option>
+                           <option value="1.1.9">1.1.9 Otros Activos Circulantes</option>
+                           <option value="1.1.9.1">1.1.9.1 Valores en Garantía</option>
+                           <option value="1.1.9.2">1.1.9.2 Bienes Enajenados de Corto Plazo</option>
+                           <option value="1.1.9.3">1.1.9.3 Bienes en Custodia (Bienes decomisados, retenidos y en depósito)</option>
+                           <option value="1.1.9.9">1.1.9.9 Otros Activos Derivados de Operaciones Financieras</option>
+                           <option value="1.2">1.2 ACTIVO NO CIRCULANTE</option>
+                           <option value="1.2.1">1.2.1 Inversiones Financieras a Largo Plazo</option>
+                           <option value="1.2.1.1">1.2.1.1 Inversiones a Largo Plazo</option>
+                           <option value="1.2.1.2">1.2.1.2 Títulos y Valores a Largo Plazo</option>
+                           <option value="1.2.1.3">1.2.1.3 Fideicomisos, Mandatos y Contratos Análogos</option>
+                           <option value="1.2.1.4">1.2.1.4 Participaciones y Aportaciones de Capital</option>
+                           <option value="1.2.2">1.2.2 Derechos a Recibir Efectivo o Equivalentes a Largo Plazo</option>
+                           <option value="1.2.2.1">1.2.2.1 Documentos por Cobrar a Largo Plazo</option>
+                           <option value="1.2.2.2">1.2.2.2 Deudores Diversos a Largo Plazo</option>
+                           <option value="1.2.2.3">1.2.2.3 Ingresos por Recuperar a Largo Plazo</option>
+                           <option value="1.2.2.4">1.2.2.4 Préstamos Otorgados a Largo Plazo</option>
+                           <option value="1.2.2.9">1.2.2.9 Otros Derechos a Recibir Efectivo o Equivalentes a Largo Plazo</option>
+                           <option value="1.2.3">1.2.3 Bienes Inmuebles, Infraestructura y Construcciones en Proceso</option>
+                           <option value="1.2.3.1">1.2.3.1 Terrenos</option>
+                           <option value="1.2.3.2">1.2.3.2 Viviendas</option>
+                           <option value="1.2.3.3">1.2.3.3 Edificios No Habitacionales</option>
+                           <option value="1.2.3.4">1.2.3.4 Infraestructura</option>
+                           <option value="1.2.3.5">1.2.3.5 Construcciones en Proceso en Bienes de Dominio Público</option>
+                           <option value="1.2.3.6">1.2.3.6 Construcciones en Proceso en Bienes Propios</option>
+                           <option value="1.2.3.9">1.2.3.9 Otros Bienes Inmuebles</option>
+                           <option value="1.2.4">1.2.4 Bienes Muebles</option>
+                           <option value="1.2.4.1">1.2.4.1 Mobiliario y Equipo de Administración</option>
+                           <option value="1.2.4.2">1.2.4.2 Mobiliario y Equipo Educacional y Recreativo</option>
+                           <option value="1.2.4.3">1.2.4.3 Equipo e Instrumental Médico y de Laboratorio</option>
+                           <option value="1.2.4.4">1.2.4.4 Vehículos y Equipo de Transporte</option>
+                           <option value="1.2.4.5">1.2.4.6 Maquinaria, Otros Equipos y Herramientas</option>
+                           <option value="1.2.4.7">1.2.4.7 Colecciones, Obras de Arte y Objetos Valiosos</option>
+                           <option value="1.2.4.8">1.2.4.8 Activos Biológicos</option>
+                           <option value="1.2.5">1.2.5 Activos Intangibles</option>
+                           <option value="1.2.5.1">1.2.5.1 Software</option>
+                           <option value="1.2.5.2">1.2.5.2 Patentes, Marcas y Derechos</option>
+                           <option value="1.2.5.3">1.2.5.3 Concesiones y Franquicias</option>
+                           <option value="1.2.5.4">1.2.5.4 Licencias</option>
+                           <option value="1.2.5.9">1.2.5.9 Otros Activos Intangibles</option>
+                           <option value="1.2.6">1.2.6 Depreciación, Deterioro y Amortización Acumulada de Bienes</option>
+                           <option value="1.2.6.1">1.2.6.1 Depreciación Acumulada de Bienes Inmuebles</option>
+                           <option value="1.2.6.2">1.2.6.2 Depreciación Acumulada de Infraestructura</option>
+                           <option value="1.2.6.3">1.2.6.3 Depreciación Acumulada de Bienes Muebles</option>
+                           <option value="1.2.6.4">1.2.6.4 Deterioro Acumulado de Activos Biológicos</option>
+                           <option value="1.2.6.5">1.2.6.5 Amortización Acumulada de Activos Intangibles</option>
+                           <option value="1.2.7">1.2.7 Activos Diferidos</option>
+                           <option value="1.2.7.1">1.2.7.1 Estudios, Formulación y Evaluación de Proyectos</option>
+                           <option value="1.2.7.2">1.2.7.2 Derechos sobre Bienes en Régimen de Arrendamiento Financiero</option>
+                           <option value="1.2.7.3">1.2.7.3 Gastos Pagados por Adelantado a Largo Plazo</option>
+                           <option value="1.2.7.4">1.2.7.4 Anticipos a Largo Plazo</option>
+                           <option value="1.2.7.5">1.2.7.5 Beneficios al Retiro de Empleados Pagados por Adelantado</option>
+                           <option value="1.2.7.9">1.2.7.9 Otros Activos Diferidos</option>
+                           <option value="1.2.8">1.2.8 Estimación por Pérdida o Deterioro de Activos no Circulantes</option>
+                           <option value="1.2.8.1">1.2.8.1 Estimaciones por Pérdida de Cuentas Incobrables a Largo Plazo</option>
+                           <option value="1.2.8.2">1.2.8.2 Estimación por Deterioro de Inversiones Financieras a Largo Plazo</option>
+                           <option value="1.2.8.3">1.2.8.3 Estimación por Deterioro de Bienes</option>
+                           <option value="1.2.9">1.2.9 Otros Activos No Circulantes</option>
+                           <option value="1.2.9.1">1.2.9.1 Bienes en Concesión</option>
+                           <option value="1.2.9.2">1.2.9.2 Bienes en Arrendamiento Financiero</option>
+                           <option value="1.2.9.3">1.2.9.3 Bienes en Custodia</option>
+                       </optgroup>
+                       <optgroup label="2 PASIVO">
+                           <option value="2.1">2.1 PASIVO CIRCULANTE</option>
+                           <option value="2.1.1">2.1.1 Cuentas por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.1">2.1.1.1 Servicios Personales por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.2">2.1.1.2 Proveedores por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.3">2.1.1.3 Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.4">2.1.1.4 Participaciones y Aportaciones por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.5">2.1.1.5 Transferencias Otorgadas por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.6">2.1.1.6 Intereses, Comisiones y Otros Gastos de la Deuda Pública por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.7">2.1.1.7 Retenciones y Contribuciones por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.8">2.1.1.8 Devoluciones de Ley de Ingresos por Pagar a Corto Plazo</option>
+                           <option value="2.1.1.9">2.1.1.9 Otras Cuentas por Pagar a Corto Plazo</option>
+                           <option value="2.1.2">2.1.2 Documentos por Pagar a Corto Plazo</option>
+                           <option value="2.1.2.1">2.1.2.1 Documentos Comerciales por Pagar a Corto Plazo</option>
+                           <option value="2.1.2.2">2.1.2.2 Documentos con Contratistas por Obras Públicas por Pagar a Corto Plazo</option>
+                           <option value="2.1.2.9">2.1.2.9 Otros Documentos por Pagar a Corto Plazo</option>
+                           <option value="2.1.3">2.1.3 Porción a Corto Plazo de la Deuda Pública a Largo Plazo</option>
+                           <option value="2.1.3.1">2.1.3.1 Porción a Corto Plazo de la Deuda Pública Interna</option>
+                           <option value="2.1.3.2">2.1.3.2 Porción a Corto Plazo de la Deuda Pública Externa</option>
+                           <option value="2.1.3.3">2.1.3.3 Porción a Corto Plazo de Arrendamiento Financiero</option>
+                           <option value="2.1.4">2.1.4 Títulos y Valores a Corto Plazo</option>
+                           <option value="2.1.4.1">2.1.4.1 Títulos y Valores de la Deuda Pública Interna a Corto Plazo</option>
+                           <option value="2.1.4.2">2.1.4.2 Títulos y Valores de la Deuda Pública Externa a Corto Plazo</option>
+                           <option value="2.1.5">2.1.5 Pasivos Diferidos a Corto Plazo</option>
+                           <option value="2.1.5.1">2.1.5.1 Ingresos Cobrados por Adelantado a Corto Plazo</option>
+                           <option value="2.1.5.2">2.1.5.2 Intereses Cobrados por Adelantado a Corto Plazo</option>
+                           <option value="2.1.5.9">2.1.5.9 Otros Pasivos Diferidos a Corto Plazo</option>
+                           <option value="2.1.6">2.1.6 Fondos y Bienes de Terceros en Garantía y/o Administración a Corto Plazo</option>
+                           <option value="2.1.6.1">2.1.6.1 Fondos en Garantía a Corto Plazo</option>
+                           <option value="2.1.6.2">2.1.6.2 Fondos en Administración a Corto Plazo</option>
+                           <option value="2.1.6.3">2.1.6.3 Fondos Contingentes a Corto Plazo</option>
+                           <option value="2.1.6.4">2.1.6.4 Fondos de Fideicomisos, Mandatos y Contratos Análogos a Corto Plazo</option>
+                           <option value="2.1.6.5">2.1.6.5 Otros Fondos de Terceros en Garantía y/o Administración a Corto Plazo</option>
+                           <option value="2.1.6.6">2.1.6.6 Bienes en Garantía a Corto Plazo</option>
+                           <option value="2.1.7">2.1.7 Provisiones a Corto Plazo</option>
+                           <option value="2.1.7.1">2.1.7.1 Provisión para Demandas y Juicios a Corto Plazo</option>
+                           <option value="2.1.7.2">2.1.7.2 Provisión para Contingencias a Corto Plazo</option>
+                           <option value="2.1.7.9">2.1.7.9 Otras Provisiones a Corto Plazo</option>
+                           <option value="2.1.9">2.1.9 Otros Pasivos Corto Plazo</option>
+                           <option value="2.1.9.1">2.1.9.1 Ingresos por Clasificar</option>
+                           <option value="2.1.9.2">2.1.9.2 Recaudación por Participar</option>
+                           <option value="2.1.9.9">2.1.9.9 Otros Pasivos Circulantes</option>
+                           <option value="2.2">2.2 PASIVO NO CIRCULANTE</option>
+                           <option value="2.2.1">2.2.1 Cuentas por Pagar a Largo Plazo</option>
+                           <option value="2.2.1.1">2.2.1.1 Proveedores por Pagar a Largo Plazo</option>
+                           <option value="2.2.1.2">2.2.1.2 Contratistas por Obras Públicas por Pagar a Largo Plazo</option>
+                           <option value="2.2.1.9">2.2.1.9 Otras Cuentas por Pagar a Largo Plazo</option>
+                           <option value="2.2.2">2.2.2 Documentos por Pagar a Largo Plazo</option>
+                           <option value="2.2.2.1">2.2.2.1 Documentos Comerciales por Pagar a Largo Plazo</option>
+                           <option value="2.2.2.2">2.2.2.2 Documentos con Contratistas por Obras Públicas por Pagar a Largo Plazo</option>
+                           <option value="2.2.2.9">2.2.2.9 Otros Documentos por Pagar a Largo Plazo</option>
+                           <option value="2.2.3">2.2.3 Deuda Pública a Largo Plazo</option>
+                           <option value="2.2.3.1">2.2.3.1 Títulos y Valores de la Deuda Pública Interna a Largo Plazo</option>
+                           <option value="2.2.3.2">2.2.3.2 Títulos y Valores de la Deuda Pública Externa a Largo Plazo</option>
+                           <option value="2.2.3.3">2.2.3.3 Préstamos de la Deuda Pública Interna por Pagar a Largo Plazo</option>
+                           <option value="2.2.3.4">2.2.3.4 Préstamos de la Deuda Pública Externa por Pagar a Largo Plazo</option>
+                           <option value="2.2.4">2.2.4 Pasivos Diferidos a Largo Plazo</option>
+                           <option value="2.2.4.1">2.2.4.1 Ingresos Cobrados por Adelantado a Largo Plazo</option>
+                           <option value="2.2.4.2">2.2.4.2 Intereses Cobrados por Adelantado a Largo Plazo</option>
+                           <option value="2.2.4.9">2.2.4.9 Otros Pasivos Diferidos a Largo Plazo</option>
+                           <option value="2.2.5">2.2.5 Fondos y Bienes de Terceros en Garantía y/o Administración a Largo Plazo</option>
+                           <option value="2.2.5.1">2.2.5.1 Fondos en Garantía a Largo Plazo</option>
+                           <option value="2.2.5.2">2.2.5.2 Fondos en Administración a Largo Plazo</option>
+                           <option value="2.2.5.3">2.2.5.3 Fondos Contingentes a Largo Plazo</option>
+                           <option value="2.2.5.4">2.2.5.4 Fondos de Fideicomisos, Mandatos y Contratos Análogos a Largo Plazo</option>
+                           <option value="2.2.5.5">2.2.5.5 Otros Fondos de Terceros en Garantía y/o Administración a Largo Plazo</option>
+                           <option value="2.2.5.6">2.2.5.6 Bienes en Garantía a Largo Plazo</option>
+                           <option value="2.2.6">2.2.6 Provisiones a Largo Plazo</option>
+                           <option value="2.2.6.1">2.2.6.1 Provisión para Demandas y Juicios a Largo Plazo</option>
+                           <option value="2.2.6.2">2.2.6.2 Provisión para Pensiones a Largo Plazo</option>
+                           <option value="2.2.6.3">2.2.6.3 Provisión para Contingencias a Largo Plazo</option>
+                           <option value="2.2.6.9">2.2.6.9 Otras Provisiones a Largo Plazo</option>
+                       </optgroup>
+                       <optgroup label="3 HACIENDA PÚBLICA/PATRIMONIO">
+                           <option value="3.1">3.1 HACIENDA PÚBLICA/PATRIMONIO CONTRIBUIDO</option>
+                           <option value="3.1.1">3.1.1 Aportaciones</option>
+                           <option value="3.1.2">3.1.2 Donaciones de Capital</option>
+                           <option value="3.1.3">3.1.3 Actualización de la Hacienda Pública/Patrimonio</option>
+                           <option value="3.2">3.2 HACIENDA PÚBLICA/PATRIMONIO GENERADO</option>
+                           <option value="3.2.1">3.2.1 Resultados del Ejercicio (Ahorro/Desahorro)</option>
+                           <option value="3.2.2">3.2.2 Resultados de Ejercicios Anteriores</option>
+                           <option value="3.2.3">3.2.3 Revalúos</option>
+                           <option value="3.2.4">3.2.4 Reservas</option>
+                           <option value="3.2.5">3.2.5 Rectificaciones de Resultados de Ejercicios Anteriores</option>
+                           <option value="3.3">3.3 EXCESO O INSUFICIENCIA EN LA ACTUALIZACIÓN DE LA HACIENDA PÚBLICA/PATRIMONIO</option>
+                           <option value="3.3.1">3.3.1 Resultado por Posición Monetaria</option>
+                           <option value="3.3.2">3.3.2 Resultado por Tenencia de Activos No Monetarios</option>
+                       </optgroup>
+                       <optgroup label="4 INGRESOS Y OTROS BENEFICIOS">
+                           <option value="4.1">4.1 INGRESOS DE GESTIÓN</option>
+                           <option value="4.1.1">4.1.1 Impuestos</option>
+                           <option value="4.1.2">4.1.2 Cuotas y Aportaciones de Seguridad Social</option>
+                           <option value="4.1.3">4.1.3 Contribuciones de Mejoras</option>
+                           <option value="4.1.4">4.1.4 Derechos</option>
+                           <option value="4.1.5">4.1.5 Productos</option>
+                           <option value="4.1.6">4.1.6 Aprovechamientos</option>
+                           <option value="4.1.7">4.1.7 Ingresos por Venta de Bienes y Prestación de Servicios</option>
+                           <option value="4.2">4.2 PARTICIPACIONES, APORTACIONES, CONVENIOS, INCENTIVOS DERIVADOS DE LA COLABORACIÓN FISCAL Y FONDOS DISTINTOS DE APORTACIONES</option>
+                           <option value="4.2.1">4.2.1 Participaciones, Aportaciones, Convenios, Incentivos Derivados de la Colaboración Fiscal y Fondos Distintos de Aportaciones</option>
+                           <option value="4.2.2">4.2.2 Transferencias, Asignaciones, Subsidios y Subvenciones, y Pensiones y Jubilaciones</option>
+                           <option value="4.3">4.3 OTROS INGRESOS Y BENEFICIOS</option>
+                           <option value="4.3.1">4.3.1 Ingresos Financieros</option>
+                           <option value="4.3.2">4.3.2 Incremento por Variación de Inventarios</option>
+                           <option value="4.3.3">4.3.3 Disminución del Exceso de Estimaciones por Pérdida o Deterioro u Obsolescencia</option>
+                           <option value="4.3.4">4.3.4 Disminución del Exceso de Provisiones</option>
+                           <option value="4.3.9">4.3.9 Otros Ingresos y Beneficios Varios</option>
+                       </optgroup>
+                       <optgroup label="5 GASTOS Y OTRAS PÉRDIDAS">
+                           <option value="5.1">5.1 GASTOS DE FUNCIONAMIENTO</option>
+                           <option value="5.1.1">5.1.1 Servicios Personales</option>
+                           <option value="5.1.2">5.1.2 Materiales y Suministros</option>
+                           <option value="5.1.3">5.1.3 Servicios Generales</option>
+                           <option value="5.2">5.2 TRANSFERENCIAS, ASIGNACIONES, SUBSIDIOS Y OTRAS AYUDAS</option>
+                           <option value="5.2.1">5.2.1 Transferencias Internas y Asignaciones al Sector Público</option>
+                           <option value="5.2.2">5.2.2 Transferencias al Resto del Sector Público</option>
+                       </optgroup>
+                   </select>
+               </div>
+
                <div class="form-group full-width">
                    <label for="titulo_observacion">📋 Título de la Observación:</label>
                    <input type="text" id="titulo_observacion" placeholder="Nombre descriptivo del hallazgo..." required>
@@ -527,9 +736,6 @@
                </div>
            </div>
  
-            <!-- =======================================================
-               ⚡ TICKET MATRIX VIRTUAL RECONSTRUIDO CON HOOK SEGURO
-               ======================================================= -->
             <div class="queue-section-title">
                 <span>🤖 MONITOR DE FILA VIRTUAL JURIX-DGAJ</span>
             </div>
@@ -575,7 +781,6 @@
                             </div>
                         </div>
 
-                        <!-- 🎟️ NUEVO BOLETO ADICIONAL ABAJO CON CÓDIGO DE BARRAS Y DGAJ-VIP -->
                         <div class="ticket-physical-badge">
                             <div class="vip-tag">DGAJ-VIP</div>
                             <div class="barcode-graphic">
@@ -607,7 +812,6 @@
             txtFecha.value = hoy;
  
             const urlParams = new URLSearchParams(window.location.search);
-            // Si no detecta folio dinámico, por seguridad usará el de la captura para hacer la prueba
             folioTicketActivo = urlParams.get('folio') || localStorage.getItem('jurix_folio_activo') || "JURIX-DGAJ-DCPL-B001-0003";
  
             document.getElementById('folioTicketSub').innerText = "VINCULADO AL TICKET: " + folioTicketActivo;
@@ -622,7 +826,6 @@
             let prioridadDetectada = "Normal"; 
             let servicioDetectado = "Análisis e Integración Jurídica";
             
-            // Un temporizador de seguridad de 2.5 segundos. Si la base de datos falla o tarda, rompe el ciclo y fuerza el renderizado.
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2500);
 
@@ -643,14 +846,12 @@
                     }
                 }
             } catch (error) {
-                console.warn("⚠️ Advertencia: Supabase fuera de rango o folio no encontrado. Iniciando modo seguro.");
+                console.warn("⚠️ Advertencia: Supabase fuera de rango o folio no encontrado. Modo preventivo.");
             }
 
-            // Aplicar los datos recuperados o los del Fallback preventivo
             document.getElementById('t_tipo_servicio').innerText = servicioDetectado;
             document.getElementById('t_prioridad').innerText = prioridadDetectada;
             
-            // Determinación estricta de tiempos
             let rangoHoras = "15 a 36 Horas";
             let colorPrioridad = "var(--tech-normal)";
             
@@ -660,15 +861,13 @@
             } else if(prioridadDetectada.toLowerCase() === "prioritario") {
                 rangoHoras = "8 a 12 Horas";
                 colorPrioridad = "var(--tech-prioritario)";
-            } else {
-                rangoHoras = "15 a 36 Horas";
-                colorPrioridad = "var(--tech-normal)";
             }
             
             document.getElementById('t_prioridad').style.color = colorPrioridad;
             ejecutarLoadingBar(rangoHoras);
         }
 
+        // ⚡ CARGA FLUIDA PROGRAMADA A 17 SEGUNDOS (17000ms / 100 pasos = 170ms por intervalo de 1%)
         function ejecutarLoadingBar(tiempoFinal) {
             let porcentaje = 0;
             const barFill = document.getElementById('progressBarFill');
@@ -676,9 +875,8 @@
             const txtEstimate = document.getElementById('timeEstimate');
             const badge = document.getElementById('badgeEstatus');
             
-            // Remueve de inmediato el estado de espera
             const interval = setInterval(() => {
-                porcentaje += 10;
+                porcentaje += 1;
                 barFill.style.width = porcentaje + "%";
                 txtPercent.innerText = porcentaje + "%";
                 
@@ -690,7 +888,7 @@
                     badge.style.color = "#00FF66";
                     badge.style.textShadow = "0 0 5px rgba(0,255,102,0.5)";
                 }
-            }, 80); 
+            }, 170); 
         }
 
         function vincularEspejoForm() {
@@ -734,7 +932,6 @@
             }
         }
 
-        // Formateador de moneda de México ($)
         const txtImporte = document.getElementById('importe');
         if(txtImporte) {
             txtImporte.addEventListener('input', (e) => {
