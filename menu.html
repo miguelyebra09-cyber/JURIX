@@ -355,43 +355,43 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Datos crudos de Supabase recibidos:", data);
+                    console.log("Datos crudos leídos:", data);
 
                     let pAsignar = 0;
                     let pAtender = 0;
                     let pLiberar = 0;
                     let pCancelados = 0;
 
-                    // Función de validación mejorada para celdas individuales
-                    const esCeldaValida = (valor) => {
-                        if (valor === null || valor === undefined) return false;
-                        const texto = String(valor).trim().toUpperCase();
-                        if (texto === "" || texto === "NULL" || texto === "EMPTY") return false;
-                        return texto.includes("JURIX");
-                    };
-
+                    // Lógica segura: solo cuenta celdas que traigan texto real y contengan "JURIX"
                     if (Array.isArray(data)) {
                         data.forEach(fila => {
-                            if (esCeldaValida(fila.tiketpendienteasignar)) pAsignar++;
-                            if (esCeldaValida(fila.tiketpendienteatender)) pAtender++;
-                            if (esCeldaValida(fila.tiketpendienteliberar)) pLiberar++;
-                            if (esCeldaValida(fila.tiketcancelado)) pCancelados++;
+                            if (fila.tiketpendienteasignar && String(fila.tiketpendienteasignar).toUpperCase().includes("JURIX")) {
+                                pAsignar++;
+                            }
+                            if (fila.tiketpendienteatender && String(fila.tiketpendienteatender).toUpperCase().includes("JURIX")) {
+                                pAtender++;
+                            }
+                            if (fila.tiketpendienteliberar && String(fila.tiketpendienteliberar).toUpperCase().includes("JURIX")) {
+                                pLiberar++;
+                            }
+                            if (fila.tiketcancelado && String(fila.tiketcancelado).toUpperCase().includes("JURIX")) {
+                                pCancelados++;
+                            }
                         });
                     }
 
-                    // Inyección directa en el HTML
+                    // Envío directo a los elementos del DOM
                     document.getElementById('countAsignar').textContent = pAsignar;
                     document.getElementById('countAtender').textContent = pAtender;
                     document.getElementById('countLiberar').textContent = pLiberar;
                     document.getElementById('countCancelados').textContent = pCancelados;
                     
-                    // Sumamos activos (Asignar + Atender + Liberar)
                     document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
                 } else {
-                    console.error("Error en la respuesta de Supabase:", response.statusText);
+                    console.error("Error devuelto por Supabase:", response.statusText);
                 }
             } catch (error) {
-                console.error("Error cargando estatus_tiket:", error);
+                console.error("Excepción en solicitud HTTP de métricas:", error);
             }
         }
 
