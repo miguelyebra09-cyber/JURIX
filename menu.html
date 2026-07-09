@@ -354,10 +354,17 @@
                         let pAtender = 0;
                         let pLiberar = 0;
 
+                        // Función de control para filtrar cadenas NULL, vacías o "EMPTY" de los folios de texto
+                        const tieneFolioValido = (valor) => {
+                            if (!valor) return false;
+                            const texto = String(valor).trim().toUpperCase();
+                            return texto !== "" && texto !== "NULL" && texto !== "EMPTY";
+                        };
+
                         data.forEach(fila => {
-                            pAsignar += parseInt(fila.tiketpendienteasignar || 0);
-                            pAtender += parseInt(fila.tiketpendienteatender || 0);
-                            pLiberar += parseInt(fila.tiketpendienteliberar || 0);
+                            if (tieneFolioValido(fila.tiketpendienteasignar)) pAsignar++;
+                            if (tieneFolioValido(fila.tiketpendienteatender)) pAtender++;
+                            if (tieneFolioValido(fila.tiketpendienteliberar)) pLiberar++;
                         });
 
                         document.getElementById('countAsignar').textContent = pAsignar;
