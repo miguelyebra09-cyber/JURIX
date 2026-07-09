@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURIX - Registrar Ticket</title>
+    <style>
+        :root {
+            --naranja-nitido: #FF6600;
+            --naranja-neon: #ff9e59;
+            --gris-oscuro: #333333;
+            --gris-fondo: #1e1e1e;
+            --blanco: #ffffff;
+            --rojo-alerta: #ff3333;
+            --gris-input: #2a2a2a;
+            --gris-borde: #444444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gris-oscuro) 0%, var(--gris-fondo) 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--blanco);
+        }
+
+        /* Barra Superior de Usuario */
+        .top-bar {
+            background-color: rgba(51, 51, 51, 0.9);
+            border-bottom: 4px solid var(--naranja-nitido);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .logo-section h1 {
+            color: var(--naranja-nitido);
+            margin: 0;
+            font-size: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .user-info-section {
+            background: rgba(255, 102, 0, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--naranja-nitido);
+            font-size: 0.95rem;
+        }
+
+        .user-info-section span {
+            font-weight: bold;
+            color: var(--naranja-nitido);
+            text-transform: uppercase;
+        }
+
+        /* Contenedor del Formulario */
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 40px;
+            border-top: 5px solid var(--naranja-nitido);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            border-left: 5px solid var(--naranja-nitido);
+            padding-left: 15px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: var(--blanco);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--naranja-neon);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--gris-input);
+            border: 1px solid var(--gris-borde);
+            border-radius: 6px;
+            color: var(--blanco);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--naranja-nitido);
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+        }
+
+        input[readonly] {
+            background-color: #222222;
+            color: #888888;
+            border-color: #333333;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Botones */
+        .btn-submit {
+            background-color: var(--blanco);
+            color: var(--gris-oscuro);
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid transparent;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-submit:hover {
+            background-color: var(--gris-oscuro);
+            color: var(--blanco);
+            border-color: var(--naranja-nitido);
+            box-shadow: 0 0 15px var(--naranja-nitido);
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid #777;
+            color: #ccc;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 0.8rem;
+        }
+        .btn-logout:hover {
+            background: var(--rojo-alerta);
+            color: white;
+            border-color: var(--rojo-alerta);
+        }
+
+        .btn-back {
+            display: inline-block;
+            background: none;
+            border: 1px solid var(--naranja-nitido);
+            color: var(--naranja-neon);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .btn-back:hover {
+            background-color: var(--naranja-nitido);
+            color: var(--blanco);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="logo-section">
+            <h1>JURIX</h1>
+        </div>
+        <div class="user-info-section">
+            Usuario: <span id="lblNombre">Cargando...</span> | Rol: <span id="lblRol">-</span>
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <a href="menu.html" class="btn-back">← Volver al Menú</a>
+        <h2>Registrar Ticket de Servicio</h2>
+        
+        <form id="ticketForm">
+            <div class="form-group">
+                <label for="user_nombre">Nombre del Servidor Público Solicitante:</label>
+                <input type="text" id="user_nombre" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="user_puesto">Puesto:</label>
+                <input type="text" id="user_puesto" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="user_area">Área de Adscripción:</label>
+                <input type="text" id="user_area" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="cmbServicios">Tipo de Servicio Solicitado (Selecciona una opción):</label>
+                <select id="cmbServicios" required>
+                    <option value="">-- Selecciona un Servicio --</option>
+                    <option value="Asesoría Jurídica Presencial u Online (_A001)">Asesoría Jurídica Presencial u Online (_A001)</option>
+                    <option value="Revisión Jurídica de Auditoría u Obra Pública (_B001)">Revisión Jurídica de Auditoría u Obra Pública (_B001)</option>
+                    <option value="Validación de Informes Financieros Municipales (_B002)">Validación de Informes Financieros Municipales (_B002)</option>
+                    <option value="Atención de Requerimientos Legales y Consultas de Autoridades (_B003)">Atención de Requerimientos Legales y Consultas de Autoridades (_B003)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="txtDescripcion">Descripción Breve o Justificación del Asunto:</label>
+                <textarea id="txtDescripcion" placeholder="Describe detalladamente el asunto o la petición legal..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Generar y Registrar Ticket</button>
+        </form>
+    </div>
+
+    <script>
+        const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
+        const URL_REGISTRO_TICKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tickets_jurix";
+
+        // Carga de Sesión y Credenciales desde Index
+        const sesionActiva = localStorage.getItem('jurix_sesion_activa');
+        const rawRol = localStorage.getItem('jurix_perfil') || ""; 
+        const userName = localStorage.getItem('last_user_name');
+        const userArea = localStorage.getItem('last_user_area');
+        const userPuesto = localStorage.getItem('last_user_puesto');
+
+        if (sesionActiva !== 'true' || !rawRol) {
+            alert("No has iniciado sesión o tu sesión expiró.");
+            window.location.href = "index.html";
+        }
+
+        // Mostrar credenciales en la Top Bar y Autocompletar Formulario
+        document.getElementById('lblNombre').textContent = userName || "Desconocido";
+        document.getElementById('lblRol').textContent = rawRol;
+        
+        document.getElementById('user_nombre').value = userName || "";
+        document.getElementById('user_puesto').value = userPuesto || "";
+        document.getElementById('user_area').value = userArea || "";
+
+        // Envío e Inserción en Supabase
+        document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const servicio = document.getElementById('cmbServicios').value;
+            const descripcion = document.getElementById('txtDescripcion').value;
+
+            // Generación de Folio Aleatorio Inteligente en base al servicio seleccionado
+            const numeroAleatorio = Math.floor(1000 + Math.random() * 9000); 
+            let codigoServicio = "GEN";
+            if(servicio.includes('_A001')) codigoServicio = "A001";
+            if(servicio.includes('_B001')) codigoServicio = "B001";
+            if(servicio.includes('_B002')) codigoServicio = "B002";
+            if(servicio.includes('_B003')) codigoServicio = "B003";
+
+            const folioGenerado = `JURIX-DGAJ-DCPL-${codigoServicio}-${numeroAleatorio}`;
+
+            const payload = {
+                folio: folioGenerado,
+                solicitante: userName,
+                puesto: userPuesto,
+                area: userArea,
+                servicio_solicitado: servicio,
+                descripcion_asunto: descripcion,
+                estatus: "Pendiente de Asignar",
+                fecha_registro: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(URL_REGISTRO_TICKET, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('generated_folio', folioGenerado);
+                    localStorage.setItem('jurix_folio_activo', folioGenerado);
+                    localStorage.setItem('folio_ticket', folioGenerado);
+                    
+                    alert(`¡Ticket Registrado con Éxito!\nFolio Oficial: ${folioGenerado}`);
+                    
+                    if(servicio.includes('_B001') || servicio.includes('_B002') || servicio.includes('_B003')) {
+                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(folioGenerado)}`;
+                    } else {
+                        window.location.href = "menu.html";
+                    }
+                } else {
+                    const err = await response.json();
+                    console.error(err);
+                    alert("Error en la respuesta del servidor de base de datos.");
+                }
+            } catch (error) {
+                console.error("Error de red:", error);
+                alert("Fallo crítico de conexión con la API de Supabase.");
+            }
+        });
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
