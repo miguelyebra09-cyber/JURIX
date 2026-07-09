@@ -276,7 +276,7 @@
 
     <script>
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
-        const URL_ESTATUS_TIKETS = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tikets";
+        const URL_ESTATUS_TIKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/estatus_tiket";
 
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
         const rawRol = localStorage.getItem('jurix_perfil') || ""; 
@@ -338,7 +338,7 @@
 
         async function cargarMetricasSupabase() {
             try {
-                const response = await fetch(URL_ESTATUS_TIKETS, {
+                const response = await fetch(URL_ESTATUS_TIKET, {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_KEY,
@@ -367,7 +367,7 @@
                     }
                 }
             } catch (error) {
-                console.error("Error cargando estatus_tikets:", error);
+                console.error("Error cargando estatus_tiket:", error);
             }
         }
 
