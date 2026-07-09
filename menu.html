@@ -356,26 +356,35 @@
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("Datos recibidos de Supabase:", data); // Esto te permitirá ver la estructura real en la consola F12
+
                     if (data && data.length > 0) {
                         let pAsignar = 0;
                         let pAtender = 0;
                         let pLiberar = 0;
                         let pCancelados = 0;
 
-                        // Validador mejorado: ignora celdas vacías, nulas o con texto "NULL"/"EMPTY"
+                        // Condición robusta e insensible a mayúsculas o variaciones de texto nulo
                         const tieneFolioValido = (valor) => {
                             if (valor === null || valor === undefined) return false;
                             const texto = String(valor).trim().toUpperCase();
                             if (texto === "" || texto === "NULL" || texto === "EMPTY") return false;
-                            // Asegura que contenga la estructura base de tus folios reales "JURIX"
                             return texto.includes("JURIX");
                         };
 
                         data.forEach(fila => {
-                            if (tieneFolioValido(fila.tiketpendienteasignar)) pAsignar++;
-                            if (tieneFolioValido(fila.tiketpendienteatender)) pAtender++;
-                            if (tieneFolioValido(fila.tiketpendienteliberar)) pLiberar++;
-                            if (tieneFolioValido(fila.tiketcancelado)) pCancelados++;
+                            // Extracción por coincidencia parcial de claves por si Supabase cambia el orden o formato
+                            Object.keys(fila).forEach(key => {
+                                const lowerKey = key.toLowerCase().trim();
+                                const valorCelda = fila[key];
+
+                                if (tieneFolioValido(valorCelda)) {
+                                    if (lowerKey.includes("asignar")) pAsignar++;
+                                    else if (lowerKey.includes("atender")) pAtender++;
+                                    else if (lowerKey.includes("liberar")) pLiberar++;
+                                    else if (lowerKey.includes("cancelado")) pCancelados++;
+                                }
+                            });
                         });
 
                         document.getElementById('countAsignar').textContent = pAsignar;
@@ -383,9 +392,10 @@
                         document.getElementById('countLiberar').textContent = pLiberar;
                         document.getElementById('countCancelados').textContent = pCancelados;
                         
-                        // Total general de tickets activos (excluyendo cancelados del total activo)
                         document.getElementById('countTotal').textContent = pAsignar + pAtender + pLiberar;
                     }
+                } else {
+                    console.error("Error en respuesta de servidor:", response.statusText);
                 }
             } catch (error) {
                 console.error("Error cargando estatus_tiket:", error);
