@@ -242,7 +242,6 @@
         const SUPABASE_KEY = "sb_publishable_GhQjnvk_LouGCj3Lf7NuUA_h7ct-yJy";
         const URL_REGISTRO_TICKET = "https://ahblnfehtlyahtimrmve.supabase.co/rest/v1/tickets_jurix";
 
-        // Obtener datos de la sesión guardada en index.html
         const sesionActiva = localStorage.getItem('jurix_sesion_activa');
         const rawRol = localStorage.getItem('jurix_perfil') || ""; 
         const userName = localStorage.getItem('last_user_name');
@@ -254,7 +253,6 @@
             window.location.href = "index.html";
         }
 
-        // Carga inicial de datos de interfaz
         document.getElementById('lblNombre').textContent = userName || "Desconocido";
         document.getElementById('lblRol').textContent = rawRol;
         
@@ -262,21 +260,20 @@
         document.getElementById('user_puesto').value = userPuesto || "";
         document.getElementById('user_area').value = userArea || "";
 
-        // Fijar fecha actual del sistema en formato local entendible
         const hoy = new Date();
         document.getElementById('txtFecha').value = hoy.toLocaleDateString('es-MX') + ' ' + hoy.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'});
 
-        // FUNCIÓN CLAVE: Cálculo automático e inteligente del Folio Consecutivo Real
+        // CORRECCIÓN DEFINITIVA DE LA SINTAXIS URL DE CONSULTA (ILIKE)
         async function calcularFolioDinamico() {
             const servicioSeleccionado = document.getElementById('cmbServicios').value;
             if (!servicioSeleccionado) return;
 
-            // Transforma el guion bajo en medio para concordar con la nomenclatura del folio (DCPL-B001)
             const sufijoServicio = servicioSeleccionado.replace("_", "-");
 
             try {
-                // Consultamos todos los folios existentes correspondientes a ese tipo de servicio para calcular el consecutivo correcto
-                const queryUrl = `${URL_REGISTRO_TICKET}?folio=ilike.*${sufijoServicio}*&select=folio`;
+                // Sintaxis PostgREST de Supabase corregida: se usa % en lugar de .*
+                const queryUrl = `${URL_REGISTRO_TICKET}?folio=ilike.%25${sufijoServicio}%25&select=folio`;
+                
                 const response = await fetch(queryUrl, {
                     method: 'GET',
                     headers: {
@@ -293,33 +290,35 @@
                     if (registros && registros.length > 0) {
                         let maxNum = 0;
                         registros.forEach(r => {
-                            const partes = r.folio.split('-');
-                            if (partes.length >= 5) {
-                                const ultimoSegmento = parseInt(partes[4], 10);
-                                if (!isNaN(ultimoSegmento) && ultimoSegmento > maxNum) {
-                                    maxNum = ultimoSegmento;
+                            if (r.folio) {
+                                const partes = r.folio.split('-');
+                                if (partes.length >= 5) {
+                                    const ultimoSegmento = parseInt(partes[4], 10);
+                                    if (!isNaN(ultimoSegmento) && ultimoSegmento > maxNum) {
+                                        maxNum = ultimoSegmento;
+                                    }
                                 }
                             }
                         });
                         siguienteConsecutivo = maxNum + 1;
                     }
+                } else {
+                    console.error("Error en respuesta HTTP al calcular folio:", response.status);
                 }
 
-                // Dar formato de 4 dígitos al número secuencial (ejemplo: 0001, 0012)
                 const consecutivoPad = String(siguienteConsecutivo).padStart(4, '0');
-                const folioOficial = `JURIX-DGAJ-DCPL-${servicioSeleccionado.split('_')[1]}-${consecutivoPad}`;
+                const codigoLimpio = servicioSeleccionado.split('_')[1];
+                const folioOficial = `JURIX-DGAJ-DCPL-${codigoLimpio}-${consecutivoPad}`;
                 
                 document.getElementById('txtFolio').value = folioOficial;
 
             } catch (error) {
-                console.error("Error calculando el folio automático:", error);
-                // Fallback en caso de desconexión temporal: Genera un número aleatorio de control
+                console.error("Error crítico calculando el folio automático:", error);
                 const randomFallback = String(Math.floor(1000 + Math.random() * 9000));
                 document.getElementById('txtFolio').value = `JURIX-DGAJ-${sufijoServicio}-${randomFallback}`;
             }
         }
 
-        // Manejo del Envío del Formulario e Inserción a Base de Datos
         document.getElementById('ticketForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -328,7 +327,7 @@
             const descripcion = document.getElementById('txtDescripcion').value;
 
             if(!folio || folio.includes('Seleccione')) {
-                alert("Por favor espere a que el folio automático se calcule.");
+                alert("Por favor seleccione un servicio válido para calcular el folio.");
                 return;
             }
 
@@ -356,7 +355,6 @@
                 });
 
                 if (response.ok) {
-                    // Sincronización de LocalStorage requerida para páginas subsecuentes
                     localStorage.setItem('generated_folio', folio);
                     localStorage.setItem('jurix_folio_activo', folio);
                     localStorage.setItem('folio_ticket', folio);
@@ -368,7 +366,6 @@
 
                     alert(`¡Ticket Registrado de Forma Exitosa!\nFolio Oficial: ${folio}`);
                     
-                    // Ruteo inteligente original según el tipo de servicio
                     if(servicio.includes('B001') || servicio.includes('B002') || servicio.includes('B003')) {
                         window.location.href = `hallazgo.html?folio=${encodeURIComponent(folio)}`;
                     } else {
@@ -376,7 +373,7 @@
                     }
                 } else {
                     const err = await response.json();
-                    console.error("Detalle del error en Supabase:", err);
+                    console.error("Error al insertar:", err);
                     alert("Error en el guardado: No se pudo registrar en la base de datos.");
                 }
             } catch (error) {
