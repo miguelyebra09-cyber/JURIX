@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURIX-DGAJ - Menú Principal</title>
+    <style>
+        :root {
+            --naranja-nitido: #FF6600;
+            --naranja-neon: #ff9e59;
+            --gris-oscuro: #333333;
+            --gris-fondo: #1e1e1e;
+            --blanco: #ffffff;
+            --deshabilitado: #555555;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gris-oscuro) 0%, var(--gris-fondo) 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--blanco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Barra Superior de Usuario */
+        .navbar {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-bottom: 3px solid var(--naranja-nitido);
+            padding: 15px 30px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo-part h1 {
+            margin: 0;
+            color: var(--naranja-nitido);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .navbar .user-info {
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid var(--naranja-nitido);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .user-info span {
+            font-weight: bold;
+            color: var(--naranja-nitido);
+        }
+
+        /* Contenedor del Menú */
+        .menu-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .menu-subtitle {
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        /* Cuadrícula de Opciones */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        /* Estilo Base de los Botones del Menú */
+        .menu-btn {
+            background-color: transparent;
+            color: var(--blanco);
+            border: 2px solid var(--blanco);
+            padding: 25px 20px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* Efecto Luz Neón Naranja al Pasar el Mouse */
+        .menu-btn:not(.disabled):hover {
+            border-color: var(--naranja-nitido);
+            color: var(--naranja-nitido);
+            background-color: rgba(255, 102, 0, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--naranja-nitido), 0 0 5px var(--naranja-neon);
+            text-shadow: 0 0 8px rgba(255, 102, 0, 0.6);
+        }
+
+        /* Estado Deshabilitado */
+        .menu-btn.disabled {
+            border-color: var(--deshabilitado);
+            color: #777777;
+            background-color: rgba(0, 0, 0, 0.2);
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-logout {
+            margin-top: 40px;
+            background-color: transparent;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background-color: #ff3333;
+            color: #fff;
+            box-shadow: 0 0 10px #ff3333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Estado e Información del Usuario -->
+    <div class="navbar">
+        <div class="logo-part">
+            <h1>JURIX</h1>
+        </div>
+        <div class="user-info" id="sessionBadge">
+            Cargando sesión...
+        </div>
+    </div>
+
+    <!-- Contenedor Principal del Menú -->
+    <div class="menu-container">
+        <div class="menu-title">Panel Operativo</div>
+        <div class="menu-subtitle">Selecciona una opción de acuerdo a tus facultades en el sistema</div>
+
+        <div class="menu-grid">
+            <!-- 1. Registrar Ticket -->
+            <a href="solicitud.html" id="btn-registrar" class="menu-btn">Registrar Ticket de Servicio</a>
+
+            <!-- 2. Consultar Ticket (Redirección dinámica por JS) -->
+            <a href="#" id="btn-consultar" class="menu-btn">Consultar Ticket</a>
+
+            <!-- 3. Asignar Ticket (Solo Administrador) -->
+            <a href="asignartiket.html" id="btn-asignar" class="menu-btn">Asignar Ticket</a>
+
+            <!-- 4. Atender Ticket (Admin y Revisor/Supervisor) -->
+            <a href="atendertiket.html" id="btn-atender" class="menu-btn">Atender Ticket</a>
+
+            <!-- 5. Modificar Ticket (Admin y Revisor/Supervisor) -->
+            <a href="modficartiket.html" id="btn-modificar" class="menu-btn">Modificar Ticket</a>
+
+            <!-- 6. Métricas (Admin y Revisor/Supervisor) -->
+            <a href="metricas.html" id="btn-metricas" class="menu-btn">Métricas</a>
+
+            <!-- 7. Base de Datos (Admin y Revisor/Supervisor) -->
+            <a href="basedatos.html" id="btn-database" class="menu-btn">Base de Datos</a>
+
+            <!-- 8. Utilerías (Todos) -->
+            <a href="utilerías.html" id="btn-utilerias" class="menu-btn">Utilerías</a>
+        </div>
+
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Validar que la sesión esté activa, de lo contrario regresar al index.html
+            if (localStorage.getItem('jurix_sesion_activa') !== 'true') {
+                alert("No has iniciado sesión o tu sesión ha expirado.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            // 2. Recuperar el rol y el nombre guardados en el login
+            // Convertimos a minúsculas para evitar discrepancias de escritura (ej. "Usuario" vs "usuario")
+            const perfil = (localStorage.getItem('jurix_perfil') || '').toLowerCase().trim();
+            const nombre = localStorage.getItem('last_user_name') || 'Usuario del Sistema';
+
+            // Mostrar la información en la barra superior
+            const sessionBadge = document.getElementById('sessionBadge');
+            sessionBadge.innerHTML = `Usuario: <span>${nombre}</span> | Rol: <span style="text-transform: uppercase;">${perfil}</span>`;
+
+            // 3. Configurar la redirección dinámica de "Consultar Ticket"
+            const btnConsultar = document.getElementById('btn-consultar');
+            if (perfil === 'usuario') {
+                btnConsultar.href = "consultauser.html";
+            } else if (perfil === 'revisor' || perfil === 'supervisor') {
+                btnConsultar.href = "consultarevi.html";
+            } else if (perfil === 'administrador' || perfil === 'admin') {
+                btnConsultar.href = "consultaradmin.html";
+            } else {
+                // Fallback por defecto si hay un rol imprevisto
+                btnConsultar.href = "consultauser.html"; 
+            }
+
+            // 4. Control de Restricciones y Deshabilitación de Opciones
+
+            // Regla: Asignar Ticket -> Solo Administrador
+            const esAdmin = (perfil === 'administrador' || perfil === 'admin');
+            // Regla: Atender, Modificar, Métricas, Base de Datos -> Administrador, Revisor o Supervisor
+            const esStaff = (perfil === 'administrador' || perfil === 'admin' || perfil === 'revisor' || perfil === 'supervisor');
+
+            if (!esAdmin) {
+                deshabilitarEnlace('btn-asignar');
+            }
+
+            if (!esStaff) {
+                deshabilitarEnlace('btn-atender');
+                deshabilitarEnlace('btn-modificar');
+                deshabilitarEnlace('btn-metricas');
+                deshabilitarEnlace('btn-database');
+            }
+        });
+
+        // Función auxiliar para deshabilitar visual y funcionalmente los botones/enlaces
+        function deshabilitarEnlace(idElemento) {
+            const elemento = document.getElementById(idElemento);
+            if (elemento) {
+                elemento.classList.add('disabled');
+                elemento.removeAttribute('href'); // Quita el enlace de navegación
+                elemento.addEventListener('click', function(e) {
+                    e.preventDefault(); // Bloquea cualquier acción de click incidental
+                });
+            }
+        }
+
+        // Función para salir de forma segura
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
