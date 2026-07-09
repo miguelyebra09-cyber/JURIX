@@ -438,7 +438,7 @@
                     alert(`¡Ticket Registrado con Éxito!\nNúmero de Ticket Oficial: ${numeroTiket}`);
                     
                     if(servicio.includes('B001') || servicio.includes('B002') || servicio.includes('B003')) {
-                        window.location.href = `hallazgo.html?folio=${encodeURIComponent(numeroTiket)}`;
+                        window.location.href = `servihallazgo.html?folio=${encodeURIComponent(numeroTiket)}`;
                     } else {
                         window.location.href = "menu.html";
                     }
