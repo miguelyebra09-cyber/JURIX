@@ -492,7 +492,7 @@
             content: '📄'; font-size: 20px; display: block; line-height: 40px; text-align: center; color: #111;
         }
 
-        @keyframes sendDoc {
+        @pragma keyframes sendDoc {
             0% { top: 0; opacity: 1; transform: translateX(-50%) scale(1); }
             80% { top: 55px; opacity: 0.3; transform: translateX(-50%) scale(0.5); }
             100% { top: 55px; opacity: 0; transform: translateX(-50%) scale(0.2); }
@@ -924,10 +924,10 @@
             function seleccionarSustancia(textoSustancia, accionBase, sinonimos, anio) {
                 txtSustancia.value = textoSustancia;
                 txtSustancia.dispatchEvent(new Event('change'));
-                ejecutarAnalisisConcepto(accionBase, sinonimos, anio);
+                ejecutarRompeConcepto(accionBase, sinonimos, anio);
             }
 
-            function ejecutarAnalisisConcepto(accionBase, sinonimos, anio) {
+            function ejecutarRompeConcepto(accionBase, sinonimos, anio) {
                 const opcionesConcepto = [
                     `${accionBase} ${anio}.`,
                     `${sinonimos[0]} ${anio}.`,
@@ -1012,7 +1012,7 @@
         }
 
         // =======================================================
-        // CONEXIÓN INTEGRADA CON SUPABASE PATCH (CORREGIDA)
+        // SOLUCIÓN INTEGRADA: GENERACIÓN DE ID ENTERO Y UPSERT MODE
         // =======================================================
         function configurarEnvioAnimado() {
             const form = document.getElementById('hallazgoForm');
@@ -1028,11 +1028,13 @@
                     modalStatusText.innerText = "Sincronizando datos con Supabase DB...";
                     modalTimerText.innerText = "Estableciendo conexión segura...";
 
-                    // Rescate preventivo del folio desde la memoria o el texto de la interfaz
+                    // Extraer o rescatar el folio activo actual
                     const fActivo = folioTicketActivo || document.getElementById('t_num_ticket').innerText || "JURIX-DGAJ-DCPL-B001-0003";
 
-                    // Payload estructurado para actualizar la fila correspondiente
+                    // Payload estructurado inyectando un entero pseudoaleatorio para la columna id
                     const payload = {
+                        id: Math.floor(Math.random() * 2147483647), 
+                        folio_user: fActivo, 
                         fecha_recepcion: document.getElementById('fecha_recepcion').value,
                         sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
                         tipo_auditoria: document.getElementById('tipo_auditoria').value,
@@ -1049,17 +1051,14 @@
                     };
 
                     try {
-                        // Construcción de la URL de destino con el filtro relacional
-                        const urlConFiltro = `${URL_SUPABASE_REGISTRAR}?folio_user=eq.${encodeURIComponent(fActivo)}`;
-
-                        // Petición mediante método PATCH para evitar el error de llave duplicada 409
-                        const response = await fetch(urlConFiltro, {
-                            method: 'PATCH',
+                        // Enviamos a la URL base mediante POST con los encabezados adecuados para Upsert
+                        const response = await fetch(URL_SUPABASE_REGISTRAR, {
+                            method: 'POST',
                             headers: {
                                 'apikey': SUPABASE_KEY,
                                 'Authorization': `Bearer ${SUPABASE_KEY}`,
                                 'Content-Type': 'application/json',
-                                'Prefer': 'return=minimal'
+                                'Prefer': 'resolution=merge-duplicates' // Fusiona si el folio_user existe, crea si es nuevo
                             },
                             body: JSON.stringify(payload)
                         });
