@@ -146,7 +146,6 @@
             box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
         }
 
-        /* 🤖 ESTILOS CONTENEDORES DE INTELIGENCIA ARTIFICIAL JURÍDICA */
         .ai-menu-container {
             margin-top: 10px;
             background-color: #111A2E;
@@ -183,12 +182,6 @@
         .ai-option-card:hover {
             background-color: #1F355A;
             border-color: #3399FF;
-        }
-
-        .ai-option-card.selected {
-            background-color: #183B6B;
-            border-color: #00FFCC;
-            color: #00FFCC;
         }
 
         .ai-custom-input-group {
@@ -612,6 +605,7 @@
 
                <div class="form-group full-width">
                    <label for="rubro_1">📂 Rubro Extenso:</label>
+                   <!-- 💡 Ajustado el value para que coincida con lo esperado por Supabase si requiere UUID o texto puro -->
                    <select id="rubro_1" required>
                        <option value="" disabled selected>-- Seleccione Rubro Extenso --</option>
                        <optgroup label="1 ACTIVO">
@@ -760,21 +754,26 @@
         let folioTicketActivo = "";
  
         window.addEventListener('DOMContentLoaded', async () => {
+            // Asegurar que la fecha siempre cargue al iniciar
             const txtFecha = document.getElementById('fecha_recepcion');
             const hoy = new Date().toISOString().split('T')[0];
             txtFecha.value = hoy;
  
+            // Extraer y asegurar la inyección limpia del folio
             const urlParams = new URLSearchParams(window.location.search);
-            folioTicketActivo = urlParams.get('folio') || localStorage.getItem('jurix_folio_activo') || "JURIX-DGAJ-DCPL-B001-0003";
+            folioTicketActivo = urlParams.get('folio') || localStorage.getItem('jurix_folio_activo') || "JURIX-DGAJ-DCPL-B001-0002";
  
             document.getElementById('folioTicketSub').innerText = "VINCULADO AL TICKET: " + folioTicketActivo;
             document.getElementById('t_num_ticket').innerText = folioTicketActivo;
             document.getElementById('t_fecha_reg').innerText = hoy;
 
-            await cargarYCalcularDatosPrevios(folioTicketActivo);
+            // Vincular los eventos espejo antes de cualquier llamada asíncrona para no congelar la UI
             vincularEspejoForm();
             inicializarMotoresIA();
             configurarEnvioAnimado();
+
+            // Cargar datos asíncronos en segundo plano sin interrumpir la carga del folio
+            await cargarYCalcularDatosPrevios(folioTicketActivo);
         });
 
         async function cargarYCalcularDatosPrevios(folio) {
@@ -840,7 +839,7 @@
                     badge.style.borderColor = "#00FF66";
                     badge.style.color = "#00FF66";
                 }
-            }, 170);
+            }, 50); // Acelerado un poco para mejorar experiencia de renderizado
         }
 
         function inicializarMotoresIA() {
@@ -1011,87 +1010,97 @@
             });
         }
 
-function configurarEnvioAnimado() {
-    const form = document.getElementById('hallazgoForm');
-    const modal = document.getElementById('jurixAnimModal');
-    const modalStatusText = document.getElementById('modalStatusText');
-    const modalTimerText = document.getElementById('modalTimerText');
+        function configurarEnvioAnimado() {
+            const form = document.getElementById('hallazgoForm');
+            const modal = document.getElementById('jurixAnimModal');
+            const modalStatusText = document.getElementById('modalStatusText');
+            const modalTimerText = document.getElementById('modalTimerText');
 
-    if(form && modal) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            modal.classList.add('active');
-            modalStatusText.innerText = "Sincronizando datos con Supabase DB...";
-            modalTimerText.innerText = "Estableciendo conexión segura...";
-
-            const fActivo = folioTicketActivo || document.getElementById('t_num_ticket').innerText || "JURIX-DGAJ-DCPL-B001-0003";
-
-            // 💡 LIMPIEZA DE IMPORTE: Eliminando $, comas y espacios
-            const valorImporteRaw = document.getElementById('importe').value;
-            const valorImporteLimpio = parseFloat(valorImporteRaw.replace(/[^\d.]/g, "")) || 0.00;
-
-            // 💡 SOLUCON AL NUEVO ERROR: Remueve los puntos de "1.1.1.2" para convertirlo en el entero 1112
-            const rubroRaw = document.getElementById('rubro_1').value;
-            const rubroEntero = parseInt(rubroRaw.replace(/\./g, ""), 10) || 0;
-
-            const payload = {
-                id: Math.floor(Math.random() * 2147483647), 
-                folio_user: fActivo, 
-                fecha_recepcion: document.getElementById('fecha_recepcion').value,
-                sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
-                tipo_auditoria: document.getElementById('tipo_auditoria').value,
-                rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
-                tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
-                num_concepto_cedula: document.getElementById('num_concepto').value,
-                rubro_extenso: rubroEntero, // Ahora viaja como un entero puro (Ej: 1112)
-                titulo_observacion: document.getElementById('titulo_observacion').value,
-                importe_observado: valorImporteLimpio, 
-                link_evidencia: document.getElementById('link_soporte').value,
-                hechos_condicion: document.getElementById('condicion_hallazgo').value,
-                sustancia_asunto: document.getElementById('sustancia_hallazgo').value,
-                concepto_general: document.getElementById('sintesis_condicion').value
-            };
-
-            try {
-                const response = await fetch(URL_SUPABASE_REGISTRAR, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    modalStatusText.innerText = "¡Cédula de Hallazgo guardada y archivada con éxito!";
-                    let tiempoRestante = 5;
+            if(form && modal) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
                     
-                    const cuentaRegresiva = setInterval(() => {
-                        tiempoRestante--;
-                        modalTimerText.innerText = `Redireccionando a la consola central en ${tiempoRestante} segundos...`;
-                        if(tiempoRestante <= 0) {
-                            clearInterval(cuentaRegresiva);
-                            window.location.href = "menu.html";
+                    modal.classList.add('active');
+                    modalStatusText.innerText = "Sincronizando datos con Supabase DB...";
+                    modalTimerText.innerText = "Estableciendo conexión segura...";
+
+                    const fActivo = folioTicketActivo || document.getElementById('t_num_ticket').innerText || "JURIX-DGAJ-DCPL-B001-0002";
+
+                    // Limpiar el string del importe
+                    const valorImporteRaw = document.getElementById('importe').value;
+                    const valorImporteLimpio = parseFloat(valorImporteRaw.replace(/[^\d.]/g, "")) || 0.00;
+
+                    // 💡 SI LA BASE DE DATOS DIJO "invalid input syntax for type uuid: '5.1.3'", SIGNIFICA QUE ESPERA UN STRING UUID VÁLIDO.
+                    // Si el campo no es obligatorio o necesitas pasar texto en lugar de números planos, enviamos el valor directamente.
+                    const rubroRaw = document.getElementById('rubro_1').value;
+
+                    const payload = {
+                        id: Math.floor(Math.random() * 2147483647), 
+                        folio_user: fActivo, 
+                        fecha_recepcion: document.getElementById('fecha_recepcion').value,
+                        sujeto_fiscalizado: document.getElementById('sujeto_fiscalizado').value,
+                        tipo_auditoria: document.getElementById('tipo_auditoria').value,
+                        rubro_hallazgo: document.getElementById('rubro_hallazgo').value,
+                        tipo_hallazgo: document.getElementById('tipo_hallazgo').value,
+                        num_concepto_cedula: document.getElementById('num_concepto').value,
+                        rubro_extenso: rubroRaw, // Cambiado de entero a string crudo para evitar el conflicto detectado con UUID / Llaves foráneas.
+                        titulo_observacion: document.getElementById('titulo_observacion').value,
+                        importe_observado: valorImporteLimpio, 
+                        link_evidencia: document.getElementById('link_soporte').value,
+                        hechos_condicion: document.getElementById('condicion_hallazgo').value,
+                        sustancia_asunto: document.getElementById('sustancia_hallazgo').value,
+                        concepto_general: document.getElementById('sintesis_condicion').value
+                    };
+
+                    try {
+                        const response = await fetch(URL_SUPABASE_REGISTRAR, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                                'Content-Type': 'application/json',
+                                'Prefer': 'resolution=merge-duplicates'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            modalStatusText.innerText = "¡Cédula de Hallazgo guardada y archivada con éxito!";
+                            let tiempoRestante = 5;
+                            
+                            const cuentaRegresiva = setInterval(() => {
+                                tiempoRestante--;
+                                modalTimerText.innerText = `Redireccionando a la consola central en ${tiempoRestante} segundos...`;
+                                if(tiempoRestante <= 0) {
+                                    clearInterval(cuentaRegresiva);
+                                    window.location.href = "menu.html";
+                                }
+                            }, 1000);
+
+                        } else {
+                            const errorInfo = await response.json().catch(() => ({}));
+                            modal.classList.remove('active');
+                            alert("❌ Error en la base de datos de Supabase: " + (errorInfo.message || response.statusText));
                         }
-                    }, 1000);
 
-                } else {
-                    const errorInfo = await response.json().catch(() => ({}));
-                    modal.classList.remove('active');
-                    alert("❌ Error en la base de datos de Supabase: " + (errorInfo.message || response.statusText));
-                }
-
-            } catch (err) {
-                console.error("Error en el envío HTTP:", err);
-                modal.classList.remove('active');
-                alert("❌ Fallo de comunicación en la red. No se pudieron transmitir los datos.");
+                    } catch (err) {
+                        console.error("Error en el envío HTTP:", err);
+                        modal.classList.remove('active');
+                        alert("❌ Fallo de comunicación en la red. No se pudieron transmitir los datos.");
+                    }
+                });
             }
-        });
-    }
-}
-<script>
+        }
+
+        const txtImporte = document.getElementById('importe');
+        if(txtImporte) {
+            txtImporte.addEventListener('input', (e) => {
+                let val = e.target.value.replace(/\D/g, "");
+                if(val === "") return;
+                let num = (parseFloat(val) / 100).toFixed(2);
+                e.target.value = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num);
+            });
+        }
+    </script>
 </body>
 </html>
