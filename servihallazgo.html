@@ -492,7 +492,7 @@
             content: '📄'; font-size: 20px; display: block; line-height: 40px; text-align: center; color: #111;
         }
 
-        @pragma keyframes sendDoc {
+        @keyframes sendDoc {
             0% { top: 0; opacity: 1; transform: translateX(-50%) scale(1); }
             80% { top: 55px; opacity: 0.3; transform: translateX(-50%) scale(0.5); }
             100% { top: 55px; opacity: 0; transform: translateX(-50%) scale(0.2); }
@@ -1011,9 +1011,6 @@
             });
         }
 
-        // =======================================================
-        // SOLUCIÓN INTEGRADA: GENERACIÓN DE ID ENTERO Y UPSERT MODE
-        // =======================================================
         function configurarEnvioAnimado() {
             const form = document.getElementById('hallazgoForm');
             const modal = document.getElementById('jurixAnimModal');
@@ -1028,10 +1025,12 @@
                     modalStatusText.innerText = "Sincronizando datos con Supabase DB...";
                     modalTimerText.innerText = "Estableciendo conexión segura...";
 
-                    // Extraer o rescatar el folio activo actual
                     const fActivo = folioTicketActivo || document.getElementById('t_num_ticket').innerText || "JURIX-DGAJ-DCPL-B001-0003";
 
-                    // Payload estructurado inyectando un entero pseudoaleatorio para la columna id
+                    // 💡 SOLUCIÓN: Limpiar el string del importe eliminando $, comas y espacios antes del parseo numérico
+                    const valorImporteRaw = document.getElementById('importe').value;
+                    const valorImporteLimpio = parseFloat(valorImporteRaw.replace(/[^\d.]/g, "")) || 0.00;
+
                     const payload = {
                         id: Math.floor(Math.random() * 2147483647), 
                         folio_user: fActivo, 
@@ -1043,7 +1042,7 @@
                         num_concepto_cedula: document.getElementById('num_concepto').value,
                         rubro_extenso: document.getElementById('rubro_1').value,
                         titulo_observacion: document.getElementById('titulo_observacion').value,
-                        importe_observado: document.getElementById('importe').value,
+                        importe_observado: valorImporteLimpio, // Se envía como flotante puro
                         link_evidencia: document.getElementById('link_soporte').value,
                         hechos_condicion: document.getElementById('condicion_hallazgo').value,
                         sustancia_asunto: document.getElementById('sustancia_hallazgo').value,
@@ -1051,14 +1050,13 @@
                     };
 
                     try {
-                        // Enviamos a la URL base mediante POST con los encabezados adecuados para Upsert
                         const response = await fetch(URL_SUPABASE_REGISTRAR, {
                             method: 'POST',
                             headers: {
                                 'apikey': SUPABASE_KEY,
                                 'Authorization': `Bearer ${SUPABASE_KEY}`,
                                 'Content-Type': 'application/json',
-                                'Prefer': 'resolution=merge-duplicates' // Fusiona si el folio_user existe, crea si es nuevo
+                                'Prefer': 'resolution=merge-duplicates'
                             },
                             body: JSON.stringify(payload)
                         });
